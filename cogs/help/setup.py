@@ -10,22 +10,63 @@ class SetupCog(commands.Cog):
     
     # Hidden means it won't show up on the default help.
     @commands.command(name='setup', hidden=True)
-    @commands.is_owner()
     async def server_setup(self, ctx):
-        """Command which aid's in setting up perms"""
+        if zb_checks.is_owner(ctx) or zb_checks.has_permission(ctx,1):
+            """Command which aid's in setting up perms"""
 
-        embed=discord.Embed(title="Choose from selection below to setup server.")
-        embed.set_author(name="Server Setup Menu",
-                         icon_url=self.bot.user.avatar_url)
-        embed.set_thumbnail(url=ctx.author.avatar_url)
-        embed.add_field(name="Set admin roles",
-                        value=".sar \<role_name\> [1-5]",
-                        inline=False)
-        embed.set_footer(text="Type '.setup' to start over.")
-        await ctx.send(embed=embed)
+            embed=discord.Embed(title="Choose from selection below to setup server.")
+            embed.set_author(name="Server Setup Menu",
+                             icon_url=self.bot.user.avatar_url)
+            embed.set_thumbnail(url=ctx.author.avatar_url)
+            embed.add_field(name="Set admin roles",
+                            value=".sar \<role_name\> [1-5]",
+                            inline=False)
+            embed.set_footer(text="Type '.setup' to start over.")
+            await ctx.send(embed=embed)
 
-        print(zb_checks.is_owner(ctx))
-        print(ctx.guild.id)
+            print(zb_checks.is_owner(ctx))
+            print(ctx.guild.id)
+
+    # Hidden means it won't show up on the default help.
+    @commands.command(name='sar', hidden=True)
+    async def set_role(self, ctx):
+        """ allow role permissions """
+        if zb_checks.is_owner(ctx) or zb_checks.has_permission(ctx,1):
+            sql = """ UPDATE roles
+                      SET role_perms = %s
+                      WHERE guild_id = %s
+                      AND role_id = %s """
+            conn = None
+            updated_rows = 0
+
+            role_perms = 1
+            role_id = 533701082283638797
+
+        try:
+            # read database configuration
+            # params = config()
+            # connect to the PostgreSQL database
+            conn = dbSQL.connect(host = 'localhost',
+                                 database=_var.dbName,
+                                 user=_var.dbUser,
+                                 password=_var.dbPass)
+            # create a new cursor
+            cur = conn.cursor()
+            # execute the UPDATE  statement
+            cur.execute(sql, (role_perms, ctx.guild.id, role_id))
+            # get the number of updated rows
+            updated_rows = cur.rowcount
+            # Commit the changes to the database
+            conn.commit()
+            # Close communication with the PostgreSQL database
+            cur.close()
+        except (Exception, dbSQL.DatabaseError) as error:
+            print(error)
+        finally:
+            if conn is not None:
+                conn.close()
+
+        return updated_rows
 
 
 def setup(bot):

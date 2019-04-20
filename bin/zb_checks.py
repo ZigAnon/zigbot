@@ -40,4 +40,7 @@ def has_permission(ctx, role_perms):
         if conn is not None:
             conn.close()
 
-    return updated_rows
+    if updated_rows > 0:
+        return True
+    else:
+        return False
