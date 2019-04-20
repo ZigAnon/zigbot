@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from bin import config
+from bin import zb_config
 
 import sys, traceback, os
 
@@ -19,7 +19,7 @@ def get_prefix(bot, message):
     # If we are in a guild, we allow for the user to mention us or use any of the prefixes in our list.
     return commands.when_mentioned_or(*prefixes)(bot, message)
 
-_var = config
+_var = zb_config
 bot = commands.Bot(command_prefix=get_prefix)
 
 # Below cogs represents our folder our cogs are in. Following is the file name. So 'meme.py' in cogs, would be cogs.meme

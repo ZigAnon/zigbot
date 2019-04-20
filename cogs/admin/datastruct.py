@@ -1,8 +1,8 @@
 from discord.ext import commands
 import psycopg2 as dbSQL
-from bin import config
+from bin import zb_config
 
-_var = config
+_var = zb_config
 
 
 class DataStructCog(commands.Cog):
