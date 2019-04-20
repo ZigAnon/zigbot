@@ -1,9 +1,16 @@
 #!/usr/local/bin/python3.6
+import re
 import psycopg2 as dbSQL
 from bin import zb_config
 
 _var = zb_config
 
+
+#################
+##             ##
+##  Functions  ##
+##             ##
+#################
 def sql_login():
     conn = dbSQL.connect(host = 'localhost',
                          database=_var.dbName,
@@ -12,11 +19,24 @@ def sql_login():
     cur = conn.cursor()
     return conn, cur
 
+
+#################
+##             ##
+##    Bool     ##
+##             ##
+#################
 def is_owner(ctx):
     if int(ctx.author.id) == int(_var.ownerID):
         return True
     else:
         return False
+
+def pattern(ctx, test):
+    p = re.compile(test, re.IGNORECASE)
+    if p.match(ctx.message.content.lower()) is None:
+        return False
+    else:
+        return True
 
 def has_permission(ctx, role_perms):
     """ test for valid data in database at two columns """

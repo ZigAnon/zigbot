@@ -31,7 +31,21 @@ class SetupCog(commands.Cog):
     @commands.command(name='sar', hidden=True)
     async def set_role(self, ctx):
         """ allow role permissions """
+        if(zb_checks.pattern(ctx, '^(.\w+)\s+(\w+\W+){1,}(\d)$') and
+           int(ctx.message.content[-1:]) >= 1 and
+           int(ctx.message.content[-1:]) <= 5):
+            pass
+        else:
+            await ctx.send('Please use format `.sar <role_name> [1-5]`.')
+            return
         if zb_checks.is_owner(ctx) or zb_checks.has_permission(ctx,1):
+            try:
+                role = a
+                pass
+            except:
+                await ctx.send('Please use format `.sar <role_name> [1-5]`.')
+                return
+
             sql = """ UPDATE roles
                       SET role_perms = %s
                       WHERE guild_id = %s
@@ -42,24 +56,24 @@ class SetupCog(commands.Cog):
             role_perms = 1
             role_id = 533701082283638797
 
-        try:
-            # connect to the PostgreSQL database
-            conn, cur = zb_checks.sql_login()
-            # execute the UPDATE  statement
-            cur.execute(sql, (role_perms, ctx.guild.id, role_id))
-            # get the number of updated rows
-            updated_rows = cur.rowcount
-            # Commit the changes to the database
-            conn.commit()
-            # Close communication with the PostgreSQL database
-            cur.close()
-        except (Exception, dbSQL.DatabaseError) as error:
-            print(error)
-        finally:
-            if conn is not None:
-                conn.close()
+            try:
+                # connect to the PostgreSQL database
+                conn, cur = zb_checks.sql_login()
+                # execute the UPDATE  statement
+                cur.execute(sql, (role_perms, ctx.guild.id, role_id))
+                # get the number of updated rows
+                updated_rows = cur.rowcount
+                # Commit the changes to the database
+                conn.commit()
+                # Close communication with the PostgreSQL database
+                cur.close()
+            except (Exception, dbSQL.DatabaseError) as error:
+                print(error)
+            finally:
+                if conn is not None:
+                    conn.close()
 
-        return updated_rows
+            return updated_rows
 
 
 def setup(bot):
