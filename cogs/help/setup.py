@@ -50,12 +50,34 @@ class SetupCog(commands.Cog):
             # Get role id by name
             role_id, role_name = zb_checks.get_role_id(ctx,role)
 
-            try:
-                role_id = role_id[0]
-            except:
-                await ctx.send('Unable to find the role `' + role + '`.\n' +
-                               'Check your spelling and try again.')
-                return
+            print(str(len(role_id)))
+            if len(role_id) > 1:
+                print(role_name)
+                print(role_id)
+                channel = ctx.message.channel
+                select = zb_checks.select(ctx, role_id, role_name)
+                await ctx.send('Multiple roles were found for `' + role + '`.\n' +
+                               'Which one do you wish to modify:\n' + select)
+
+                def check(m):
+                    return (0 < int(m.content) <= len(role_id) and 
+                            m.channel == channel and
+                            m.author == ctx.author)
+
+                try:
+                    msg = await self.bot.wait_for('message', timeout=10.0, check=check)
+                    role_id = role_id[int(msg.content)-1]
+                    role_name = role_name[int(msg.content)-1]
+                except:
+                    await ctx.send('Invalid choice. Next time please use a number.')
+                    return
+            else:
+                try:
+                    role_id = role_id[0]
+                except:
+                    await ctx.send('Unable to find the role `' + role + '`.\n' +
+                                   'Check your spelling and try again.')
+                    return
 
             sql = """ UPDATE roles
                       SET role_perms = %s
@@ -82,7 +104,7 @@ class SetupCog(commands.Cog):
                     conn.close()
 
             if updated_rows > 0:
-                await ctx.send('Updated role `' + str(role_name[0]) +
+                await ctx.send('Updated role `' + str(role_name) +
                                '` with id `' + str(role_id) +
                                '`.\nPermission is now ' + str(role_perms))
             else:

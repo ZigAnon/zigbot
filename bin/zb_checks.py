@@ -39,6 +39,15 @@ def get_role_id(ctx, role):
 
     return role_id, role_name
 
+def select(ctx, list_id, list_name):
+    choice = '```'
+    for x in range(len(list_id)):
+        choice = (choice + str(x+1) + '.  Object ID = ' + str(list_id[x]) +
+                  ' -- Name = ' + list_name[x] + '\n')
+    choice = choice + '```'
+
+    return choice
+
 
 #################
 ##             ##
