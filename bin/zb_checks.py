@@ -11,6 +11,11 @@ _var = zb_config
 ##  Functions  ##
 ##             ##
 #################
+def error(e):
+    error = ('__**`Error:`**__\n```' +
+             str(e) + '```')
+    return error
+
 def sql_login():
     conn = dbSQL.connect(host = 'localhost',
                          database=_var.dbName,
@@ -18,6 +23,21 @@ def sql_login():
                          password=_var.dbPass)
     cur = conn.cursor()
     return conn, cur
+
+def get_role_id(ctx, role):
+    role_id = []
+    role_name = []
+    
+    # Finds role_id by name
+    l = str(ctx.guild.roles).split('<Role id=')[1:]
+    roles = [x.lower() for x in l]
+
+    for x in range(len(roles)):
+        if role in roles[x-1]:
+            role_id.append(roles[x-1].split()[0])
+            role_name.append(l[x-1].split('\'')[1])
+
+    return role_id, role_name
 
 
 #################
