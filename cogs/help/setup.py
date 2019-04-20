@@ -43,15 +43,8 @@ class SetupCog(commands.Cog):
             role_id = 533701082283638797
 
         try:
-            # read database configuration
-            # params = config()
             # connect to the PostgreSQL database
-            conn = dbSQL.connect(host = 'localhost',
-                                 database=_var.dbName,
-                                 user=_var.dbUser,
-                                 password=_var.dbPass)
-            # create a new cursor
-            cur = conn.cursor()
+            conn, cur = zb_checks.sql_login()
             # execute the UPDATE  statement
             cur.execute(sql, (role_perms, ctx.guild.id, role_id))
             # get the number of updated rows
