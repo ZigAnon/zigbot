@@ -14,10 +14,13 @@ class SetupCog(commands.Cog):
         """Command which aid's in setting up perms"""
 
         embed=discord.Embed(title="Choose from selection below to setup server.")
-        embed.set_author(name="Server Setup Menu", icon_url="https://cdn.discordapp.com/avatars/506310779298119680/4a4ff80747f598f562c68a88ba4786af.png")
-        embed.set_thumbnail(url="https://cdn.discordapp.com/avatars/506310779298119680/4a4ff80747f598f562c68a88ba4786af.png")
-        embed.add_field(name="Set admin roles", value=".sar \<role_name\> [1-5]", inline=False)
-        embed.set_footer(text="aaa")
+        embed.set_author(name="Server Setup Menu",
+                         icon_url=self.bot.user.avatar_url)
+        embed.set_thumbnail(url=ctx.author.avatar_url)
+        embed.add_field(name="Set admin roles",
+                        value=".sar \<role_name\> [1-5]",
+                        inline=False)
+        embed.set_footer(text="Type '.setup' to start over.")
         await ctx.send(embed=embed)
 
 
