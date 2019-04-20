@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from bin import zb_checks
 
 
 class SetupCog(commands.Cog):
@@ -22,6 +23,8 @@ class SetupCog(commands.Cog):
                         inline=False)
         embed.set_footer(text="Type '.setup' to start over.")
         await ctx.send(embed=embed)
+
+        print(zb_checks.is_owner(ctx))
 
 
 def setup(bot):
