@@ -25,6 +25,7 @@ class SetupCog(commands.Cog):
         await ctx.send(embed=embed)
 
         print(zb_checks.is_owner(ctx))
+        print(ctx.guild.id)
 
 
 def setup(bot):
