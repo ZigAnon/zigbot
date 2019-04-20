@@ -3,6 +3,7 @@ TOKEN = 'token'
 ownerID = 280455061140930562
 
 # DataBase information
+# https://github.com/strinking/statbot
 dbUser = 'name'
 dbPass = 'pass'
 dbName = 'dataname'
