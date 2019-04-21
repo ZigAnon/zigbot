@@ -28,10 +28,7 @@ class LookupCog(commands.Cog):
                 sql = sql.format(str(ctx.guild.id))
 
                 data, rows, string = zb.sql_query(sql)
-                if string == '':
-                    await ctx.send(zb.print_lookup(rows,data,title))
-                else:
-                    await ctx.send(string)
+                await zb.print_lookup(ctx,rows,data,title,string)
             else:
                 await ctx.send('**`INVALID OPTION:`** {0}'.format(tool))
 

@@ -1,6 +1,8 @@
 #!/usr/local/bin/python3.6
 import re
+import discord
 import psycopg2 as dbSQL
+from discord.ext import commands
 from bin import zb_config
 
 _var = zb_config
@@ -173,10 +175,27 @@ def sql_query(sql):
 ##  Printers   ##
 ##             ##
 #################
-def print_2000lim(string):
-    return
+async def print_string(ctx,string):
+    string = print_2000lim(string)
 
-def print_lookup(rows,data,title):
+    i = 0
+    if len(string[0]) == 1:
+        await ctx.send(string)
+    else:
+        while i < len(string):
+            await ctx.send(string[i])
+            i+=1
+
+def print_2000lim(string):
+    if len(string) < 2000:
+        return string
+    return string
+
+async def print_lookup(ctx,rows,data,title,string):
+    # Return if error
+    if string != '':
+        await print_string(ctx,string)
+        return
 
     # Build a title bar
     maxTitle = len(title)
@@ -190,7 +209,8 @@ def print_lookup(rows,data,title):
     if rows == 0:
         string = ('```\n      ' + title + '\n' + top + '\n' +
                   '   Empty list```')
-        return string
+        await print_string(ctx,string)
+        return
 
     maxRows = range(rows)
     maxEle = range(len(data[0]))
@@ -216,7 +236,6 @@ def print_lookup(rows,data,title):
         bar = top
 
     string = '```\n      ' + title + '\n' + bar + '\n'
-
     for x in maxRows:
         string = string + '||'
         for y in maxEle:
@@ -230,10 +249,8 @@ def print_lookup(rows,data,title):
                     i+=1
                 string = string + '||'
         string = string + '\n'
-
     string = string + bar + '\n'
-
     string = string + '```'
-    return string
 
-
+    await print_string(ctx,string)
+    return
