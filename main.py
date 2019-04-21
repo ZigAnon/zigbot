@@ -26,8 +26,7 @@ bot = commands.Bot(command_prefix=get_prefix)
 # Think of it like a dot path import
 initial_extensions = ['cogs.admin.serverinfo',
                       'cogs.admin.owner',
-                      'cogs.admin.lookup',
-                      'cogs.admin.datastruct']
+                      'cogs.admin.lookup']
 
 # Here we load our extensions(cogs) listed above in [initial_extensions].
 if __name__ == '__main__':

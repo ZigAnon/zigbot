@@ -173,6 +173,9 @@ def sql_query(sql):
 ##  Printers   ##
 ##             ##
 #################
+def print_2000lim(string):
+    return
+
 def print_lookup(rows,data,title):
 
     # Build a title bar

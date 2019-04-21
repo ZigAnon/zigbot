@@ -13,9 +13,18 @@ class OwnerCog(commands.Cog):
     async def tool_dev(self, ctx):
         """ Command that tests modules. """
         try:
+            string = ['string 1','string 2']
             lst = ['bacon', 'eggs', 'foo', 'bar']
-            msg = zb.pad_spaces(lst)
-            print(msg)
+            await ctx.send(string)
+            i = 0
+            print(len(string[0]))
+            print(len(lst[0]))
+            if len(string[0]) == 1:
+                await ctx.send(string)
+            else:
+                while i < len(string):
+                    await ctx.send(string[i])
+                    i+=1
         except Exception as e:
             await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
         else:
