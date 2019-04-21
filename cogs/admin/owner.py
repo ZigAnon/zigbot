@@ -1,10 +1,25 @@
 from discord.ext import commands
+from bin import zb_checks
 
 
 class OwnerCog(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.command(name='dev', hidden=True)
+    @commands.is_owner()
+    # async def tool_dev(self, ctx, *, cog: str):
+    async def tool_dev(self, ctx):
+        """ Command that tests modules. """
+        try:
+            lst = ['bacon', 'eggs', 'foo', 'bar']
+            msg = zb_checks.pad_spaces(lst)
+            print(msg)
+        except Exception as e:
+            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
+        else:
+            await ctx.send('**`SUCCESS`**')
     
     # Hidden means it won't show up on the default help.
     @commands.command(name='load', hidden=True)

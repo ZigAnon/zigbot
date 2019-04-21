@@ -52,7 +52,7 @@ class SetupCog(commands.Cog):
 
             if len(role_id) > 1:
                 channel = ctx.message.channel
-                select = zb_checks.select(ctx, role_id, role_name)
+                select = zb_checks.select(ctx, role_id, role_name, 0)
                 await ctx.send('Multiple roles were found for `' + role + '`.\n' +
                                'Which one do you wish to modify:\n' + select)
 

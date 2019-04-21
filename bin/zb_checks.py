@@ -24,6 +24,22 @@ def sql_login():
     cur = conn.cursor()
     return conn, cur
 
+def how_wide(data):
+    longest = max(data, key=len)
+    length = len(longest)
+    return length
+
+def pad_spaces(data):
+    length = how_wide(data)
+    spaces = ' '
+
+    i = 0
+    while i < length:
+        spaces = spaces + ' '
+        i+=1
+    lst = ['{0}{1}'.format(x, spaces[0:length-len(x)]) for x in data]
+    return lst
+
 def get_role_id(ctx, role):
     role_id = []
     role_name = []
@@ -39,11 +55,16 @@ def get_role_id(ctx, role):
 
     return role_id, role_name
 
-def select(ctx, list_id, list_name):
+def select(ctx, list_id, list_name, path):
+    """ Used to build output for users """
+
     choice = '```'
-    for x in range(len(list_id)):
-        choice = (choice + str(x+1) + '.  Object ID = ' + str(list_id[x]) +
-                  ' -- Name = ' + list_name[x] + '\n')
+
+    if path == 0:
+        for x in range(len(list_id)):
+            choice = (choice + str(x+1) + '.  Object ID = ' + str(list_id[x]) +
+                      ' -- Name = ' + list_name[x] + '\n')
+
     choice = choice + '```'
 
     return choice
@@ -86,7 +107,6 @@ def has_permission(ctx, role_perms):
         updated_rows = cur.rowcount
         # Close communication with the PostgreSQL database
         cur.close()
-        print('worked')
     except (Exception, dbSQL.DatabaseError) as error:
         print(error)
     finally:
