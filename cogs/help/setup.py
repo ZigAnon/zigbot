@@ -70,7 +70,7 @@ class SetupCog(commands.Cog):
                     role_id = role_id[int(msg.content)-1]
                     role_name = role_name[int(msg.content)-1]
                 except Exception as e:
-                    await ctx.send('Invalid choice. Next time please use a listed number.\n' + e)
+                    await ctx.send('Invalid choice. Next time please use a listed number.')
                     return
             else:
                 try:
