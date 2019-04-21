@@ -1,5 +1,6 @@
 #!/usr/local/bin/python3.6
 import re
+import math
 import discord
 import psycopg2 as dbSQL
 from discord.ext import commands
@@ -182,14 +183,45 @@ async def print_string(ctx,string):
     if len(string[0]) == 1:
         await ctx.send(string)
     else:
+        print(len(string))
         while i < len(string):
             await ctx.send(string[i])
             i+=1
 
 def print_2000lim(string):
-    if len(string) < 2000:
+    try:
+        if len(string) < 2000:
+            return string
+
+        # Gather numbers from data
+        build = string.split('\n')
+        length = len(build[2])
+        rows = math.floor(1800/length)
+        allRows = math.ceil(len(string)/length)
+        msgs = math.ceil(len(build)/rows)
+        string = ['' for x in range(msgs)]
+
+        # Rebuild for multimessages
+        string[0] = build[0] + '\n' + build[1] + '\n'
+        i = 2
+        j = 0
+        while j < msgs:
+            while i < rows:
+                string[j] = string[j] + build[i] + '\n'
+                i+=1
+            rows += rows
+            if rows > allRows:
+                rows = allRows
+            string[j] = string[j] + '```'
+            j+=1
+            if j < msgs:
+                string[j] = string[j] + build[allRows] + '```'
         return string
-    return string
+
+    except Exception as e:
+        string = (f'**`ERROR:`** {type(e).__name__} - {e}')
+        return string
+
 
 async def print_lookup(ctx,rows,data,title,string):
     # Return if error
