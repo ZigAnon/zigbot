@@ -43,7 +43,7 @@ def pad_spaces(data):
 def get_role_id(ctx, role):
     role_id = []
     role_name = []
-    
+
     # Finds role_id by name
     l = str(ctx.guild.roles).split('<Role id=')[1:]
     roles = [x.lower() for x in l]
@@ -117,3 +117,38 @@ def has_permission(ctx, role_perms):
         return True
     else:
         return False
+
+
+#################
+##             ##
+##  Printers   ##
+##             ##
+#################
+def print_lookup(rows,data,title):
+    if rows == 0:
+        string = ('{0}\n'.format(title) +
+                  '```---=======================================---\n' +
+                  'Empty list```')
+        return string
+
+    maxRows = range(rows)
+    maxEle = range(len(data[0]))
+    size = [0 for x in maxEle]
+    matrix = [[0 for x in maxRows] for y in maxEle]
+
+    for x in maxEle:
+        for y in maxRows:
+            matrix[x-1][y-1] = data[y-1][x-1]
+
+    string = ('{0}\n'.format(title) +
+              '```---=======================================---\n')
+    for x in maxEle:
+        pass
+
+    print(matrix)
+
+    string = string + '```'
+    string = str(matrix)
+    return string
+
+
