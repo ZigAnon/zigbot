@@ -50,17 +50,18 @@ class SetupCog(commands.Cog):
             # Get role id by name
             role_id, role_name = zb_checks.get_role_id(ctx,role)
 
-            print(str(len(role_id)))
             if len(role_id) > 1:
-                print(role_name)
-                print(role_id)
                 channel = ctx.message.channel
                 select = zb_checks.select(ctx, role_id, role_name)
                 await ctx.send('Multiple roles were found for `' + role + '`.\n' +
                                'Which one do you wish to modify:\n' + select)
 
                 def check(m):
-                    return (0 < int(m.content) <= len(role_id) and 
+                    try:
+                        test = int(m.content)
+                    except:
+                        test = 0
+                    return (0 < test <= len(role_id) and
                             m.channel == channel and
                             m.author == ctx.author)
 
@@ -68,8 +69,8 @@ class SetupCog(commands.Cog):
                     msg = await self.bot.wait_for('message', timeout=10.0, check=check)
                     role_id = role_id[int(msg.content)-1]
                     role_name = role_name[int(msg.content)-1]
-                except:
-                    await ctx.send('Invalid choice. Next time please use a number.')
+                except Exception as e:
+                    await ctx.send('Invalid choice. Next time please use a listed number.\n' + e)
                     return
             else:
                 try:
