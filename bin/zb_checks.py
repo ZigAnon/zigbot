@@ -37,7 +37,7 @@ def pad_spaces(data):
     while i < length:
         spaces = spaces + ' '
         i+=1
-    lst = ['{0}{1}'.format(x, spaces[0:length-len(x)]) for x in data]
+    lst = [' {0}{1} '.format(x, spaces[0:length-len(x)]) for x in data]
     return lst
 
 def get_role_id(ctx, role):
@@ -133,22 +133,27 @@ def print_lookup(rows,data,title):
 
     maxRows = range(rows)
     maxEle = range(len(data[0]))
-    size = [0 for x in maxEle]
     matrix = [[0 for x in maxRows] for y in maxEle]
 
     for x in maxEle:
         for y in maxRows:
-            matrix[x-1][y-1] = data[y-1][x-1]
+            matrix[x-1][y-1] = str(data[y-1][x-1])
 
     string = ('{0}\n'.format(title) +
               '```---=======================================---\n')
-    for x in maxEle:
-        pass
 
-    print(matrix)
+    for x in maxEle:
+        matrix[x-1][:] = pad_spaces(matrix[x-1][:])
+
+    for x in maxRows:
+        string = string + '||'
+        for y in maxEle:
+            string = string + matrix[y-1][x-1] + '||'
+        string = string + '\n'
+
+    string = string + '---=======================================---\n'
 
     string = string + '```'
-    string = str(matrix)
     return string
 
 
