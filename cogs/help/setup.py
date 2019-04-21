@@ -13,7 +13,7 @@ class SetupCog(commands.Cog):
     @commands.command(name='setup', hidden=True)
     async def server_setup(self, ctx):
         """Command which aid's in setting up perms"""
-        if zb.is_owner(ctx) or zb.has_permission(ctx,1):
+        if zb.is_owner(ctx):
 
             embed=discord.Embed(title="Choose from selection below to setup server.")
             embed.set_author(name="Server Setup Menu",
@@ -35,7 +35,7 @@ class SetupCog(commands.Cog):
         """ allow role permissions """
 
         # Ensures only bot owner or user with perms can use command
-        if zb.is_owner(ctx) or zb.has_permission(ctx,1):
+        if zb.is_owner(ctx):
 
             # Verifies pattern is valid
             if(zb.pattern(ctx, '^(.\w+)\s+(\w+\W+){1,}(\d)$') and

@@ -16,7 +16,7 @@ class InactiveCog(commands.Cog):
         """Command to show inactive members"""
 
         # Ensures only bot owner or user with perms can use command
-        if zb.is_owner(ctx) or zb.has_permission(ctx,3):
+        if zb.is_owner(ctx):
 
             # Lists current Server Access Roles
             title = '**`List of Inactive Members`**'
