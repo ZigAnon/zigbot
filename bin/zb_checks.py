@@ -125,10 +125,19 @@ def has_permission(ctx, role_perms):
 ##             ##
 #################
 def print_lookup(rows,data,title):
+
+    # Build a title bar
+    maxTitle = len(title)
+    bar = '---==='
+    i = 0
+    while i < maxTitle:
+        bar = bar + '='
+        i+=1
+    top = bar + '===---'
+
     if rows == 0:
-        string = ('{0}\n'.format(title) +
-                  '```---=======================================---\n' +
-                  'Empty list```')
+        string = ('```\n      ' + title + '\n' + top + '\n' +
+                  '   Empty list```')
         return string
 
     maxRows = range(rows)
@@ -139,19 +148,38 @@ def print_lookup(rows,data,title):
         for y in maxRows:
             matrix[x-1][y-1] = str(data[y-1][x-1])
 
-    string = ('{0}\n'.format(title) +
-              '```---=======================================---\n')
-
+    lenTotal = -10
     for x in maxEle:
         matrix[x-1][:] = pad_spaces(matrix[x-1][:])
+        lenTotal = lenTotal + len(matrix[x-1][0]) + 2
+
+    test = lenTotal - maxTitle
+    if lenTotal > maxTitle:
+        i = 0
+        while i < test:
+            bar = bar + '='
+            i+=1
+        bar = bar + '===---'
+    else:
+        bar = top
+
+    string = '```\n      ' + title + '\n' + bar + '\n'
 
     for x in maxRows:
         string = string + '||'
         for y in maxEle:
-            string = string + matrix[y-1][x-1] + '||'
+            string = string + matrix[y-1][x-1]
+            if y+1 != len(data[0]) and test < 0:
+                string = string + '||'
+            else:
+                i = test
+                while i < 0:
+                    string = string + ' '
+                    i+=1
+                string = string + '||'
         string = string + '\n'
 
-    string = string + '---=======================================---\n'
+    string = string + bar + '\n'
 
     string = string + '```'
     return string
