@@ -1,7 +1,7 @@
 import discord
 import psycopg2 as dbSQL
 from discord.ext import commands
-from bin import zb_checks
+from bin import zb
 
 
 class SetupCog(commands.Cog):
@@ -13,7 +13,7 @@ class SetupCog(commands.Cog):
     @commands.command(name='setup', hidden=True)
     async def server_setup(self, ctx):
         """Command which aid's in setting up perms"""
-        if zb_checks.is_owner(ctx) or zb_checks.has_permission(ctx,1):
+        if zb.is_owner(ctx) or zb.has_permission(ctx,1):
 
             embed=discord.Embed(title="Choose from selection below to setup server.")
             embed.set_author(name="Server Setup Menu",
@@ -25,7 +25,7 @@ class SetupCog(commands.Cog):
             embed.set_footer(text="Type '.setup' to start over.")
             await ctx.send(embed=embed)
 
-            print(zb_checks.is_owner(ctx))
+            print(zb.is_owner(ctx))
             print(ctx.guild.id)
 
 
@@ -35,10 +35,10 @@ class SetupCog(commands.Cog):
         """ allow role permissions """
 
         # Ensures only bot owner or user with perms can use command
-        if zb_checks.is_owner(ctx) or zb_checks.has_permission(ctx,1):
+        if zb.is_owner(ctx) or zb.has_permission(ctx,1):
 
             # Verifies pattern is valid
-            if(zb_checks.pattern(ctx, '^(.\w+)\s+(\w+\W+){1,}(\d)$') and
+            if(zb.pattern(ctx, '^(.\w+)\s+(\w+\W+){1,}(\d)$') and
                int(ctx.message.content[-1:]) >= 0 and
                int(ctx.message.content[-1:]) <= 5):
                 role = ctx.message.content[5:-2].lower()
@@ -48,11 +48,11 @@ class SetupCog(commands.Cog):
                 return
 
             # Get role id by name
-            role_id, role_name = zb_checks.get_role_id(ctx,role)
+            role_id, role_name = zb.get_role_id(ctx,role)
 
             if len(role_id) > 1:
                 channel = ctx.message.channel
-                select = zb_checks.select(ctx, role_id, role_name, 0)
+                select = zb.select(ctx, role_id, role_name, 0)
                 await ctx.send('Multiple roles were found for `' + role + '`.\n' +
                                'Which one do you wish to modify:\n' + select)
 
@@ -89,7 +89,7 @@ class SetupCog(commands.Cog):
 
             try:
                 # connect to the PostgreSQL database
-                conn, cur = zb_checks.sql_login()
+                conn, cur = zb.sql_login()
                 # execute the UPDATE  statement
                 cur.execute(sql, (role_perms, ctx.guild.id, role_id))
                 # get the number of updated rows
@@ -99,7 +99,7 @@ class SetupCog(commands.Cog):
                 # Close communication with the PostgreSQL database
                 cur.close()
             except (Exception, dbSQL.DatabaseError) as e:
-                await ctx.send(zb_checks.error(e))
+                await ctx.send(zb.error(e))
             finally:
                 if conn is not None:
                     conn.close()

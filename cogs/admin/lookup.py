@@ -1,7 +1,7 @@
 import discord
 import psycopg2 as dbSQL
 from discord.ext import commands
-from bin import zb_checks
+from bin import zb
 
 
 class LookupCog(commands.Cog):
@@ -15,42 +15,25 @@ class LookupCog(commands.Cog):
         """Command which aid's in looking up current settings"""
 
         # Ensures only bot owner or user with perms can use command
-        if zb_checks.is_owner(ctx) or zb_checks.has_permission(ctx,3):
+        if zb.is_owner(ctx) or zb.has_permission(ctx,3):
 
             # Lists current Server Access Roles
             if tool == 'sar':
-                try:
-                    sql = """ SELECT role_id, name, role_perms
-                              FROM roles
-                              WHERE role_perms > 0
-                              AND guild_id = {0}
-                              ORDER BY role_perms, name ASC """
-                    conn = None
-                    rows = 0
+                title = '**`List of Server Access Roles`**'
+                sql = """ SELECT role_id, name, role_perms
+                          FROM roles
+                          WHERE role_perms > 0
+                          AND guild_id = {0}
+                          ORDER BY role_perms, name ASC """
+                sql = sql.format(str(ctx.guild.id))
 
-                    try:
-                        # connect to the PostgreSQL database
-                        conn, cur = zb_checks.sql_login()
-                        # execute the QUERY statement
-                        cur.execute(sql.format(str(ctx.guild.id)))
-                        # get the number of listed rows
-                        rows = cur.rowcount
-                        # Commit the changes to the database
-                        title = '**`List of Server Access Roles`**'
-                        data = cur.fetchall()
-                        # Close communication with the PostgreSQL database
-                        cur.close()
-                    except (Exception, dbSQL.DatabaseError) as e:
-                        await ctx.send(zb_checks.error(e))
-                    finally:
-                        if conn is not None:
-                            conn.close()
-                    # msg = zb_checks.pad_spaces(lst)
-                except Exception as e:
-                    await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
+                data, rows, string = zb.sql_query(sql)
+                if string == '':
+                    await ctx.send(zb.print_lookup(rows,data,title))
+                    print('exception ----------============------------')
                 else:
-                    await ctx.send(zb_checks.print_lookup(rows,data,title))
-                    # await ctx.send('**`SUCCESS`**')
+                    print(string)
+                    # await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             else:
                 await ctx.send('**`INVALID OPTION:`** {0}'.format(tool))
 
