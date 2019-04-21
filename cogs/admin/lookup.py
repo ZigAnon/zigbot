@@ -30,10 +30,8 @@ class LookupCog(commands.Cog):
                 data, rows, string = zb.sql_query(sql)
                 if string == '':
                     await ctx.send(zb.print_lookup(rows,data,title))
-                    print('exception ----------============------------')
                 else:
-                    print(string)
-                    # await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
+                    await ctx.send(string)
             else:
                 await ctx.send('**`INVALID OPTION:`** {0}'.format(tool))
 
