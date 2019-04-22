@@ -2,6 +2,7 @@
 import re
 import math
 import discord
+import numpy as np
 import psycopg2 as dbSQL
 from discord.ext import commands
 from bin import zb_config
@@ -31,14 +32,12 @@ def pad_spaces(data):
     return lst
 
 def get_roles_by_name(ctx, roleName):
-    role_id = []
-    role_name = []
+    roles = []
     for role in ctx.guild.roles:
         if roleName == role.name.lower():
-            role_id.append(role.id)
-            role_name.append(role.name)
+            roles.append([role.id,role.name])
 
-    return role_id, role_name
+    return roles
 
 def get_members_ids(ctx):
     idList = []
@@ -50,19 +49,6 @@ def get_members_ids(ctx):
 
     return idList
 
-def select(ctx, list_id, list_name, path):
-    """ Used to build output for users """
-
-    choice = '```'
-
-    if path == 0:
-        for x in range(len(list_id)):
-            choice = (choice + str(x+1) + '.  Object ID = ' + str(list_id[x]) +
-                      ' -- Name = ' + list_name[x] + '\n')
-
-    choice = choice + '```'
-
-    return choice
 
 
 #################
@@ -241,6 +227,19 @@ def print_2000lim(string):
         string = (f'**`ERROR:`** {type(e).__name__} - {e}')
         return string
 
+def print_select(ctx, list_id, list_name, path):
+    """ Used to build output for users """
+
+    choice = '```'
+
+    if path == 0:
+        for x in range(len(list_id)):
+            choice = (choice + str(x+1) + '.  Object ID = ' + str(list_id[x]) +
+                      ' -- Name = ' + list_name[x] + '\n')
+
+    choice = choice + '```'
+
+    return choice
 
 async def print_lookup(ctx,rows,data,title,string):
     # Return if error

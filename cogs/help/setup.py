@@ -49,11 +49,15 @@ class SetupCog(commands.Cog):
                 return
 
             # Get role id by name
-            role_id, role_name = zb.get_roles_by_name(ctx,role)
+            roles = zb.get_roles_by_name(ctx,role)
 
-            if len(role_id) > 1:
+            # role_id, role_name = zb.get_roles_by_name(ctx,role)
+
+            if len(roles) > 1:
+                print('over 1')
+                return
                 channel = ctx.message.channel
-                select = zb.select(ctx, role_id, role_name, 0)
+                select = zb.print_select(ctx, role_id, role_name, 0)
                 await ctx.send('Multiple roles were found for `' + role + '`.\n' +
                                'Which one do you wish to modify:\n' + select)
 
@@ -75,7 +79,7 @@ class SetupCog(commands.Cog):
                     return
             else:
                 try:
-                    role_id = role_id[0]
+                    junk = roles[0][0]
                 except:
                     await ctx.send('Unable to find the role `' + role + '`.\n' +
                                    'Check your spelling and try again.')
@@ -85,12 +89,12 @@ class SetupCog(commands.Cog):
                       SET role_perms = {0}
                       WHERE guild_id = {1}
                       AND role_id = {2} """
-            sql = sql.format(role_perms, ctx.guild.id, role_id)
+            sql = sql.format(role_perms, ctx.guild.id, roles[0][0])
             rows, string = zb.sql_update(sql)
 
             if rows > 0:
-                await ctx.send('Updated role `' + str(role_name) +
-                               '` with id `' + str(role_id) +
+                await ctx.send('Updated role `' + roles[0][1] +
+                               '` with id `' + str(roles[0][0]) +
                                '`.\nPermission is now ' + str(role_perms))
             else:
                 await ctx.send('Something went wrong.\n' +
