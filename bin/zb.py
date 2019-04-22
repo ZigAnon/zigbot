@@ -16,6 +16,8 @@ _var = zb_config
 ##             ##
 #################
 def how_wide(data):
+    data = np.array(data)
+    data = data.astype('str')
     longest = max(data, key=len)
     length = len(longest)
     return length
@@ -191,7 +193,6 @@ async def print_string(ctx,string):
     if len(string[0]) == 1:
         await ctx.send(string)
     else:
-        print(len(string))
         while i < len(string):
             await ctx.send(string[i])
             i+=1
@@ -220,10 +221,12 @@ def print_2000lim(string):
             rows += rows
             if rows > allRows:
                 rows = allRows
-            string[j] = string[j] + '```'
+            if j+1 < msgs:
+                string[j] = string[j] + '```'
             j+=1
             if j < msgs:
-                string[j] = string[j] + build[allRows] + '```'
+                string[j] = (string[j] + '```' + '\n')
+        string[j-1] = string[j-1] + build[2] + '```'
         return string
 
     except Exception as e:
@@ -270,6 +273,7 @@ async def print_lookup(ctx,rows,data,title,string):
     maxRows = range(rows)
     maxEle = range(len(data[0]))
     matrix_np = np.array(data)
+    matrix_np = matrix_np.astype('str')
     matrix = matrix_np.transpose()
 
     # Calculates table width
@@ -289,8 +293,6 @@ async def print_lookup(ctx,rows,data,title,string):
     else:
         bar = top
 
-    print(matrix[0][0])
-
     string = '```\n      ' + title + '\n' + bar + '\n'
     i = 0
     while i < rows:
@@ -298,7 +300,6 @@ async def print_lookup(ctx,rows,data,title,string):
         j = 0
         while j < len(data[0]):
             string = string + matrix[j][i]
-            print(matrix[j][i] + ' i = ' + str(i) + ' j = ' + str(j))
             if j+1 != len(data[0]) and test < 0:
                 string = string + '||'
             else:
@@ -312,23 +313,6 @@ async def print_lookup(ctx,rows,data,title,string):
         string = string + '\n'
     string = string + bar + '\n'
     string = string + '```'
-    print(string)
-
-    # for x in maxRows:
-    #     string = string + '||'
-    #     for y in maxEle:
-    #         string = string + matrix[y-1][x-1]
-    #         if y+1 != len(data[0]) and test < 0:
-    #             string = string + '||'
-    #         else:
-    #             i = test
-    #             while i < 0:
-    #                 string = string + ' '
-    #                 i+=1
-    #             string = string + '||'
-    #     string = string + '\n'
-    # string = string + bar + '\n'
-    # string = string + '```'
 
     await print_string(ctx,string)
     return
