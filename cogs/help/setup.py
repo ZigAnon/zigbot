@@ -49,7 +49,7 @@ class SetupCog(commands.Cog):
                 return
 
             # Get role id by name
-            role_id, role_name = zb.get_role_id(ctx,role)
+            role_id, role_name = zb.get_roles_by_name(ctx,role)
 
             if len(role_id) > 1:
                 channel = ctx.message.channel

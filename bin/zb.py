@@ -30,7 +30,7 @@ def pad_spaces(data):
     lst = [' {0}{1} '.format(x, spaces[0:length-len(x)]) for x in data]
     return lst
 
-def get_role_id(ctx, roleName):
+def get_roles_by_name(ctx, roleName):
     role_id = []
     role_name = []
     for role in ctx.guild.roles:
