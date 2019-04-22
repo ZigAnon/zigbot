@@ -14,7 +14,7 @@ class SetupCog(commands.Cog):
     @commands.command(name='setup', hidden=True)
     async def server_setup(self, ctx):
         """Command which aid's in setting up perms"""
-        if zb.has_permission(ctx,3):
+        if zb.is_trusted(ctx,3):
 
             embed=discord.Embed(title="Choose from selection below to setup server.")
             embed.set_author(name="Server Setup Menu",
@@ -34,7 +34,7 @@ class SetupCog(commands.Cog):
         maxNum = len(maxRanks)
 
         # Ensures only bot owner or user with perms can use command
-        if zb.is_owner(ctx) or zb.has_permission(ctx,3):
+        if zb.is_owner(ctx) or zb.is_trusted(ctx,3):
 
             try:
 

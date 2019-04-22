@@ -15,7 +15,7 @@ class LookupCog(commands.Cog):
         """Command which aid's in looking up current settings"""
 
         # Ensures only bot owner or user with perms can use command
-        if zb.is_owner(ctx) or zb.has_permission(ctx,3):
+        if zb.is_trusted(ctx,3):
 
             # Lists current Server Access Roles
             if tool == 'sar':

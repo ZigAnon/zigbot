@@ -97,19 +97,7 @@ def is_owner(ctx):
     else:
         return False
 
-def pattern(string, test):
-
-    # If nothing to test
-    if test == '':
-        return False
-
-    p = re.compile(test, re.IGNORECASE)
-    if p.match(string) is None:
-        return False
-    else:
-        return True
-
-def has_permission(ctx, role_perms):
+def is_trusted(ctx, role_perms):
     """ test for valid data in database at two columns """
 
     sql = """ SELECT role_id
@@ -127,6 +115,18 @@ def has_permission(ctx, role_perms):
         return True
     else:
         return False
+
+def pattern(string, test):
+
+    # If nothing to test
+    if test == '':
+        return False
+
+    p = re.compile(test, re.IGNORECASE)
+    if p.match(string) is None:
+        return False
+    else:
+        return True
 
 
 #################
