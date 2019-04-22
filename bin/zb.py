@@ -85,6 +85,42 @@ def get_members_ids(ctx):
 
     return idList
 
+def get_trusted_roles(ctx, role_perms):
+    """ Extracts role ids that are trusted """
+
+    sql = """ SELECT role_id
+              FROM roles
+              WHERE guild_id = {0}
+              AND NOT role_perms = 0
+              AND role_perms <= {1}
+              AND role_id in {2} """
+    sql = sql.format(ctx.guild.id,
+                     role_perms,
+                     sql_list(get_role_ids(ctx)))
+    data, rows, string = sql_query(sql)
+
+    return data
+
+def get_member_with_role(ctx,roles):
+
+    data = []
+    roles = np.array(roles)
+    i = 0
+    while i < len(roles):
+        for member in ctx.guild.members:
+            for role in member.roles:
+                if int(roles[i]) == role.id:
+                    found = True
+                    break
+                else:
+                    pass
+            if found:
+                data.append(member.id)
+                found = False
+        i+=1
+
+    return data
+
 
 #################
 ##             ##
@@ -116,7 +152,7 @@ def is_trusted(ctx, role_perms):
     else:
         return False
 
-def pattern(string, test):
+def is_pattern(string, test):
 
     # If nothing to test
     if test == '':
@@ -161,7 +197,7 @@ def sql_query(sql):
             # get the number of updated rows
             rows = cur.rowcount
             # fetch data from query
-            data = cur.fetchall()
+            data = cur.fetchall()[:][:]
             # Close communication with the PostgreSQL database
             cur.close()
         except (Exception, dbSQL.DatabaseError) as e:

@@ -2,6 +2,9 @@ import discord
 import psycopg2 as dbSQL
 from discord.ext import commands
 from bin import zb
+from bin import zb_config
+
+_var = zb_config
 
 
 class InactiveCog(commands.Cog):
@@ -39,9 +42,13 @@ class InactiveCog(commands.Cog):
                       WHERE guild_id = {0}
                       AND NOT created_at > now() - INTERVAL '60 day'
                       AND real_user_id in {1}
+                      AND NOT real_user_id in {2}
                       ORDER BY created_at DESC; """
+            ignore = zb.get_member_with_role(ctx,
+                    zb.get_trusted_roles(ctx,_var.maxRoleRanks))
             sql = sql.format(str(ctx.guild.id),
-                             zb.sql_list(zb.get_members_ids(ctx)))
+                             zb.sql_list(zb.get_members_ids(ctx)),
+                             zb.sql_list(ignore))
             data, rows, string = zb.sql_query(sql)
             await zb.print_lookup(ctx,rows,data,title,string)
 

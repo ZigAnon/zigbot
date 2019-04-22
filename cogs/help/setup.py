@@ -39,7 +39,7 @@ class SetupCog(commands.Cog):
             try:
 
                 # Verifies pattern is valid
-                if zb.pattern(ctx.message.content.lower(),
+                if zb.is_pattern(ctx.message.content.lower(),
                         '^(.\w+)\s+(\w+\W+){1,}([0-' + maxRanks + '])$'):
                     role = role[:-(1+maxNum)].lower()
                     role_perms = int(ctx.message.content[-1:])
