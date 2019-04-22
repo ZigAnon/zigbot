@@ -22,3 +22,4 @@ newAccount = 72 # [72] Discord account must be at least 72 hours
 
 # Constant Variables
 dateFormat = '%Y-%m-%d %H:%M:%S.%f'
+maxRoleRanks = 5
