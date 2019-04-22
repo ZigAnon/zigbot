@@ -19,18 +19,6 @@ def error(e):
              str(e) + '```')
     return error
 
-def sql_login():
-    conn = dbSQL.connect(host = 'localhost',
-                         database=_var.dbName,
-                         user=_var.dbUser,
-                         password=_var.dbPass)
-    cur = conn.cursor()
-    return conn, cur
-
-def sql_list(data):
-    string = '(' + ','.join(map(str, data)) + ')'
-    return string
-
 def how_wide(data):
     longest = max(data, key=len)
     length = len(longest)
@@ -141,6 +129,18 @@ def has_permission(ctx, role_perms):
 ##     SQL     ##
 ##             ##
 #################
+def sql_list(data):
+    string = '(' + ','.join(map(str, data)) + ')'
+    return string
+
+def sql_login():
+    conn = dbSQL.connect(host = 'localhost',
+                         database=_var.dbName,
+                         user=_var.dbUser,
+                         password=_var.dbPass)
+    cur = conn.cursor()
+    return conn, cur
+
 def sql_query(sql):
     """ Returns data from query """
 
@@ -155,6 +155,37 @@ def sql_query(sql):
             cur.execute(sql)
             # get the number of updated rows
             rows = cur.rowcount
+            # fetch data from query
+            data = cur.fetchall()
+            # Close communication with the PostgreSQL database
+            cur.close()
+        except (Exception, dbSQL.DatabaseError) as e:
+            string = (f'**`ERROR:`** {type(e).__name__} - {e}')
+        finally:
+            if conn is not None:
+                conn.close()
+
+    except Exception as e:
+        string = (f'**`ERROR:`** {type(e).__name__} - {e}')
+
+    return data, rows, string
+
+def sql_update(sql):
+    """ Updates data in table """
+
+    string = ''
+    try:
+        conn = None
+        rows = 0
+        try:
+            # connect to the PostgreSQL database and create cursor
+            conn, cur = sql_login()
+            # execute the UPDATE  statement
+            cur.execute(sql)
+            # get the number of updated rows
+            rows = cur.rowcount
+            # Commit the changes to database
+            conn.commit()
             # fetch data from query
             data = cur.fetchall()
             # Close communication with the PostgreSQL database
