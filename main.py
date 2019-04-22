@@ -29,7 +29,8 @@ initial_extensions = ['cogs.admin.serverinfo',
                       'cogs.admin.owner',
                       'cogs.admin.lookup',
                       'cogs.admin.inactive',
-                      'cogs.help.setup']
+                      'cogs.help.setup',
+                      'cogs.help.help']
 
 # Here we load our extensions(cogs) listed above in [initial_extensions].
 if __name__ == '__main__':
