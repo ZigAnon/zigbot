@@ -62,6 +62,16 @@ def get_roles_by_name(ctx, roleName):
 
     return roles
 
+def get_role_ids(ctx):
+    # Returns array idList
+    """ Extracts role id from author """
+
+    idList = []
+    for role in ctx.author.roles:
+        idList.append(role.id)
+
+    return idList
+
 def get_members_ids(ctx):
     # Returns array idList
     """ Extracts member id from guild """
@@ -104,27 +114,16 @@ def has_permission(ctx, role_perms):
 
     sql = """ SELECT role_id
               FROM roles
-              WHERE guild_id = %s
+              WHERE guild_id = {0}
               AND NOT role_perms = 0
-              AND role_perms <= %s """
-    conn = None
-    updated_rows = 0
-    try:
-        # connect to the PostgreSQL database and create cursor
-        conn, cur = sql_login()
-        # execute the UPDATE  statement
-        cur.execute(sql, (ctx.guild.id, role_perms))
-        # get the number of updated rows
-        updated_rows = cur.rowcount
-        # Close communication with the PostgreSQL database
-        cur.close()
-    except (Exception, dbSQL.DatabaseError) as error:
-        print(error)
-    finally:
-        if conn is not None:
-            conn.close()
+              AND role_perms <= {1}
+              AND role_id in {2} """
+    sql = sql.format(ctx.guild.id,
+                     role_perms,
+                     sql_list(get_role_ids(ctx)))
+    data, rows, string = sql_query(sql)
 
-    if updated_rows > 0:
+    if rows > 0:
         return True
     else:
         return False
