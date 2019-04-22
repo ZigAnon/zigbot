@@ -43,7 +43,7 @@ class InactiveCog(commands.Cog):
                       AND NOT created_at > now() - INTERVAL '60 day'
                       AND real_user_id in {1}
                       AND NOT real_user_id in {2}
-                      ORDER BY created_at DESC; """
+                      ORDER BY created_at ASC; """
             ignore = zb.get_member_with_role(ctx,
                     zb.get_trusted_roles(ctx,_var.maxRoleRanks))
             sql = sql.format(str(ctx.guild.id),
