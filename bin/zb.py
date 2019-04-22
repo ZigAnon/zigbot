@@ -35,18 +35,13 @@ def pad_spaces(data):
     lst = [' {0}{1} '.format(x, spaces[0:length-len(x)]) for x in data]
     return lst
 
-def get_role_id(ctx, role):
+def get_role_id(ctx, roleName):
     role_id = []
     role_name = []
-
-    # Finds role_id by name
-    l = str(ctx.guild.roles).split('<Role id=')[1:]
-    roles = [x.lower() for x in l]
-
-    for x in range(len(roles)):
-        if role in roles[x-1]:
-            role_id.append(roles[x-1].split()[0])
-            role_name.append(l[x-1].split('\'')[1])
+    for role in ctx.guild.roles:
+        if roleName == role.name.lower():
+            role_id.append(role.id)
+            role_name.append(role.name)
 
     return role_id, role_name
 

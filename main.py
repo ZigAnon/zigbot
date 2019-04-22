@@ -27,7 +27,8 @@ bot = commands.Bot(command_prefix=get_prefix)
 initial_extensions = ['cogs.admin.serverinfo',
                       'cogs.admin.owner',
                       'cogs.admin.lookup',
-                      'cogs.admin.inactive']
+                      'cogs.admin.inactive',
+                      'cogs.help.setup']
 
 # Here we load our extensions(cogs) listed above in [initial_extensions].
 if __name__ == '__main__':
