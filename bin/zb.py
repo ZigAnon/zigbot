@@ -14,11 +14,6 @@ _var = zb_config
 ##  Functions  ##
 ##             ##
 #################
-def error(e):
-    error = ('__**`Error:`**__\n```' +
-             str(e) + '```')
-    return error
-
 def how_wide(data):
     longest = max(data, key=len)
     length = len(longest)
