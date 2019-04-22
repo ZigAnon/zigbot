@@ -259,25 +259,26 @@ async def print_lookup(ctx,rows,data,title,string):
         i+=1
     top = bar + '===---'
 
+    # If no data, print empty list
     if rows == 0:
         string = ('```\n      ' + title + '\n' + top + '\n' +
                   '   Empty list```')
         await print_string(ctx,string)
         return
 
+    # Initializes dynamic array
     maxRows = range(rows)
     maxEle = range(len(data[0]))
-    matrix = [[0 for x in maxRows] for y in maxEle]
+    matrix_np = np.array(data)
+    matrix = matrix_np.transpose()
 
-    for x in maxEle:
-        for y in maxRows:
-            matrix[x-1][y-1] = str(data[y-1][x-1])
-
+    # Calculates table width
     lenTotal = -10
     for x in maxEle:
         matrix[x-1][:] = pad_spaces(matrix[x-1][:])
         lenTotal = lenTotal + len(matrix[x-1][0]) + 2
 
+    # Checks to see if title or data is wider
     test = lenTotal - maxTitle
     if lenTotal > maxTitle:
         i = 0
@@ -288,22 +289,46 @@ async def print_lookup(ctx,rows,data,title,string):
     else:
         bar = top
 
+    print(matrix[0][0])
+
     string = '```\n      ' + title + '\n' + bar + '\n'
-    for x in maxRows:
+    i = 0
+    while i < rows:
         string = string + '||'
-        for y in maxEle:
-            string = string + matrix[y-1][x-1]
-            if y+1 != len(data[0]) and test < 0:
+        j = 0
+        while j < len(data[0]):
+            string = string + matrix[j][i]
+            print(matrix[j][i] + ' i = ' + str(i) + ' j = ' + str(j))
+            if j+1 != len(data[0]) and test < 0:
                 string = string + '||'
             else:
-                i = test
-                while i < 0:
+                k = test
+                while k < 0:
                     string = string + ' '
-                    i+=1
+                    k+=1
                 string = string + '||'
+            j+=1
+        i+=1
         string = string + '\n'
     string = string + bar + '\n'
     string = string + '```'
+    print(string)
+
+    # for x in maxRows:
+    #     string = string + '||'
+    #     for y in maxEle:
+    #         string = string + matrix[y-1][x-1]
+    #         if y+1 != len(data[0]) and test < 0:
+    #             string = string + '||'
+    #         else:
+    #             i = test
+    #             while i < 0:
+    #                 string = string + ' '
+    #                 i+=1
+    #             string = string + '||'
+    #     string = string + '\n'
+    # string = string + bar + '\n'
+    # string = string + '```'
 
     await print_string(ctx,string)
     return
