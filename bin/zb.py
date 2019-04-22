@@ -176,8 +176,6 @@ def sql_update(sql):
             rows = cur.rowcount
             # Commit the changes to database
             conn.commit()
-            # fetch data from query
-            data = cur.fetchall()
             # Close communication with the PostgreSQL database
             cur.close()
         except (Exception, dbSQL.DatabaseError) as e:
@@ -189,7 +187,7 @@ def sql_update(sql):
     except Exception as e:
         string = (f'**`ERROR:`** {type(e).__name__} - {e}')
 
-    return data, rows, string
+    return rows, string
 
 
 #################

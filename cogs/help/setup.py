@@ -82,39 +82,20 @@ class SetupCog(commands.Cog):
                     return
 
             sql = """ UPDATE roles
-                      SET role_perms = %s
-                      WHERE guild_id = %s
-                      AND role_id = %s """
-            conn = None
-            updated_rows = 0
+                      SET role_perms = {0}
+                      WHERE guild_id = {1}
+                      AND role_id = {2} """
+            sql = sql.format(role_perms, ctx.guild.id, role_id)
+            rows, string = zb.sql_update(sql)
 
-            try:
-                # connect to the PostgreSQL database
-                conn, cur = zb.sql_login()
-                # execute the UPDATE  statement
-                cur.execute(sql, (role_perms, ctx.guild.id, role_id))
-                # get the number of updated rows
-                updated_rows = cur.rowcount
-                # Commit the changes to the database
-                conn.commit()
-                # Close communication with the PostgreSQL database
-                cur.close()
-            except (Exception, dbSQL.DatabaseError) as e:
-                await ctx.send(zb.error(e))
-            finally:
-                if conn is not None:
-                    conn.close()
-
-            if updated_rows > 0:
+            if rows > 0:
                 await ctx.send('Updated role `' + str(role_name) +
                                '` with id `' + str(role_id) +
                                '`.\nPermission is now ' + str(role_perms))
             else:
                 await ctx.send('Something went wrong.\n' +
                                'Check the spelling and try again. ' +
-                               'I\'ll let <@280455061140930562> know there is an issue')
-
-            return updated_rows
+                               'I\'ll let <@{0}> know there is an issue'.format('zig'))
 
 
 def setup(bot):
