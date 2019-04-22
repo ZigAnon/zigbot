@@ -39,7 +39,17 @@ def pad_spaces(data):
         spaces = spaces + ' '
         i+=1
     lst = [' {0}{1} '.format(x, spaces[0:length-len(x)]) for x in data]
+
     return lst
+
+def add_numbers_list(data):
+    data = np.array(data)
+    lst = list(range(1,len(data)+1))
+    lst = np.array(lst)
+
+    data = np.insert(data, 0, lst, axis=1)
+
+    return data
 
 def get_roles_by_name(ctx, roleName):
     # Returns array roles
@@ -55,6 +65,7 @@ def get_roles_by_name(ctx, roleName):
 def get_members_ids(ctx):
     # Returns array idList
     """ Extracts member id from guild """
+
     idList = []
     for member in ctx.guild.members:
         if member.bot:
@@ -63,10 +74,6 @@ def get_members_ids(ctx):
             idList.append(member.id)
 
     return idList
-
-# TODO: correct after print sort fixed
-async def list_select(ctx,title,data2,regex):
-    return
 
 
 #################
@@ -80,9 +87,14 @@ def is_owner(ctx):
     else:
         return False
 
-def pattern(ctx, test):
+def pattern(string, test):
+
+    # If nothing to test
+    if test == '':
+        return False
+
     p = re.compile(test, re.IGNORECASE)
-    if p.match(ctx.message.content.lower()) is None:
+    if p.match(string) is None:
         return False
     else:
         return True
@@ -246,17 +258,32 @@ def print_2000lim(string):
         string = (f'**`ERROR:`** {type(e).__name__} - {e}')
         return string
 
-def print_select(ctx, list_id, list_name, path):
-    """ Used to build output for users """
+async def print_select(self,ctx,data2):
+    """ Used to build selection for users """
 
-    choice = '```'
+    data = add_numbers_list(data2)
+    title = '**`CHOOSE A NUMBER TO CHANGE`**'
+    await print_lookup(ctx,len(data),data,title,'')
 
-    if path == 0:
-        for x in range(len(list_id)):
-            choice = (choice + str(x+1) + '.  Object ID = ' + str(list_id[x]) +
-                      ' -- Name = ' + list_name[x] + '\n')
+    def check(m):
+        try:
+            test = int(m.content)
+        except:
+            test = 0
+        return (0 < test <= len(data) and
+                m.channel == ctx.channel and
+                m.author == ctx.author)
 
-    choice = choice + '```'
+    try:
+        msg = await self.bot.wait_for('message',
+                                      timeout=10.0,
+                                      check=check)
+        choice = int(msg.content)-1
+        print(choice)
+    except Exception as e:
+        await ctx.send('**Invalid choice.** Select a listed number next time.')
+        choice = -1
+        return choice
 
     return choice
 

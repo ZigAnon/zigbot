@@ -2,6 +2,7 @@ import discord
 import psycopg2 as dbSQL
 from discord.ext import commands
 from bin import zb
+from bin import zb_config
 
 
 class SetupCog(commands.Cog):
@@ -32,74 +33,64 @@ class SetupCog(commands.Cog):
 
     # Hidden means it won't show up on the default help.
     @commands.command(name='sar', hidden=True)
-    async def set_role(self, ctx):
+    async def set_role(self, ctx, *, role: str):
         """ allow role permissions """
+        maxRanks = str(zb_config.maxRoleRanks)
+        maxNum = len(maxRanks)
 
         # Ensures only bot owner or user with perms can use command
         if zb.is_owner(ctx):
 
-            # Verifies pattern is valid
-            if(zb.pattern(ctx, '^(.\w+)\s+(\w+\W+){1,}(\d)$') and
-               int(ctx.message.content[-1:]) >= 0 and
-               int(ctx.message.content[-1:]) <= 5):
-                role = ctx.message.content[5:-2].lower()
-                role_perms = int(ctx.message.content[-1:])
-            else:
-                await ctx.send('Please use format `.sar <role_name> [1-5]`.')
-                return
+            try:
 
-            # Get role id by name
-            roles = zb.get_roles_by_name(ctx,role)
+                # Verifies pattern is valid
+                if zb.pattern(ctx.message.content.lower(),
+                        '^(.\w+)\s+(\w+\W+){1,}([0-' + maxRanks + '])$'):
+                    role = role[:-(1+maxNum)].lower()
+                    role_perms = int(ctx.message.content[-1:])
+                else:
+                    await ctx.send('Please use format `.sar <role_name> [1-' +
+                                   maxRanks +  ']`.')
+                    return
 
-            # role_id, role_name = zb.get_roles_by_name(ctx,role)
+                # Get role id by name
+                roles = zb.get_roles_by_name(ctx,role)
 
-            if len(roles) > 1:
-                print('over 1')
-                return
-                channel = ctx.message.channel
-                select = zb.print_select(ctx, role_id, role_name, 0)
-                await ctx.send('Multiple roles were found for `' + role + '`.\n' +
-                               'Which one do you wish to modify:\n' + select)
+                if len(roles) > 1:
+                    rows = len(roles)
 
-                def check(m):
+                    await ctx.send('Multiple roles were found for `' + role + '`.')
+                    select = await zb.print_select(self,ctx,roles)
+                    if select >= 0:
+                        role_id = roles[select][0]
+                        role_name = roles[select][1]
+                    else:
+                        return
+                else:
                     try:
-                        test = int(m.content)
+                        junk = roles[0][0]
                     except:
-                        test = 0
-                    return (0 < test <= len(role_id) and
-                            m.channel == channel and
-                            m.author == ctx.author)
+                        await ctx.send('Unable to find the role `' + role + '`.\n' +
+                                       'Check your spelling and try again.')
+                        return
 
-                try:
-                    msg = await self.bot.wait_for('message', timeout=10.0, check=check)
-                    role_id = role_id[int(msg.content)-1]
-                    role_name = role_name[int(msg.content)-1]
-                except Exception as e:
-                    await ctx.send('Invalid choice. Next time please use a listed number.')
-                    return
-            else:
-                try:
-                    junk = roles[0][0]
-                except:
-                    await ctx.send('Unable to find the role `' + role + '`.\n' +
-                                   'Check your spelling and try again.')
-                    return
+                sql = """ UPDATE roles
+                          SET role_perms = {0}
+                          WHERE guild_id = {1}
+                          AND role_id = {2} """
+                sql = sql.format(role_perms, ctx.guild.id, role_id)
+                rows, string = zb.sql_update(sql)
 
-            sql = """ UPDATE roles
-                      SET role_perms = {0}
-                      WHERE guild_id = {1}
-                      AND role_id = {2} """
-            sql = sql.format(role_perms, ctx.guild.id, roles[0][0])
-            rows, string = zb.sql_update(sql)
-
-            if rows > 0:
-                await ctx.send('Updated role `' + roles[0][1] +
-                               '` with id `' + str(roles[0][0]) +
-                               '`.\nPermission is now ' + str(role_perms))
-            else:
-                await ctx.send('Something went wrong.\n' +
-                               'Check the spelling and try again. ' +
-                               'I\'ll let <@{0}> know there is an issue'.format('zig'))
+                if rows > 0:
+                    await ctx.send('Updated role `' + role_name +
+                                   '` with id `' + str(role_id) +
+                                   '`.\nPermission is now ' + str(role_perms))
+                else:
+                    await ctx.send('Something went wrong.\n' +
+                                   'Check the spelling and try again. ' +
+                                   'I\'ll let <@{0}> know there is an issue'.format('zig'))
+            except Exception as e:
+                await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
 
 
 def setup(bot):
