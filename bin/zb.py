@@ -279,7 +279,6 @@ async def print_select(self,ctx,data2):
                                       timeout=10.0,
                                       check=check)
         choice = int(msg.content)-1
-        print(choice)
     except Exception as e:
         await ctx.send('**Invalid choice.** Select a listed number next time.')
         choice = -1

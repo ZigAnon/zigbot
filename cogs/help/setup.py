@@ -27,10 +27,6 @@ class SetupCog(commands.Cog):
             embed.set_footer(text="Type '.setup' to start over.")
             await ctx.send(embed=embed)
 
-            print(zb.is_owner(ctx))
-            print(ctx.guild.id)
-
-
     # Hidden means it won't show up on the default help.
     @commands.command(name='sar', hidden=True)
     async def set_role(self, ctx, *, role: str):
@@ -68,7 +64,8 @@ class SetupCog(commands.Cog):
                         return
                 else:
                     try:
-                        junk = roles[0][0]
+                        role_id = roles[0][0]
+                        role_name = roles[0][1]
                     except:
                         await ctx.send('Unable to find the role `' + role + '`.\n' +
                                        'Check your spelling and try again.')
