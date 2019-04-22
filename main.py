@@ -43,9 +43,8 @@ if __name__ == '__main__':
 async def main_loop():
     await bot.wait_until_ready()
     while not bot.is_closed():
-        await hb._heartbeat(bot)
-        reboot = 60
-        await asyncio.sleep(reboot)
+        beat = 60 - await hb._heartbeat(bot)
+        await asyncio.sleep(beat)
 
 
 @bot.command()

@@ -6,6 +6,12 @@ from bin import zb_config
 _var = zb_config
 
 async def _heartbeat(bot):
-    print('working')
+    timeoff = 0
+    try:
+        print('working')
+        #TODO: autoPurge needs to be added
+        # grab channels to purge, msg limit, time, checks bot/text
+    except Exception as e:
+        print(f'**`ERROR:`** {type(e).__name__} - {e}')
 
-    return
+    return timeoff
