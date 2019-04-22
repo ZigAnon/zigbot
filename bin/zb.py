@@ -16,13 +16,21 @@ _var = zb_config
 ##             ##
 #################
 def how_wide(data):
+    # Returns int length
+    """ Finds longest element in array """
+
+    # Ensures all are string type
     data = np.array(data)
     data = data.astype('str')
     longest = max(data, key=len)
     length = len(longest)
+
     return length
 
 def pad_spaces(data):
+    # Returns array lst
+    """ Adds spaces for discord print """
+
     length = how_wide(data)
     spaces = ' '
 
@@ -34,6 +42,9 @@ def pad_spaces(data):
     return lst
 
 def get_roles_by_name(ctx, roleName):
+    # Returns array roles
+    """ Extracts role id and name from guild """
+
     roles = []
     for role in ctx.guild.roles:
         if roleName == role.name.lower():
@@ -42,6 +53,8 @@ def get_roles_by_name(ctx, roleName):
     return roles
 
 def get_members_ids(ctx):
+    # Returns array idList
+    """ Extracts member id from guild """
     idList = []
     for member in ctx.guild.members:
         if member.bot:
