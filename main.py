@@ -1,6 +1,8 @@
 import discord
+import asyncio
 from discord.ext import commands
 from bin import zb_config
+from bin import hb
 
 import sys, traceback, os
 
@@ -37,6 +39,15 @@ if __name__ == '__main__':
     for extension in initial_extensions:
         bot.load_extension(extension)
 
+# Main loop, do not comment this area out
+async def main_loop():
+    await bot.wait_until_ready()
+    while not bot.is_closed():
+        await hb._heartbeat(bot)
+        reboot = 60
+        await asyncio.sleep(reboot)
+
+
 @bot.command()
 async def ping(ctx):
     await ctx.send('pong')
@@ -49,4 +60,5 @@ async def on_ready():
     await bot.change_presence(activity=discord.Game(name='with Trump', type=1))
     print(f'Successfully logged in and booted...!')
 
+bot.loop.create_task(main_loop())
 bot.run(_var.TOKEN, bot=True, reconnect=True)
