@@ -182,6 +182,45 @@ def sql_login():
     cur = conn.cursor()
     return conn, cur
 
+def sql_all_guild_id(guild_id):
+    sql = """ SELECT g.guild_id,u.real_user_id,r.role_id,u.name,g.nick,u.int_user_id
+              FROM users u
+              LEFT JOIN guild_membership g ON u.int_user_id = g.int_user_id
+              LEFT JOIN role_membership r ON u.int_user_id = r.int_user_id
+              WHERE g.guild_id = {0}
+              ORDER BY u.real_user_id DESC; """
+    sql = sql.format(guild_id)
+
+    data, rows, string = sql_query(sql)
+
+    return data
+
+def sql_all_member_id(member_id):
+    sql = """ SELECT g.guild_id,u.real_user_id,r.role_id,u.name,g.nick,u.int_user_id
+              FROM users u
+              LEFT JOIN guild_membership g ON u.int_user_id = g.int_user_id
+              LEFT JOIN role_membership r ON u.int_user_id = r.int_user_id
+              WHERE u.real_user_id = {0}
+              ORDER BY g.guild_id DESC; """
+    sql = sql.format(member_id)
+
+    data, rows, string = sql_query(sql)
+
+    return data
+
+def sql_all_role_id(role_id):
+    sql = """ SELECT g.guild_id,u.real_user_id,r.role_id,u.name,g.nick,u.int_user_id
+              FROM users u
+              LEFT JOIN guild_membership g ON u.int_user_id = g.int_user_id
+              LEFT JOIN role_membership r ON u.int_user_id = r.int_user_id
+              WHERE r.role_id = {0}
+              ORDER BY u.real_user_id DESC; """
+    sql = sql.format(role_id)
+
+    data, rows, string = sql_query(sql)
+
+    return data
+
 def sql_query(sql):
     """ Returns data from query """
 
@@ -198,6 +237,7 @@ def sql_query(sql):
             rows = cur.rowcount
             # fetch data from query
             data = cur.fetchall()[:][:]
+            data = np.array(data)
             # Close communication with the PostgreSQL database
             cur.close()
         except (Exception, dbSQL.DatabaseError) as e:
