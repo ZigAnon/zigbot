@@ -8,6 +8,10 @@ from discord.ext import commands
 from bin import zb_config
 
 _var = zb_config
+_query = """ SELECT g.guild_id,u.real_user_id,r.role_id,u.name,g.nick,u.int_user_id
+             FROM users u
+             LEFT JOIN guild_membership g ON u.int_user_id = g.int_user_id
+             LEFT JOIN role_membership r ON u.int_user_id = r.int_user_id """
 
 
 #################
@@ -183,39 +187,30 @@ def sql_login():
     return conn, cur
 
 def sql_all_guild_id(guild_id):
-    sql = """ SELECT g.guild_id,u.real_user_id,r.role_id,u.name,g.nick,u.int_user_id
-              FROM users u
-              LEFT JOIN guild_membership g ON u.int_user_id = g.int_user_id
-              LEFT JOIN role_membership r ON u.int_user_id = r.int_user_id
-              WHERE g.guild_id = {0}
+    sql = """ {0}
+              WHERE g.guild_id = {1}
               ORDER BY u.real_user_id DESC; """
-    sql = sql.format(guild_id)
+    sql = sql.format(_query,guild_id)
 
     data, rows, string = sql_query(sql)
 
     return data
 
 def sql_all_member_id(member_id):
-    sql = """ SELECT g.guild_id,u.real_user_id,r.role_id,u.name,g.nick,u.int_user_id
-              FROM users u
-              LEFT JOIN guild_membership g ON u.int_user_id = g.int_user_id
-              LEFT JOIN role_membership r ON u.int_user_id = r.int_user_id
-              WHERE u.real_user_id = {0}
+    sql = """ {0}
+              WHERE u.real_user_id = {1}
               ORDER BY g.guild_id DESC; """
-    sql = sql.format(member_id)
+    sql = sql.format(_query,member_id)
 
     data, rows, string = sql_query(sql)
 
     return data
 
 def sql_all_role_id(role_id):
-    sql = """ SELECT g.guild_id,u.real_user_id,r.role_id,u.name,g.nick,u.int_user_id
-              FROM users u
-              LEFT JOIN guild_membership g ON u.int_user_id = g.int_user_id
-              LEFT JOIN role_membership r ON u.int_user_id = r.int_user_id
-              WHERE r.role_id = {0}
+    sql = """ {0}
+              WHERE r.role_id = {1}
               ORDER BY u.real_user_id DESC; """
-    sql = sql.format(role_id)
+    sql = sql.format(_query,role_id)
 
     data, rows, string = sql_query(sql)
 
