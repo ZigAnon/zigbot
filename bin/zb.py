@@ -16,6 +16,18 @@ _query = """ SELECT g.guild_id,u.real_user_id,r.role_id,u.name,g.nick,u.int_user
 
 #################
 ##             ##
+##   Classes   ##
+##             ##
+#################
+class SqlData:
+    """ Place holder for SqlData Class """
+    i=0
+    def j(self):
+        return 'nothing'
+
+
+#################
+##             ##
 ##  Functions  ##
 ##             ##
 #################
@@ -190,7 +202,7 @@ def sql_all_guild_id(guild_id):
     sql = """ {0}
               WHERE g.guild_id = {1}
               ORDER BY u.real_user_id DESC; """
-    sql = sql.format(_query,guild_id)
+    sql = sql.format(_query,str(guild_id))
 
     data, rows, string = sql_query(sql)
 
@@ -200,7 +212,7 @@ def sql_all_member_id(member_id):
     sql = """ {0}
               WHERE u.real_user_id = {1}
               ORDER BY g.guild_id DESC; """
-    sql = sql.format(_query,member_id)
+    sql = sql.format(_query,str(member_id))
 
     data, rows, string = sql_query(sql)
 
@@ -210,7 +222,7 @@ def sql_all_role_id(role_id):
     sql = """ {0}
               WHERE r.role_id = {1}
               ORDER BY u.real_user_id DESC; """
-    sql = sql.format(_query,role_id)
+    sql = sql.format(_query,str(role_id))
 
     data, rows, string = sql_query(sql)
 

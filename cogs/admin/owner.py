@@ -17,6 +17,7 @@ class OwnerCog(commands.Cog):
             lst = ['bacon', 'eggs', 'foo', 'bar']
             await ctx.send(string)
             i = 0
+            print(zb.SqlData.i)
             print(len(string[0]))
             print(len(lst[0]))
             if len(string[0]) == 1:
