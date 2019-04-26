@@ -16,6 +16,10 @@ class OmjCog(commands.Cog):
             sendWelcome = True
             #TODO: Add member join to log channel
             #TODO: Check if server closed
+            # Checks if server is closed
+            if zb.is_closed(guild_id):
+                #TODO: send dm to user with invite
+                pass
             #    TODO: if join too many times, temp ban
             # Checks if raidNumber in 5 mins is exceeded
             if zb.is_raid(guild_id):

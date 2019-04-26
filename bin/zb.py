@@ -173,10 +173,24 @@ def is_raid(guild_id):
               WHERE joined_at >= now() + INTERVAL '4 hours 55 minutes'
               AND is_member = TRUE
               AND guild_id = {0} """
+    sql = sql.format(str(guild_id))
 
     data, rows, string = sql_query(sql)
 
     if rows >= _var.raidNumber:
+        return True
+    else:
+        return False
+
+def is_closed(guild_id):
+    sql = """ SELECT guild_id FROM guilds
+              WHERE can_join = False 
+              AND guild_id = {0} """
+    sql = sql.format(str(guild_id))
+
+    data, rows, string = sql_query(sql)
+
+    if rows > 0:
         return True
     else:
         return False
