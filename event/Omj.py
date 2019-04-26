@@ -10,8 +10,26 @@ class OmjCog(commands.Cog):
 
     # Hidden means it won't show up on the default help.
     @commands.Cog.listener()
-    async def on_member_join(self,member):
-        print('Member Joined!!')
+    async def on_member_join(self, member):
+        try:
+            guild_id = member.guild.id
+            sendWelcome = True
+            #TODO: Add member join to log channel
+            #TODO: Check if server closed
+            #    TODO: if join too many times, temp ban
+            # Checks if raidNumber in 5 mins is exceeded
+            if zb.is_raid(guild_id):
+                #TODO: Close server
+                pass
+            #TODO: Check blacklist
+            #TODO: Check to see if account too new
+            #    TODO: if too new, log
+            #TODO: Check if left after punishment
+            #    TODO: if punished, add roles
+            #TODO: Add roles on join
+            #TODO: Send welcome message
+        except Exception as e:
+            print(f'**`ERROR:`** {type(e).__name__} - {e}')
 
 
 def setup(bot):

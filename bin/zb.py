@@ -168,6 +168,19 @@ def is_trusted(ctx, role_perms):
     else:
         return False
 
+def is_raid(guild_id):
+    sql = """ SELECT int_user_id from guild_membership
+              WHERE joined_at >= now() + INTERVAL '4 hours 55 minutes'
+              AND is_member = TRUE
+              AND guild_id = {0} """
+
+    data, rows, string = sql_query(sql)
+
+    if rows >= _var.raidNumber:
+        return True
+    else:
+        return False
+
 def is_pattern(string, test):
 
     # If nothing to test
@@ -201,7 +214,7 @@ def sql_login():
 def sql_all_guild_id(guild_id):
     sql = """ {0}
               WHERE g.guild_id = {1}
-              ORDER BY u.real_user_id DESC; """
+              ORDER BY u.real_user_id DESC """
     sql = sql.format(_query,str(guild_id))
 
     data, rows, string = sql_query(sql)
@@ -211,7 +224,7 @@ def sql_all_guild_id(guild_id):
 def sql_all_member_id(member_id):
     sql = """ {0}
               WHERE u.real_user_id = {1}
-              ORDER BY g.guild_id DESC; """
+              ORDER BY g.guild_id DESC """
     sql = sql.format(_query,str(member_id))
 
     data, rows, string = sql_query(sql)
@@ -221,7 +234,7 @@ def sql_all_member_id(member_id):
 def sql_all_role_id(role_id):
     sql = """ {0}
               WHERE r.role_id = {1}
-              ORDER BY u.real_user_id DESC; """
+              ORDER BY u.real_user_id DESC """
     sql = sql.format(_query,str(role_id))
 
     data, rows, string = sql_query(sql)
