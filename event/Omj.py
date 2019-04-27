@@ -37,11 +37,18 @@ class OmjCog(commands.Cog):
             sendWelcome = True
             # Checks if server is closed
             if zb.is_closed(member.guild.id):
+                # Lets member join when server opens again
                 await member.send('**"{0}"** is currently not accepting members'.format(member.guild.name) +
                          ' at this time.  If you wish to join our discussions please' +
                          ' wait a few days and try again.\nhttps://discord.gg/' +
                          '{0}'.format(zb.get_invite(member.guild.id)))
-                #TODO: if join too many times, temp ban
+                # If closed prevents exploiting API by joining quickly
+                if zb.hammering(member) > 1:
+                    print('hammer time')
+                    #TODO: add to heartbeat remove ban after time
+                    #TODO: send message to read
+                    return
+                    # await member.ban(delete_message_days=0)
             # Checks if raidNumber in 5 mins is exceeded
             if zb.is_raid(member.guild.id):
                 #TODO: Close server

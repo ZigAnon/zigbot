@@ -120,7 +120,7 @@ def get_invite(guild_id):
     sql = sql.format(str(guild_id))
 
     data, rows, string = sql_query(sql)
-    inviteLink = str(data[0])
+    inviteLink = str(data[0][0])
 
     return inviteLink
 
@@ -160,6 +160,47 @@ def get_member_with_role(ctx,roles):
         i+=1
 
     return data
+
+
+#################
+##             ##
+## Punishments ##
+##             ##
+#################
+def hammering(member):
+    sql = """ SELECT g.hammer
+              FROM guild_membership g
+              LEFT JOIN users u ON g.int_user_id = u.int_user_id
+              WHERE g.joined_at >= now() + INTERVAL '4 hours 55 minutes'
+              AND g.guild_id = {0}
+              AND u.real_user_id = {1} """
+    sql = sql.format(member.guild.id,member.id)
+
+    sqlu = """ UPDATE guild_membership g
+               SET hammer = {2}
+               FROM (SELECT int_user_id, real_user_id
+               FROM users) AS u
+               WHERE g.int_user_id = u.int_user_id
+               AND g.guild_id = {0}
+               AND u.real_user_id = {1} """
+
+    data, rows, string = sql_query(sql)
+    try:
+        count = int(data[0])
+        if count > 1:
+            print('greater than 1')
+            return count
+        elif count > 0:
+            sqlu = sqlu.format(member.guild.id,member.id,2)
+            rows, string = sql_update(sqlu)
+            print('greater than 0')
+            return count
+    except:
+        sqlu = sqlu.format(member.guild.id,member.id,1)
+        rows, string = sql_update(sqlu)
+        print(string)
+        #TODO: increment
+        return 0
 
 
 #################
