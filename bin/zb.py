@@ -75,6 +75,15 @@ def add_blacklist(message,member_id,reason):
     #TODO: Add sql insert function
     return
 
+def close_server(guild_id):
+    sql = """ UPDATE guilds
+              SET can_join = FALSE
+              WHERE guild_id = {0} """
+    sql = sql.format(guild_id)
+
+    rows, string = sql_update(sql)
+    return
+
 async def add_roles(member,lst,reason):
     lst = lst.flatten()
     lst = get_roles_obj(member.guild,lst)

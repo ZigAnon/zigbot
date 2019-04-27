@@ -70,8 +70,9 @@ class OmjCog(commands.Cog):
             # Checks if raidNumber in 5 mins is exceeded
             if zb.is_raid(member.guild.id):
                 sendWelcome = False
-                #TODO: Close server
-                pass
+                zb.close_server(member.guild.id)
+                if channel != '':
+                    await channel.send('@everyone\n__**RAID DETECTED**__\n__**RAID DETECTED**__\n__**RAID DETECTED**__')
 
             # If member account is newer than config time, kick
             if datetime.utcnow() - timedelta(hours=_var.newAccount) < member.created_at:
