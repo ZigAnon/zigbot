@@ -72,6 +72,12 @@ class OmjCog(commands.Cog):
 
             data, rows, string = zb.get_blacklist(member)
             if rows > 0:
+                if channel != '':
+                    memberID = int(data[0][0])
+                    banBy = self.bot.get_user(memberID)
+                    await channel.send('@here\n' + member.mention +
+                            ' banned by __**' + banBy.name + '**__ for reason: ' +
+                            '`' + data[0][1] + '`.')
                 #TODO: Print reason and who
                 pass
 

@@ -67,6 +67,14 @@ def add_numbers_list(data):
 
     return data
 
+def add_blacklist(message,member_id,reason):
+    sql = """ INSERT INTO blacklist(guild_id,real_user_id,whitelist,added_by,reason)
+    VALUES ({0},{1},False,{2},'{3}') """
+    sql = sql.format(message.guild.id,member_id,message.author.id,reason)
+
+    #TODO: Add sql insert function
+    return
+
 def get_roles_by_name(ctx, roleName):
     # Returns array roles
     """ Extracts role id and name from guild """
