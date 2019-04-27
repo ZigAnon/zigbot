@@ -235,10 +235,7 @@ def get_punish_num(member):
     sql = sql.format(member.guild.id,member.id)
 
     data, rows, string = sql_query(sql)
-    if rows > 0:
-        return int(data[0][0])
-    else:
-        return 0
+    return int(data[0][0])
 
 def hammering(member):
     sql = """ SELECT g.hammer
@@ -430,6 +427,16 @@ def log_channel(member):
 
 def log_channel_pub(member):
     sql = """ SELECT log_channel_public
+              FROM guilds
+              WHERE guild_id = {0} """
+    sql = sql.format(str(member.guild.id))
+
+    data, rows, string = sql_query(sql)
+
+    return int(data[0])
+
+def welcome_channel(member):
+    sql = """ SELECT welcome_channel
               FROM guilds
               WHERE guild_id = {0} """
     sql = sql.format(str(member.guild.id))

@@ -23,6 +23,7 @@ class OmjCog(commands.Cog):
         # Get log channels
         channel = self.bot.get_channel(zb.log_channel(member))
         channelp = self.bot.get_channel(zb.log_channel_pub(member))
+        welcomeChan = self.bot.get_channel(zb.welcome_channel(member))
 
         # Build logs
         try:
@@ -106,11 +107,10 @@ class OmjCog(commands.Cog):
             # If member leaves after being punished and returns
             elif zb.get_punish_num(member) != 0:
                 punishNum = zb.get_punish_num(member)
-                #TODO: get and remove chat and join roles
-                #TODO: get and add punish roles
-            #TODO: Check if left after punishment
-            #    TODO: if punished, add roles
-            #TODO: Add roles on join
+                #TODO: public log their punishment
+                data = zb.get_roles_special(member.guild.id,12)
+                reason = 'Left and rejoined after punishment {0}'.format(punishNum)
+                await zb.add_roles(member,data,reason)
 
             # Else, send welcome
             else:
@@ -119,7 +119,8 @@ class OmjCog(commands.Cog):
                     data = zb.get_roles_special(member.guild.id,1)
                     reason = 'Member joined'
                     await zb.add_roles(member,data,reason)
-                #TODO: Message welcome
+                await welcomeChan.send('Hey ' + member.mention +
+                        ', welcome to **{0}** \U0001F389\U0001F917 !'.format(member.guild.name))
                 #TODO: How to access message
                 #TODO: Delete access message after x mins
                 pass
