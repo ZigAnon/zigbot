@@ -75,16 +75,11 @@ def add_blacklist(message,member_id,reason):
     #TODO: Add sql insert function
     return
 
-def get_roles_by_name(ctx, roleName):
-    # Returns array roles
-    """ Extracts role id and name from guild """
-
-    roles = []
-    for role in ctx.guild.roles:
-        if roleName == role.name.lower():
-            roles.append([role.id,role.name])
-
-    return roles
+async def add_roles(member,lst,reason):
+    lst = lst.flatten()
+    lst = get_roles_obj(member.guild,lst)
+    await member.add_roles(*lst,reason=reason)
+    return
 
 def get_role_ids(ctx):
     # Returns array idList
@@ -95,6 +90,43 @@ def get_role_ids(ctx):
         idList.append(role.id)
 
     return idList
+
+def get_roles_obj(guild,lst):
+    data = []
+    i = 0
+    while i < len(lst):
+        for role in guild.roles:
+            if role.id == int(lst[i]):
+                data.append(role)
+        i+=1
+
+    return data
+
+def get_roles_special(guild_id,group_id):
+    # 1 = Join Role
+    # 2 = Chat Role
+    # 3 = Ideology Role
+    # 10 = Shitpost Role
+    # 11 = Mute Role
+    # 12 = Jail Role
+    sql = """ SELECT role_id FROM roles
+              WHERE guild_id = {0}
+              AND group_id = {1} """
+    sql = sql.format(guild_id,group_id)
+
+    data, rows, string = sql_query(sql)
+    return data
+
+def get_roles_by_name(ctx, roleName):
+    # Returns array roles
+    """ Extracts role id and name from guild """
+
+    roles = []
+    for role in ctx.guild.roles:
+        if roleName == role.name.lower():
+            roles.append([role.id,role.name])
+
+    return roles
 
 def get_members_ids(ctx):
     # Returns array idList
@@ -175,6 +207,21 @@ def get_member_with_role(ctx,roles):
 ## Punishments ##
 ##             ##
 #################
+def get_punish_num(member):
+    sql = """ SELECT g.punished
+              FROM guild_membership g
+              LEFT JOIN users u ON g.int_user_id = u.int_user_id
+              WHERE g.guild_id = {0}
+              AND u.real_user_id = {1}
+              AND NOT g.punished IS NULL """
+    sql = sql.format(member.guild.id,member.id)
+
+    data, rows, string = sql_query(sql)
+    if rows > 0:
+        return int(data[0][0])
+    else:
+        return 0
+
 def hammering(member):
     sql = """ SELECT g.hammer
               FROM guild_membership g
@@ -196,18 +243,14 @@ def hammering(member):
     try:
         count = int(data[0])
         if count > 1:
-            print('greater than 1')
             return count
         elif count > 0:
             sqlu = sqlu.format(member.guild.id,member.id,2)
             rows, string = sql_update(sqlu)
-            print('greater than 0')
             return count
     except:
         sqlu = sqlu.format(member.guild.id,member.id,1)
         rows, string = sql_update(sqlu)
-        print(string)
-        #TODO: increment
         return 0
 
 def reset_hammer(guild):
@@ -287,9 +330,21 @@ def is_raid(guild_id):
     else:
         return False
 
+def is_role_group(guild_id,group_id):
+    sql = """ SELECT role_id FROM roles
+              WHERE guild_id = {0}
+              AND group_id = {1} """
+    sql = sql.format(guild_id,group_id)
+
+    data, rows, string = sql_query(sql)
+    if rows > 0:
+        return True
+    else:
+        return False
+
 def is_closed(guild_id):
     sql = """ SELECT guild_id FROM guilds
-              WHERE can_join = False 
+              WHERE can_join = False
               AND guild_id = {0} """
     sql = sql.format(str(guild_id))
 
