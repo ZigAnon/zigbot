@@ -7,7 +7,7 @@ from bin import zb
 
 _var = zb_config
 
-class OmjCog(commands.Cog):
+class onmemberjoinCog(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
@@ -130,4 +130,4 @@ class OmjCog(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(OmjCog(bot))
+    bot.add_cog(onmemberjoinCog(bot))
