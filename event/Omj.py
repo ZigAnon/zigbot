@@ -1,8 +1,11 @@
 import discord
 from discord.ext import commands
 from datetime import datetime
+from datetime import timedelta
+from bin import zb_config
 from bin import zb
 
+_var = zb_config
 
 class OmjCog(commands.Cog):
 
@@ -31,15 +34,16 @@ class OmjCog(commands.Cog):
 
         # Main tasks
         try:
-            guild_id = member.guild.id
             sendWelcome = True
             # Checks if server is closed
-            if zb.is_closed(guild_id):
-                #TODO: send dm to user with invite
-                pass
-            #    TODO: if join too many times, temp ban
+            if zb.is_closed(member.guild.id):
+                await member.send('**"{0}"** is currently not accepting members'.format(member.guild.name) +
+                         ' at this time.  If you wish to join our discussions please' +
+                         ' wait a few days and try again.\nhttps://discord.gg/' +
+                         '{0}'.format(zb.get_invite(member.guild.id)))
+                #TODO: if join too many times, temp ban
             # Checks if raidNumber in 5 mins is exceeded
-            if zb.is_raid(guild_id):
+            if zb.is_raid(member.guild.id):
                 #TODO: Close server
                 pass
 
@@ -48,8 +52,21 @@ class OmjCog(commands.Cog):
                 #TODO: Print reason and who
                 pass
 
-            #TODO: Check to see if account too new
-            #    TODO: if too new, log
+            # If account is newer than config time, kick
+            if datetime.utcnow() - timedelta(hours=_var.newAccount) < member.created_at:
+                await member.send('Your account is too new to for "{0}". '.format(member.guild.name) +
+                        ' If you wish to join our discussions please wait a few days' +
+                        ' and try again.  :D')
+                try:
+                    if zb.log_channel(member) != 0:
+                        channel = self.bot.get_channel(zb.log_channel(member))
+                        await channel.send('I kicked ' + member.mention +
+                                ' because account was made in the last ' +
+                                str(_var.newAccount) + ' hours.')
+                except Exception as e:
+                    print(f'**`ERROR:`** {type(e).__name__} - {e}')
+                await member.kick()
+
             #TODO: Check if left after punishment
             #    TODO: if punished, add roles
             #TODO: Add roles on join

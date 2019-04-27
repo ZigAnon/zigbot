@@ -113,6 +113,17 @@ def get_blacklist(member):
 
     return data, rows, string
 
+def get_invite(guild_id):
+    sql = """ SELECT invite_link
+              FROM guilds
+              WHERE guild_id = {0} """
+    sql = sql.format(str(guild_id))
+
+    data, rows, string = sql_query(sql)
+    inviteLink = str(data[0])
+
+    return inviteLink
+
 def get_trusted_roles(ctx, role_perms):
     """ Extracts role ids that are trusted """
 
