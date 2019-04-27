@@ -144,6 +144,7 @@ def get_member_with_role(ctx,roles):
 
     data = []
     roles = np.array(roles)
+    found = False
     i = 0
     while i < len(roles):
         for member in ctx.guild.members:
