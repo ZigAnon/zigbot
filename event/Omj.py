@@ -15,7 +15,12 @@ class OmjCog(commands.Cog):
     # Hidden means it won't show up on the default help.
     @commands.Cog.listener()
     async def on_member_join(self, member):
+        # Resets counters on hammered members
+        if zb.is_hammer(member.guild.id):
+            zb.reset_hammer(member.guild)
+
         # Build logs
+        channel = ''
         try:
             if zb.log_channel(member) != 0:
                 channel = self.bot.get_channel(zb.log_channel(member))
@@ -37,18 +42,29 @@ class OmjCog(commands.Cog):
             sendWelcome = True
             # Checks if server is closed
             if zb.is_closed(member.guild.id):
-                # Lets member join when server opens again
-                await member.send('**"{0}"** is currently not accepting members'.format(member.guild.name) +
-                         ' at this time.  If you wish to join our discussions please' +
-                         ' wait a few days and try again.\nhttps://discord.gg/' +
-                         '{0}'.format(zb.get_invite(member.guild.id)))
                 # If closed prevents exploiting API by joining quickly
                 if zb.hammering(member) > 1:
-                    print('hammer time')
-                    #TODO: add to heartbeat remove ban after time
-                    #TODO: send message to read
+                    if channel != '':
+                        await channel.send(member.mention +
+                                ' can\'t read so I banned them.')
+                    await member.send('**"{0}"** has banned you for '.format(member.guild.name) +
+                            'being unable to read. ' + 
+                            'Sorry, go play roblox elsewhere.')
+                    await member.ban(delete_message_days=0)
                     return
-                    # await member.ban(delete_message_days=0)
+                else:
+                    if channel != '':
+                        await channel.send(member.mention + ' tried to join ' +
+                                'but I kicked them because server is closed.  ' +
+                                'To open server, please `!disboard bump`.')
+                    # Lets member join when server opens again
+                    await member.send('**"{0}"** is currently not accepting members'.format(member.guild.name) +
+                             ' at this time.  If you wish to join our discussions please' +
+                             ' wait a few days and try again.\nhttps://discord.gg/' +
+                             '{0}'.format(zb.get_invite(member.guild.id)))
+                    await member.kick()
+                    return
+
             # Checks if raidNumber in 5 mins is exceeded
             if zb.is_raid(member.guild.id):
                 #TODO: Close server
@@ -65,8 +81,7 @@ class OmjCog(commands.Cog):
                         ' If you wish to join our discussions please wait a few days' +
                         ' and try again.  :D')
                 try:
-                    if zb.log_channel(member) != 0:
-                        channel = self.bot.get_channel(zb.log_channel(member))
+                    if channel != '':
                         await channel.send('I kicked ' + member.mention +
                                 ' because account was made in the last ' +
                                 str(_var.newAccount) + ' hours.')

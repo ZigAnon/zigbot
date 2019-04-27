@@ -202,6 +202,38 @@ def hammering(member):
         #TODO: increment
         return 0
 
+def reset_hammer(guild):
+    # unbans users banned for hammering
+    data, rows = get_hammer_ban(guild.id)
+    if rows > 0:
+        #TODO: return list of hammered users auto unban
+        pass
+
+    sql = """ UPDATE guild_membership g
+              SET hammer = NULL
+              FROM (SELECT int_user_id, real_user_id
+              FROM users) AS u
+              WHERE g.int_user_id = u.int_user_id
+              AND g.guild_id = {0}
+              AND g.joined_at <= now() - INTERVAL '3 days' """
+    sql = sql.format(guild.id)
+
+    rows, string = sql_update(sql)
+    return
+
+def get_hammer_ban(guild_id):
+    sql = """ SELECT u.real_user_id
+              FROM guild_membership g
+              LEFT JOIN users u ON g.int_user_id = u.int_user_id
+              WHERE g.joined_at <= now() - INTERVAL '3 days'
+              AND g.guild_id = {0}
+              AND g.hammer = 2 """
+    sql = sql.format(str(guild_id))
+
+    data, rows, string = sql_query(sql)
+
+    return data, rows
+
 
 #################
 ##             ##
@@ -271,6 +303,21 @@ def is_pattern(string, test):
         return False
     else:
         return True
+
+def is_hammer(guild_id):
+    sql = """ SELECT u.real_user_id
+              FROM guild_membership g
+              LEFT JOIN users u ON g.int_user_id = u.int_user_id
+              WHERE g.joined_at <= now() - INTERVAL '3 days'
+              AND g.guild_id = {0}
+              AND NOT g.hammer IS NULL """
+    sql = sql.format(str(guild_id))
+
+    data, rows, string = sql_query(sql)
+    if rows > 0:
+        return True
+    else:
+        return False
 
 
 #################
