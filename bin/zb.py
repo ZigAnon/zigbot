@@ -84,6 +84,15 @@ def close_server(guild_id):
     rows, string = sql_update(sql)
     return
 
+def open_server(guild_id):
+    sql = """ UPDATE guilds
+              SET can_join = NULL
+              WHERE guild_id = {0} """
+    sql = sql.format(guild_id)
+
+    rows, string = sql_update(sql)
+    return
+
 async def add_roles(member,lst,reason):
     lst = lst.flatten()
     lst = get_roles_obj(member.guild,lst)
@@ -417,10 +426,17 @@ def log_channel(member):
 
     data, rows, string = sql_query(sql)
 
-    try:
-        return int(data[0])
-    except:
-        return 0
+    return int(data[0])
+
+def log_channel_pub(member):
+    sql = """ SELECT log_channel_public
+              FROM guilds
+              WHERE guild_id = {0} """
+    sql = sql.format(str(member.guild.id))
+
+    data, rows, string = sql_query(sql)
+
+    return int(data[0])
 
 def sql_all_guild_id(guild_id):
     sql = """ {0}
