@@ -101,6 +101,18 @@ def get_members_ids(ctx):
 
     return idList
 
+def get_blacklist(member):
+    sql = """ SELECT added_by, reason
+              FROM blacklist
+              WHERE guild_id = {0}
+              AND whitelist = False
+              AND real_user_id = {1} """
+    sql = sql.format(str(member.guild.id),str(member.id))
+
+    data, rows, string = sql_query(sql)
+
+    return data, rows, string
+
 def get_trusted_roles(ctx, role_perms):
     """ Extracts role ids that are trusted """
 

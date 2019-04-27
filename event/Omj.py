@@ -33,7 +33,6 @@ class OmjCog(commands.Cog):
         try:
             guild_id = member.guild.id
             sendWelcome = True
-            #TODO: Add member join to log channel
             # Checks if server is closed
             if zb.is_closed(guild_id):
                 #TODO: send dm to user with invite
@@ -44,7 +43,11 @@ class OmjCog(commands.Cog):
                 #TODO: Close server
                 pass
 
-            #TODO: Check blacklist
+            data, rows, string = zb.get_blacklist(member)
+            if rows > 0:
+                #TODO: Print reason and who
+                pass
+
             #TODO: Check to see if account too new
             #    TODO: if too new, log
             #TODO: Check if left after punishment
