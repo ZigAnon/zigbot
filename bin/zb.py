@@ -225,6 +225,19 @@ def sql_login():
     cur = conn.cursor()
     return conn, cur
 
+def log_channel(member):
+    sql = """ SELECT log_channel
+              FROM guilds
+              WHERE guild_id = {0} """
+    sql = sql.format(str(member.guild.id))
+
+    data, rows, string = sql_query(sql)
+
+    try:
+        return int(data[0])
+    except:
+        return 0
+
 def sql_all_guild_id(guild_id):
     sql = """ {0}
               WHERE g.guild_id = {1}
@@ -320,6 +333,10 @@ def sql_update(sql):
 ##  Printers   ##
 ##             ##
 #################
+async def print_log(ctx,color):
+
+    pass
+
 async def print_string(ctx,string):
     string = print_2000lim(string)
 
