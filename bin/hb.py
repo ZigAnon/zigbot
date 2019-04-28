@@ -30,9 +30,9 @@ async def _heartbeat(bot):
             data = data.flatten()
             if rows > 0:
                 if data[5]:
-                    futureTime = data[7] + timedelta(minutes=int(data[4]))
-                    member = guild.get_member(data[1])
-                    channel = guild.get_channel(data[2])
+                    futureTime = data[7] + timedelta(minutes=int(data[4])-1)
+                    member = guild.get_member(int(data[1]))
+                    channel = guild.get_channel(int(data[2]))
                     if datetime.utcnow() > futureTime:
                         print('Time is old')
                         sql = """ UPDATE reminders
@@ -42,11 +42,10 @@ async def _heartbeat(bot):
                                   AND trigger_word = '{1}' """
                         sql = sql.format(guild.id,data[6])
                         rows, string = zb.sql_update(sql)
-                        msg = await channel.send(member.mention + data[3])
+                        msg = await channel.send(member.mention + ' ' + data[3])
                 else:
                     futureTime = data[7] + timedelta(minutes=(int(data[4])/2))
-                    member = guild.get_member(data[1])
-                    channel = guild.get_channel(data[2])
+                    channel = guild.get_channel(int(data[2]))
                     if datetime.utcnow() > futureTime:
                         sql = """ UPDATE reminders
                                   SET time = CURRENT_TIMESTAMP AT TIME ZONE 'ZULU'
