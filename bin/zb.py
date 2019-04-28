@@ -1,10 +1,13 @@
 #!/usr/local/bin/python3.6
 import re
 import math
+import asyncio
 import discord
-import numpy as np
-import psycopg2 as dbSQL
 from discord.ext import commands
+from datetime import datetime
+from datetime import timedelta
+import psycopg2 as dbSQL
+import numpy as np
 from bin import zb_config
 
 _var = zb_config
@@ -25,6 +28,38 @@ class SqlData:
     def j(self):
         return 'nothing'
 
+
+#################
+##             ##
+##  Messages   ##
+##             ##
+#################
+async def do_trigger(self,message):
+    sql = """ SELECT * FROM reminders
+              WHERE guild_id = {0}
+              AND trigger_word = '{1}' """
+    sql = sql.format(message.guild.id,message.content.lower())
+    data, rows, string = sql_query(sql)
+    data = data.flatten()
+
+    # Checks if on repeat
+    if data[5]:
+        print('true')
+    else:
+        sql = """ UPDATE reminders
+                  SET channel_id = {0}, real_user_id = {1},
+                  time = CURRENT_TIMESTAMP AT TIME ZONE 'ZULU'
+                  WHERE guild_id = {2}
+                  AND trigger_word = '{3}' """
+        sql = sql.format(message.channel.id,message.author.id,
+                message.guild.id,message.content.lower())
+        rows, string = sql_update(sql)
+        data[3] = data[3].replace('\\n','\n')
+
+        msg = await message.channel.send(data[3])
+        await message.delete()
+        await asyncio.sleep(_var.timeout)
+        await msg.delete()
 
 #################
 ##             ##
@@ -93,10 +128,10 @@ def open_server(guild_id):
     rows, string = sql_update(sql)
     return
 
-async def add_roles(member,lst,reason):
-    lst = lst.flatten()
-    lst = get_roles_obj(member.guild,lst)
-    await member.add_roles(*lst,reason=reason)
+async def add_roles(member,role_ids,reason):
+    lst = role_ids.flatten()
+    roles = get_roles_obj(member.guild,lst)
+    await member.add_roles(*roles,reason=reason)
     return
 
 def get_role_ids(ctx):
@@ -171,6 +206,18 @@ def get_blacklist(member):
 
     return data, rows, string
 
+def get_startswith(guild_id):
+    sql = """ SELECT trigger_word
+              FROM reminders
+              WHERE guild_id = {0} """
+    sql = sql.format(guild_id)
+
+    data, rows, string = sql_query(sql)
+    data = data.flatten()
+
+    triggers = tuple(data)
+    return triggers
+
 def get_invite(guild_id):
     sql = """ SELECT invite_link
               FROM guilds
@@ -241,7 +288,7 @@ def hammering(member):
     sql = """ SELECT g.hammer
               FROM guild_membership g
               LEFT JOIN users u ON g.int_user_id = u.int_user_id
-              WHERE g.joined_at >= now() + INTERVAL '4 hours 55 minutes'
+              WHERE g.joined_at >= CURRENT_TIMESTAMP AT TIME ZONE 'ZULU' - INTERVAL '5 minutes'
               AND g.guild_id = {0}
               AND u.real_user_id = {1} """
     sql = sql.format(member.guild.id,member.id)
@@ -333,7 +380,7 @@ def is_trusted(ctx, role_perms):
 
 def is_raid(guild_id):
     sql = """ SELECT int_user_id from guild_membership
-              WHERE joined_at >= now() + INTERVAL '4 hours 55 minutes'
+              WHERE joined_at >= CURRENT_TIMESTAMP AT TIME ZONE 'ZULU' - INTERVAL '5 minutes'
               AND is_member = TRUE
               AND guild_id = {0} """
     sql = sql.format(str(guild_id))
