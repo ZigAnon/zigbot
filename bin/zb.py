@@ -51,25 +51,23 @@ async def do_trigger(self,message):
         sql = sql.format(message.channel.id,message.author.id,
                 message.guild.id,message.content.lower())
         rows, string = sql_update(sql)
+        futureTime = data[7] + timedelta(minutes=int(data[4]))
 
-        diff = int(int((data[7] - datetime.utcnow()).seconds)/60) + 1
+        diff = int(int((futureTime - datetime.utcnow()).seconds)/60) + 1
         msg = 'I\'ll remind you here in {0} minutes.'.format(diff)
         msg = await message.channel.send(msg)
         await asyncio.sleep(_var.timeout)
         await msg.delete()
+    elif int(data[4]) != 0:
+        pass
     else:
         sql = """ UPDATE reminders
                   SET channel_id = {0}, real_user_id = {1},
                   time = CURRENT_TIMESTAMP AT TIME ZONE 'ZULU',
-                  repeat = {4}
                   WHERE guild_id = {2}
                   AND trigger_word = '{3}' """
-        if int(data[4]) != 0:
-            repeat = 'TRUE'
-        else:
-            repeat = 'FALSE'
         sql = sql.format(message.channel.id,message.author.id,
-                message.guild.id,message.content.lower(),repeat)
+                message.guild.id,message.content.lower())
         rows, string = sql_update(sql)
         data[3] = data[3].replace('\\n','\n')
 

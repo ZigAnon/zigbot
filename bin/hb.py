@@ -34,6 +34,7 @@ async def _heartbeat(bot):
                     member = guild.get_member(data[1])
                     channel = guild.get_channel(data[2])
                     if datetime.utcnow() > futureTime:
+                        print('Time is old')
                         sql = """ UPDATE reminders
                                   SET repeat = False,
                                   time = CURRENT_TIMESTAMP AT TIME ZONE 'ZULU'
