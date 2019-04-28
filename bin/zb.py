@@ -42,22 +42,29 @@ async def do_trigger(self,message):
     data, rows, string = sql_query(sql)
     data = data.flatten()
 
-    # Checks if on repeat
+    # If Repeat is TRUE
     if data[5]:
-        sql = """ UPDATE reminders
-                  SET channel_id = {0}, real_user_id = {1}
-                  WHERE guild_id = {2}
-                  AND trigger_word = '{3}' """
-        sql = sql.format(message.channel.id,message.author.id,
-                message.guild.id,message.content.lower())
-        rows, string = sql_update(sql)
-        futureTime = data[7] + timedelta(minutes=int(data[4]))
+        # If interval exists
+        if int(data[4]) != 0:
+            sql = """ UPDATE reminders
+                      SET channel_id = {0}, real_user_id = {1}
+                      WHERE guild_id = {2}
+                      AND trigger_word = '{3}' """
+            sql = sql.format(message.channel.id,message.author.id,
+                    message.guild.id,message.content.lower())
+            rows, string = sql_update(sql)
+            futureTime = data[7] + timedelta(minutes=int(data[4]))
 
-        diff = int(int((futureTime - datetime.utcnow()).seconds)/60) + 1
-        msg = 'I\'ll remind you here in {0} minutes.'.format(diff)
-        msg = await message.channel.send(msg)
-        await asyncio.sleep(_var.timeout)
-        await msg.delete()
+            diff = int(int((futureTime - datetime.utcnow()).seconds)/60) + 1
+            msg = 'I\'ll remind you here in {0} minutes.'.format(diff)
+            msg = await message.channel.send(msg)
+            await asyncio.sleep(_var.timeout)
+            await msg.delete()
+        # If no interval
+        else:
+            #TODO: add 4th condition
+            pass
+    # If Repeat is FALSE
     else:
         sql = """ UPDATE reminders
                   SET channel_id = {0}, real_user_id = {1},
@@ -65,25 +72,28 @@ async def do_trigger(self,message):
                   repeat = {4}
                   WHERE guild_id = {2}
                   AND trigger_word = '{3}' """
+        # If interval exists
         if int(data[4]) != 0:
             repeat = 'TRUE'
-        else:
-            repeat = 'FALSE'
-        sql = sql.format(message.channel.id,message.author.id,
-                message.guild.id,message.content.lower(),repeat)
-        rows, string = sql_update(sql)
-        data[3] = data[3].replace('\\n','\n')
+            sql = sql.format(message.channel.id,message.author.id,
+                    message.guild.id,message.content.lower(),repeat)
+            rows, string = sql_update(sql)
+            data[3] = data[3].replace('\\n','\n')
 
-        if int(data[4]) == 0:
-            msg = await message.channel.send(data[3])
-            await message.delete()
-            await asyncio.sleep(_var.timeout)
-            await msg.delete()
-        else:
             msg = 'I\'ll remind you here in {0} minutes.'.format(data[4])
             msg = await message.channel.send(msg)
-            await asyncio.sleep(_var.timeout)
-            await msg.delete()
+        # If no interval
+        else:
+            repeat = 'FALSE'
+            sql = sql.format(message.channel.id,message.author.id,
+                    message.guild.id,message.content.lower(),repeat)
+            rows, string = sql_update(sql)
+            data[3] = data[3].replace('\\n','\n')
+
+            msg = await message.channel.send(data[3])
+            await message.delete()
+        await asyncio.sleep(_var.timeout)
+        await msg.delete()
 
 
 #################
