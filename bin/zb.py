@@ -101,6 +101,11 @@ async def do_trigger(self,message):
 ##  Functions  ##
 ##             ##
 #################
+async def timed_msg(channel,string,seconds):
+    msg = await channel.send(string)
+    await asyncio.sleep(seconds)
+    await msg.delete()
+
 def how_wide(data):
     # Returns int length
     """ Finds longest element in array """
@@ -168,6 +173,11 @@ async def add_roles(member,role_ids,reason):
     roles = get_roles_obj(member.guild,lst)
     await member.add_roles(*roles,reason=reason)
     return
+
+def get_pattern(string, test):
+    grab = re.search(test, string)
+
+    return grab.group(0)
 
 def get_role_ids(ctx):
     # Returns array idList

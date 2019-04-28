@@ -18,6 +18,15 @@ class onmessageCog(commands.Cog):
         if message.content.lower().startswith(triggers):
             await zb.do_trigger(self,message)
 
+        # I'm hungry
+        if zb.is_pattern(message.content.lower(),
+                """^((\s+)?i((\s+)?|[']|)m\s+?)\w+(\W+)?$"""):
+            hungry = zb.get_pattern(message.content.lower(),"""[^i'm(\s)]\w+""")
+            msg = 'Hi {0}, I\'m {1}.'.format(hungry.capitalize(),
+                self.bot.user.display_name)
+            await zb.timed_msg(message.channel,msg,30)
+
+
         #TODO: disboard bump
         #TODO: get server, member, channel
         #TODO: open_server
