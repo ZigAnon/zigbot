@@ -26,9 +26,11 @@ async def _heartbeat(bot):
                       WHERE guild_id = {0}
                       AND NOT interval = 0 """
             sql = sql.format(guild.id)
-            data, rows, string = zb.sql_query(sql)
-            data = data.flatten()
-            if rows > 0:
+            array, rows, string = zb.sql_query(sql)
+            i = 0
+            while i < rows:
+                data = array[i]
+                data = data.flatten()
                 # If Repeat is TRUE
                 if data[5]:
                     if int(data[4]) != 0:
@@ -62,6 +64,7 @@ async def _heartbeat(bot):
                         data[9] = data[9].replace('\\n','\n')
                         msg = await channel.send(data[9])
                     pass
+                i+=1
 
             #TODO: SQL check for bump
             try:
