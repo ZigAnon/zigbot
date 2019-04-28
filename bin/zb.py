@@ -44,15 +44,32 @@ async def do_trigger(self,message):
 
     # Checks if on repeat
     if data[5]:
-        print('true')
-    else:
         sql = """ UPDATE reminders
-                  SET channel_id = {0}, real_user_id = {1},
-                  time = CURRENT_TIMESTAMP AT TIME ZONE 'ZULU'
+                  SET channel_id = {0}, real_user_id = {1}
                   WHERE guild_id = {2}
                   AND trigger_word = '{3}' """
         sql = sql.format(message.channel.id,message.author.id,
                 message.guild.id,message.content.lower())
+        rows, string = sql_update(sql)
+
+        diff = int(int((data[7] - datetime.utcnow()).seconds)/60) + 1
+        msg = 'I\'ll remind you here in {0} minutes.'.format(diff)
+        msg = await message.channel.send(msg)
+        await asyncio.sleep(_var.timeout)
+        await msg.delete()
+    else:
+        sql = """ UPDATE reminders
+                  SET channel_id = {0}, real_user_id = {1},
+                  time = CURRENT_TIMESTAMP AT TIME ZONE 'ZULU',
+                  repeat = {4}
+                  WHERE guild_id = {2}
+                  AND trigger_word = '{3}' """
+        if int(data[4]) != 0:
+            repeat = 'TRUE'
+        else:
+            repeat = 'FALSE'
+        sql = sql.format(message.channel.id,message.author.id,
+                message.guild.id,message.content.lower(),repeat)
         rows, string = sql_update(sql)
         data[3] = data[3].replace('\\n','\n')
 
@@ -60,6 +77,7 @@ async def do_trigger(self,message):
         await message.delete()
         await asyncio.sleep(_var.timeout)
         await msg.delete()
+
 
 #################
 ##             ##

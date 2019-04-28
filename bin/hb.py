@@ -3,7 +3,9 @@ import discord
 from discord.ext import commands
 from datetime import datetime
 from datetime import timedelta
+import numpy as np
 from bin import zb_config
+from bin import zb
 
 _var = zb_config
 
@@ -19,7 +21,42 @@ async def _heartbeat(bot):
         #TODO: autoPurge needs to be added
         # grab channels to purge, msg limit, time, checks bot/text
 
-        for x in range(len(guilds)):
+        for guild in guilds:
+            sql = """ SELECT * FROM reminders
+                      WHERE guild_id = {0}
+                      AND NOT interval = 0 """
+            sql = sql.format(guild.id)
+            data, rows, string = zb.sql_query(sql)
+            data = data.flatten()
+            if rows > 0:
+                if data[5]:
+                    futureTime = data[7] + timedelta(minutes=int(data[4]))
+                    member = guild.get_member(data[1])
+                    channel = guild.get_channel(data[2])
+                    if datetime.utcnow() > futureTime:
+                        sql = """ UPDATE reminders
+                                  SET repeat = False,
+                                  time = CURRENT_TIMESTAMP AT TIME ZONE 'ZULU'
+                                  WHERE guild_id = {0}
+                                  AND trigger_word = '{1}' """
+                        sql = sql.format(guild.id,data[6])
+                        rows, string = zb.sql_update(sql)
+                        msg = await channel.send(member.mention + data[3])
+                else:
+                    futureTime = data[7] + timedelta(minutes=(int(data[4])/2))
+                    member = guild.get_member(data[1])
+                    channel = guild.get_channel(data[2])
+                    if datetime.utcnow() > futureTime:
+                        sql = """ UPDATE reminders
+                                  SET time = CURRENT_TIMESTAMP AT TIME ZONE 'ZULU'
+                                  WHERE guild_id = {0}
+                                  AND trigger_word = '{1}' """
+                        sql = sql.format(guild.id,data[6])
+                        rows, string = zb.sql_update(sql)
+                        data[9] = data[9].replace('\\n','\n')
+                        msg = await channel.send(data[9])
+                    pass
+
             #TODO: SQL check for bump
             try:
                 #TODO: if bump found get last bump time
