@@ -74,11 +74,16 @@ async def do_trigger(self,message):
         rows, string = sql_update(sql)
         data[3] = data[3].replace('\\n','\n')
 
-        msg = await message.channel.send(data[3])
         if int(data[4]) == 0:
+            msg = await message.channel.send(data[3])
             await message.delete()
-        await asyncio.sleep(_var.timeout)
-        await msg.delete()
+            await asyncio.sleep(_var.timeout)
+            await msg.delete()
+        else:
+            msg = 'I\'ll remind you here in {0} minutes.'.format(data[4])
+            msg = await message.channel.send(msg)
+            await asyncio.sleep(_var.timeout)
+            await msg.delete()
 
 
 #################

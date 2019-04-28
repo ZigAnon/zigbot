@@ -30,7 +30,7 @@ async def _heartbeat(bot):
             data = data.flatten()
             if rows > 0:
                 if data[5]:
-                    futureTime = data[7] + timedelta(minutes=int(data[4])-1)
+                    futureTime = data[7] + timedelta(minutes=int(data[4]))
                     member = guild.get_member(int(data[1]))
                     channel = guild.get_channel(int(data[2]))
                     if datetime.utcnow() > futureTime:
