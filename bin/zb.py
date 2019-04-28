@@ -68,7 +68,7 @@ async def do_trigger(self,message):
     else:
         sql = """ UPDATE reminders
                   SET channel_id = {0}, real_user_id = {1},
-                  time = CURRENT_TIMESTAMP AT TIME ZONE 'ZULU',
+                  time = date_trunc('minute', timezone('ZULU', NOW())),
                   repeat = {4}
                   WHERE guild_id = {2}
                   AND trigger_word = '{3}' """

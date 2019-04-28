@@ -41,7 +41,7 @@ async def _heartbeat(bot):
                             print('Time is old')
                             sql = """ UPDATE reminders
                                       SET repeat = False,
-                                      time = CURRENT_TIMESTAMP AT TIME ZONE 'ZULU'
+                                      time = date_trunc('minute', timezone('ZULU', NOW()))
                                       WHERE guild_id = {0}
                                       AND trigger_word = '{1}' """
                             sql = sql.format(guild.id,data[6])
@@ -56,7 +56,7 @@ async def _heartbeat(bot):
                     channel = guild.get_channel(int(data[2]))
                     if datetime.utcnow() > futureTime:
                         sql = """ UPDATE reminders
-                                  SET time = CURRENT_TIMESTAMP AT TIME ZONE 'ZULU'
+                                  SET time = date_trunc('minute', timezone('ZULU', NOW()))
                                   WHERE guild_id = {0}
                                   AND trigger_word = '{1}' """
                         sql = sql.format(guild.id,data[6])
