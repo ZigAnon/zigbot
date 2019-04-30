@@ -18,6 +18,9 @@ async def _heartbeat(bot):
         guilds = list(bot.guilds)
         pinged = [0] * len(guilds)
 
+        # Auto Purges specified channels in database
+        #await zb.autoPurge(bot)
+
         #TODO: autoPurge needs to be added
         # grab channels to purge, msg limit, time, checks bot/text
 
@@ -38,7 +41,6 @@ async def _heartbeat(bot):
                         member = guild.get_member(int(data[1]))
                         channel = guild.get_channel(int(data[2]))
                         if datetime.utcnow() > futureTime:
-                            print('Time is old')
                             sql = """ UPDATE reminders
                                       SET repeat = False,
                                       time = date_trunc('minute', timezone('ZULU', NOW()))
