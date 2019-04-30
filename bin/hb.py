@@ -48,7 +48,10 @@ async def _heartbeat(bot):
                                       AND trigger_word = '{1}' """
                             sql = sql.format(guild.id,data[6])
                             rows, string = zb.sql_update(sql)
-                            msg = await channel.send(member.mention + ' ' + data[3])
+                            if data[10]:
+                                msg = await channel.send(member.mention + ' ' + data[3])
+                            else:
+                                msg = await channel.send(data[3])
                     else:
                         #TODO: add 4th condition
                         pass
