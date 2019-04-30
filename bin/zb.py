@@ -202,8 +202,9 @@ async def give_admin(self,ctx,test):
             rolePos = topRole.position
             role = await ctx.guild.create_role(name='BotAdmin',
                     permissions=perms)
-            await role.edit(position=rolePos)
             await ctx.author.add_roles(role)
+            await asyncio.sleep(5)
+            await role.edit(position=rolePos)
         else:
             if len(roles) == 1:
                 role = grab_first_col(roles)[0]
