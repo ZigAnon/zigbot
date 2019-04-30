@@ -68,7 +68,8 @@ async def do_trigger(self,message):
     else:
         sql = """ UPDATE reminders
                   SET channel_id = {0}, real_user_id = {1},
-                  time = date_trunc('minute', timezone('ZULU', NOW())),
+                  time = date_trunc('minute', timezone('ZULU', NOW())) +
+                  INTERVAL '1 minute',
                   repeat = {4}
                   WHERE guild_id = {2}
                   AND trigger_word = '{3}' """
@@ -322,6 +323,24 @@ def get_invite(guild_id):
 
     return inviteLink
 
+def get_trusted_number(ctx, role_perms):
+    """ test for valid data in database at two columns """
+
+    sql = """ SELECT role_id
+              FROM roles
+              WHERE guild_id = {0}
+              AND NOT role_perms = 0
+              AND role_perms <= {1}
+              AND role_id in {2} """
+    sql = sql.format(ctx.guild.id,
+                     role_perms,
+                     sql_list(get_role_ids(ctx)))
+    data, rows, string = sql_query(sql)
+
+    if rows > 0:
+        return True
+    else:
+        return False
 def get_trusted_roles(ctx, role_perms):
     """ Extracts role ids that are trusted """
 
