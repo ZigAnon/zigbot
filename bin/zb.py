@@ -103,6 +103,7 @@ async def do_trigger(self,message):
 ##             ##
 #################
 async def timed_msg(channel,string,seconds):
+    string = string.replace('\\n','\n')
     msg = await channel.send(string)
     await asyncio.sleep(seconds)
     await msg.delete()
@@ -584,8 +585,19 @@ def log_channel(member):
 
     return int(data[0])
 
-def log_channel_pub(member):
-    sql = """ SELECT log_channel_public
+def join_msg(member):
+    sql = """ SELECT message
+              FROM guilds
+              WHERE guild_id = {0} """
+    sql = sql.format(str(member.guild.id))
+
+    data, rows, string = sql_query(sql)
+    string = data[0][0]
+
+    return string
+
+def join_channel(member):
+    sql = """ SELECT msg_channel_public
               FROM guilds
               WHERE guild_id = {0} """
     sql = sql.format(str(member.guild.id))

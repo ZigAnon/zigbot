@@ -22,7 +22,7 @@ class onmemberjoinCog(commands.Cog):
 
         # Get log channels
         channel = self.bot.get_channel(zb.log_channel(member))
-        channelp = self.bot.get_channel(zb.log_channel_pub(member))
+        joinChan = self.bot.get_channel(zb.join_channel(member))
         welcomeChan = self.bot.get_channel(zb.welcome_channel(member))
 
         # Build logs
@@ -121,9 +121,11 @@ class onmemberjoinCog(commands.Cog):
                     await zb.add_roles(member,data,reason)
                 await welcomeChan.send('Hey ' + member.mention +
                         ', welcome to **{0}** \U0001F389\U0001F917 !'.format(member.guild.name))
-                #TODO: How to access message
-                #TODO: Delete access message after x mins
-                pass
+
+                # Sends join instructions
+                msg = 'Welcome {0}! {1}'.format(member.mention,
+                        zb.join_msg(member))
+                await zb.timed_msg(joinChan,msg,_var.timeout*2)
 
         except Exception as e:
             print(f'**`ERROR:`** {type(e).__name__} - {e}')
