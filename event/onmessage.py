@@ -10,8 +10,6 @@ class onmessageCog(commands.Cog):
     # Events on member join
     @commands.Cog.listener()
     async def on_message(self, message):
-        # Get Context
-        ctx = await self.bot.get_context(message)
 
         # Ignore self
         if message.author == self.bot.user:
@@ -19,6 +17,9 @@ class onmessageCog(commands.Cog):
 
         reminders = zb.get_startswith(message.guild.id)
         if message.content.lower().startswith(reminders):
+            # Get Context
+            ctx = await self.bot.get_context(message)
+
             await zb.do_reminder(ctx)
 
         # I'm hungry
