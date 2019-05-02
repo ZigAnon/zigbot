@@ -19,6 +19,7 @@ webKey = ''
 # Bot settings
 timeout = 60*5 # [60*5] Bot will auto remove messages after 5 minutes
 newAccount = 72 # [72] Discord account must be at least 72 hours
+botErrors = 573505165764591618 # Channel to log errors
 
 # Constant Variables
 dateFormat = '%Y-%m-%d %H:%M:%S.%f'

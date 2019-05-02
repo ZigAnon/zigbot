@@ -55,7 +55,7 @@ class SetupCog(commands.Cog):
                     rows = len(roles)
 
                     await ctx.send('Multiple roles were found for `' + role + '`.')
-                    select = await zb.print_select(self,ctx,roles)
+                    select = await zb.print_select(ctx,roles)
                     if select >= 0:
                         role_id = roles[select][0]
                         role_name = roles[select][1]

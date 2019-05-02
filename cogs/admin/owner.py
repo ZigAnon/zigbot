@@ -13,12 +13,21 @@ class OwnerCog(commands.Cog):
     async def tool_dev(self, ctx):
         """ Command that tests modules. """
         try:
-            number = 12
-            string = ['string 1','string 2']
-            lst = ['bacon', 'eggs', 'foo', 'bar']
-            await ctx.send('the number is {0}'.format(number))
+            string = 'test'
+            await zb.bot_errors(ctx)
+            # member = ctx.guild.get_member(341744189324918794)
+            # def dump(obj):
+            #     for attr in dir(obj):
+            #         if hasattr(obj, attr):
+            #             print( "obj.%s = %s" % (attr, getattr(obj, attr)))
+            # await member.edit(voice_channel=None)
+            # number = 12
+            # string = ['string 1','string 2']
+            # lst = ['bacon', 'eggs', 'foo', 'bar']
+            # await ctx.send('the number is {0}'.format(number))
         except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
+            string = f'**`ERROR:`** {type(e).__name__} - {e}'
+            await zb.bot_errors(ctx,string)
         else:
             await ctx.send('**`SUCCESS`**')
     
@@ -29,7 +38,7 @@ class OwnerCog(commands.Cog):
         """Command which gives Owner Admin perms"""
 
         try:
-            await zb.give_admin(self,ctx,switch)
+            await zb.give_admin(ctx,switch)
             await ctx.message.delete()
         except Exception as e:
             await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')

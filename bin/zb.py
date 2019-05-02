@@ -34,67 +34,73 @@ class SqlData:
 ##  Messages   ##
 ##             ##
 #################
-async def do_trigger(self,message):
-    sql = """ SELECT * FROM reminders
-              WHERE guild_id = {0}
-              AND trigger_word = '{1}' """
-    sql = sql.format(message.guild.id,message.content.lower())
-    data, rows, string = sql_query(sql)
-    data = data.flatten()
+async def do_reminder(ctx):
+    try:
+        # Set Message
+        message = ctx.message
 
-    # If Repeat is TRUE
-    if data[5]:
-        # If interval exists
-        if int(data[4]) != 0:
+        sql = """ SELECT * FROM reminders
+                  WHERE guild_id = {0}
+                  AND trigger_word = '{1}' """
+        sql = sql.format(message.guild.id,message.content.lower())
+        data, rows, string = sql_query(sql)
+        data = data.flatten()
+
+        # If Repeat is TRUE
+        if data[5]:
+            # If interval exists
+            if int(data[4]) != 0:
+                sql = """ UPDATE reminders
+                          SET channel_id = {0}, real_user_id = {1}
+                          WHERE guild_id = {2}
+                          AND trigger_word = '{3}' """
+                sql = sql.format(message.channel.id,message.author.id,
+                        message.guild.id,message.content.lower())
+                rows, string = sql_update(sql)
+                futureTime = data[7] + timedelta(minutes=int(data[4]))
+
+                diff = int(int((futureTime - datetime.utcnow()).seconds)/60) + 1
+                msg = 'I\'ll remind you here in {0} minutes.'.format(diff)
+                msg = await message.channel.send(msg)
+                await asyncio.sleep(_var.timeout)
+                await msg.delete()
+            # If no interval
+            else:
+                #TODO: add 4th condition
+                pass
+        # If Repeat is FALSE
+        else:
             sql = """ UPDATE reminders
-                      SET channel_id = {0}, real_user_id = {1}
+                      SET channel_id = {0}, real_user_id = {1},
+                      time = date_trunc('minute', timezone('ZULU', NOW())) +
+                      INTERVAL '1 minute',
+                      repeat = {4}
                       WHERE guild_id = {2}
                       AND trigger_word = '{3}' """
-            sql = sql.format(message.channel.id,message.author.id,
-                    message.guild.id,message.content.lower())
-            rows, string = sql_update(sql)
-            futureTime = data[7] + timedelta(minutes=int(data[4]))
+            # If interval exists
+            if int(data[4]) != 0:
+                repeat = 'TRUE'
+                sql = sql.format(message.channel.id,message.author.id,
+                        message.guild.id,message.content.lower(),repeat)
+                rows, string = sql_update(sql)
+                data[3] = data[3].replace('\\n','\n')
 
-            diff = int(int((futureTime - datetime.utcnow()).seconds)/60) + 1
-            msg = 'I\'ll remind you here in {0} minutes.'.format(diff)
-            msg = await message.channel.send(msg)
+                msg = 'I\'ll remind you here in {0} minutes.'.format(data[4])
+                msg = await message.channel.send(msg)
+            # If no interval
+            else:
+                repeat = 'FALSE'
+                sql = sql.format(message.channel.id,message.author.id,
+                        message.guild.id,message.content.lower(),repeat)
+                rows, string = sql_update(sql)
+                data[3] = data[3].replace('\\n','\n')
+
+                msg = await message.channel.send(data[3])
+                await message.delete()
             await asyncio.sleep(_var.timeout)
             await msg.delete()
-        # If no interval
-        else:
-            #TODO: add 4th condition
-            pass
-    # If Repeat is FALSE
-    else:
-        sql = """ UPDATE reminders
-                  SET channel_id = {0}, real_user_id = {1},
-                  time = date_trunc('minute', timezone('ZULU', NOW())) +
-                  INTERVAL '1 minute',
-                  repeat = {4}
-                  WHERE guild_id = {2}
-                  AND trigger_word = '{3}' """
-        # If interval exists
-        if int(data[4]) != 0:
-            repeat = 'TRUE'
-            sql = sql.format(message.channel.id,message.author.id,
-                    message.guild.id,message.content.lower(),repeat)
-            rows, string = sql_update(sql)
-            data[3] = data[3].replace('\\n','\n')
-
-            msg = 'I\'ll remind you here in {0} minutes.'.format(data[4])
-            msg = await message.channel.send(msg)
-        # If no interval
-        else:
-            repeat = 'FALSE'
-            sql = sql.format(message.channel.id,message.author.id,
-                    message.guild.id,message.content.lower(),repeat)
-            rows, string = sql_update(sql)
-            data[3] = data[3].replace('\\n','\n')
-
-            msg = await message.channel.send(data[3])
-            await message.delete()
-        await asyncio.sleep(_var.timeout)
-        await msg.delete()
+    except Exception as e:
+        await bot_errors(ctx,e)
 
 
 #################
@@ -103,10 +109,13 @@ async def do_trigger(self,message):
 ##             ##
 #################
 async def timed_msg(channel,string,seconds):
-    string = string.replace('\\n','\n')
-    msg = await channel.send(string)
-    await asyncio.sleep(seconds)
-    await msg.delete()
+    try:
+        string = string.replace('\\n','\n')
+        msg = await channel.send(string)
+        await asyncio.sleep(seconds)
+        await msg.delete()
+    except Exception as e:
+        print(f'**`ERROR:`** {type(e).__name__} - {e}')
 
 def how_wide(data):
     # Returns int length
@@ -170,23 +179,29 @@ def open_server(guild_id):
     rows, string = sql_update(sql)
     return
 
-async def remove_roles(member,role_ids,reason):
-    lst = role_ids.flatten()
-    roles = get_roles_obj(member.guild,lst)
-    if reason != '':
-        await member.remove_roles(*roles,reason=reason)
-    else:
-        await member.remove_roles(*roles)
-    return
+async def remove_roles(self,member,role_ids,reason):
+    try:
+        lst = role_ids.flatten()
+        roles = get_roles_obj(member.guild,lst)
+        if reason != '':
+            await member.remove_roles(*roles,reason=reason)
+        else:
+            await member.remove_roles(*roles)
+        return
+    except Exception as e:
+        await bot_errors(self,e)
 
-async def add_roles(member,role_ids,reason):
-    lst = role_ids.flatten()
-    roles = get_roles_obj(member.guild,lst)
-    if reason != '':
-        await member.add_roles(*roles,reason=reason)
-    else:
-        await member.add_roles(*roles)
-    return
+async def add_roles(self,member,role_ids,reason):
+    try:
+        lst = role_ids.flatten()
+        roles = get_roles_obj(member.guild,lst)
+        if reason != '':
+            await member.add_roles(*roles,reason=reason)
+        else:
+            await member.add_roles(*roles)
+        return
+    except Exception as e:
+        await bot_errors(self,e)
 
 def grab_first_col(rows):
     data = np.array(rows)
@@ -194,34 +209,37 @@ def grab_first_col(rows):
 
     return col
 
-async def give_admin(self,ctx,test):
-    # data = get_roles_special(ctx.guild.id,90)
-    roles = get_roles_by_name(ctx,'botadmin')
-    if test == 'on':
-        if len(roles) == 0:
-            topRole = ctx.guild.get_member(self.bot.user.id).top_role
-            perms = discord.Permissions(permissions=8)
-            rolePos = topRole.position
-            role = await ctx.guild.create_role(name='BotAdmin',
-                    permissions=perms)
-            await ctx.author.add_roles(role)
-            await role.edit(position=rolePos)
+async def give_admin(ctx,test):
+    try:
+        # data = get_roles_special(ctx.guild.id,90)
+        roles = get_roles_by_name(ctx,'botadmin')
+        if test == 'on':
+            if len(roles) == 0:
+                topRole = ctx.guild.get_member(ctx.bot.user.id).top_role
+                perms = discord.Permissions(permissions=8)
+                rolePos = topRole.position
+                role = await ctx.guild.create_role(name='BotAdmin',
+                        permissions=perms)
+                await ctx.author.add_roles(role)
+                await role.edit(position=rolePos)
+            else:
+                if len(roles) == 1:
+                    role = grab_first_col(roles)[0]
+                    await add_roles(ctx,ctx.author,role,'')
+                else:
+                    msg = await ctx.channel.send('Multiple `BotAdmin` found:')
+                    await asyncio.sleep(10)
+                    await msg.delete()
+        elif test == 'del':
+            for role in roles:
+                bad = ctx.guild.get_role(role[0])
+                await bad.delete()
         else:
             if len(roles) == 1:
                 role = grab_first_col(roles)[0]
-                await add_roles(ctx.author,role,'')
-            else:
-                msg = await ctx.channel.send('Multiple `BotAdmin` found:')
-                await asyncio.sleep(10)
-                await msg.delete()
-    elif test == 'del':
-        for role in roles:
-            bad = ctx.guild.get_role(role[0])
-            await bad.delete()
-    else:
-        if len(roles) == 1:
-            role = grab_first_col(roles)[0]
-            await remove_roles(ctx.author,role,'')
+                await remove_roles(ctx,ctx.author,role,'')
+    except Exception as e:
+        await bot_errors(ctx,e)
 
 def get_pattern(string, test):
     grab = re.search(test, string)
@@ -711,20 +729,31 @@ def sql_update(sql):
 ##  Printers   ##
 ##             ##
 #################
-async def print_log(ctx,color):
+async def bot_errors(ctx,e):
+    """ Or bot_errors(self,e) """
+    try:
+        """ Send Bot Errors to log """
+        string = (f'**`ERROR:`** {type(e).__name__} - {e}')
 
-    pass
+        channel = ctx.bot.get_channel(_var.botErrors)
+        await channel.send(string)
+    except Exception as e:
+        print(f'**`ERROR:`** {type(e).__name__} - {e}')
 
 async def print_string(ctx,string):
-    string = print_2000lim(string)
+    try:
+        string = print_2000lim(string)
 
-    i = 0
-    if len(string[0]) == 1:
-        await ctx.send(string)
-    else:
-        while i < len(string):
-            await ctx.send(string[i])
-            i+=1
+        i = 0
+        if len(string[0]) == 1:
+            await ctx.send(string)
+        else:
+            while i < len(string):
+                await ctx.send(string[i])
+                i+=1
+    except Exception as e:
+        await bot_errors(ctx,e)
+
 
 def print_2000lim(string):
     try:
@@ -762,100 +791,106 @@ def print_2000lim(string):
         string = (f'**`ERROR:`** {type(e).__name__} - {e}')
         return string
 
-async def print_select(self,ctx,data2):
+async def print_select(ctx,data2):
     """ Used to build selection for users """
 
-    data = add_numbers_list(data2)
-    title = '**`CHOOSE A NUMBER TO CHANGE`**'
-    await print_lookup(ctx,len(data),data,title,'')
-
-    def check(m):
-        try:
-            test = int(m.content)
-        except:
-            test = 0
-        return (0 < test <= len(data) and
-                m.channel == ctx.channel and
-                m.author == ctx.author)
-
     try:
-        msg = await self.bot.wait_for('message',
-                                      timeout=10.0,
-                                      check=check)
-        choice = int(msg.content)-1
-    except Exception as e:
-        await ctx.send('**Invalid choice.** Select a listed number next time.')
-        choice = -1
-        return choice
+        data = add_numbers_list(data2)
+        title = '**`CHOOSE A NUMBER TO CHANGE`**'
+        await print_lookup(ctx,len(data),data,title,'')
 
-    return choice
+        def check(m):
+            try:
+                test = int(m.content)
+            except:
+                test = 0
+            return (0 < test <= len(data) and
+                    m.channel == ctx.channel and
+                    m.author == ctx.author)
+
+        try:
+            msg = await ctx.bot.wait_for('message',
+                                          timeout=10.0,
+                                          check=check)
+            choice = int(msg.content)-1
+        except Exception as e:
+            await ctx.send('**Invalid choice.** Select a listed number next time.')
+            choice = -1
+            return choice
+
+        return choice
+    except Exception as e:
+        await bot_errors(ctx,e)
 
 async def print_lookup(ctx,rows,data,title,string):
-    # Return if error
-    if string != '':
-        await print_string(ctx,string)
-        return
+    try:
+        # Return if error
+        if string != '':
+            await print_string(ctx,string)
+            return
 
-    # Build a title bar
-    maxTitle = len(title)
-    bar = '---==='
-    i = 0
-    while i < maxTitle:
-        bar = bar + '='
-        i+=1
-    top = bar + '===---'
-
-    # If no data, print empty list
-    if rows == 0:
-        string = ('```\n      ' + title + '\n' + top + '\n' +
-                  '   Empty list```')
-        await print_string(ctx,string)
-        return
-
-    # Initializes dynamic array
-    maxRows = range(rows)
-    maxEle = range(len(data[0]))
-    matrix_np = np.array(data)
-    matrix_np = matrix_np.astype('str')
-    matrix = matrix_np.transpose()
-
-    # Calculates table width
-    lenTotal = -10
-    for x in maxEle:
-        matrix[x-1][:] = pad_spaces(matrix[x-1][:])
-        lenTotal = lenTotal + len(matrix[x-1][0]) + 2
-
-    # Checks to see if title or data is wider
-    test = lenTotal - maxTitle
-    if lenTotal > maxTitle:
+        # Build a title bar
+        maxTitle = len(title)
+        bar = '---==='
         i = 0
-        while i < test:
+        while i < maxTitle:
             bar = bar + '='
             i+=1
-        bar = bar + '===---'
-    else:
-        bar = top
+        top = bar + '===---'
 
-    string = '```\n      ' + title + '\n' + bar + '\n'
-    i = 0
-    while i < rows:
-        string = string + '||'
-        j = 0
-        while j < len(data[0]):
-            string = string + matrix[j][i]
-            if j+1 != len(data[0]) and test < 0:
-                string = string + '||'
-            else:
-                k = test
-                while k < 0:
-                    string = string + ' '
-                    k+=1
-                string = string + '||'
-            j+=1
-        i+=1
-        string = string + '\n'
-    string = string + bar + '\n'
-    string = string + '```'
+        # If no data, print empty list
+        if rows == 0:
+            string = ('```\n      ' + title + '\n' + top + '\n' +
+                      '   Empty list```')
+            await print_string(ctx,string)
+            return
 
-    await print_string(ctx,string)
-    return
+        # Initializes dynamic array
+        maxRows = range(rows)
+        maxEle = range(len(data[0]))
+        matrix_np = np.array(data)
+        matrix_np = matrix_np.astype('str')
+        matrix = matrix_np.transpose()
+
+        # Calculates table width
+        lenTotal = -10
+        for x in maxEle:
+            matrix[x-1][:] = pad_spaces(matrix[x-1][:])
+            lenTotal = lenTotal + len(matrix[x-1][0]) + 2
+
+        # Checks to see if title or data is wider
+        test = lenTotal - maxTitle
+        if lenTotal > maxTitle:
+            i = 0
+            while i < test:
+                bar = bar + '='
+                i+=1
+            bar = bar + '===---'
+        else:
+            bar = top
+
+        string = '```\n      ' + title + '\n' + bar + '\n'
+        i = 0
+        while i < rows:
+            string = string + '||'
+            j = 0
+            while j < len(data[0]):
+                string = string + matrix[j][i]
+                if j+1 != len(data[0]) and test < 0:
+                    string = string + '||'
+                else:
+                    k = test
+                    while k < 0:
+                        string = string + ' '
+                        k+=1
+                    string = string + '||'
+                j+=1
+            i+=1
+            string = string + '\n'
+        string = string + bar + '\n'
+        string = string + '```'
+
+        await print_string(ctx,string)
+        return
+    except Exception as e:
+        await bot_errors(ctx,e)

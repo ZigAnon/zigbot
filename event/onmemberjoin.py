@@ -15,7 +15,6 @@ class onmemberjoinCog(commands.Cog):
     # Events on member join
     @commands.Cog.listener()
     async def on_member_join(self, member):
-
         # Resets counters on hammered members
         if zb.is_hammer(member.guild.id):
             zb.reset_hammer(member.guild)
@@ -110,7 +109,7 @@ class onmemberjoinCog(commands.Cog):
                 #TODO: public log their punishment
                 data = zb.get_roles_special(member.guild.id,12)
                 reason = 'Left and rejoined after punishment {0}'.format(punishNum)
-                await zb.add_roles(member,data,reason)
+                await zb.add_roles(self,member,data,reason)
 
             # Else, send welcome
             else:
@@ -118,7 +117,7 @@ class onmemberjoinCog(commands.Cog):
                 if zb.is_role_group(member.guild.id,1):
                     data = zb.get_roles_special(member.guild.id,1)
                     reason = 'Member joined'
-                    await zb.add_roles(member,data,reason)
+                    await zb.add_roles(self,member,data,reason)
                 await welcomeChan.send('Hey ' + member.mention +
                         ', welcome to **{0}** \U0001F389\U0001F917 !'.format(member.guild.name))
 
