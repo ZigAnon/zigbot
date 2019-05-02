@@ -26,8 +26,8 @@ class OwnerCog(commands.Cog):
             # lst = ['bacon', 'eggs', 'foo', 'bar']
             # await ctx.send('the number is {0}'.format(number))
         except Exception as e:
-            string = f'**`ERROR:`** {type(e).__name__} - {e}'
-            await zb.bot_errors(ctx,string)
+            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
+            await zb.bot_errors(ctx,e)
         else:
             await ctx.send('**`SUCCESS`**')
     
@@ -54,6 +54,7 @@ class OwnerCog(commands.Cog):
             self.bot.load_extension(cog)
         except Exception as e:
             await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
+            await zb.bot_errors(ctx,e)
         else:
             await ctx.send('**`SUCCESS`**')
 
@@ -67,6 +68,7 @@ class OwnerCog(commands.Cog):
             self.bot.unload_extension(cog)
         except Exception as e:
             await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
+            await zb.bot_errors(ctx,e)
         else:
             await ctx.send('**`SUCCESS`**')
 
@@ -81,6 +83,7 @@ class OwnerCog(commands.Cog):
             self.bot.load_extension(cog)
         except Exception as e:
             await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
+            await zb.bot_errors(ctx,e)
         else:
             await ctx.send('**`SUCCESS`**')
 
