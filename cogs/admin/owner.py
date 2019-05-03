@@ -13,8 +13,9 @@ class OwnerCog(commands.Cog):
     async def tool_dev(self, ctx):
         """ Command that tests modules. """
         try:
-            string = 'test'
-            await zb.bot_errors(ctx)
+            string = 'Good pass'
+            if ctx.author.guild_permissions.administrator:
+                await ctx.send(string)
             # member = ctx.guild.get_member(341744189324918794)
             # def dump(obj):
             #     for attr in dir(obj):
