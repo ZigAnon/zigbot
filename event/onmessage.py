@@ -59,7 +59,6 @@ class onmessageCog(commands.Cog):
                 print(f'**`ERROR:`** {type(e).__name__} - {e}')
         except Exception as e:
             ctx = await self.bot.get_context(message)
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,e)
 
 

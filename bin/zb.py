@@ -294,11 +294,20 @@ def get_roles_by_name(ctx, roleName):
 
     return roles
 
+def get_members_ids_new(ctx):
+    """ Extracts sub list from list returns array """
+
+    lst = [member.id for member in ctx.guild.members if not member.bot]
+    data = np.asarray(lst)
+
+    return data
+
 def get_members_ids(ctx):
     # Returns array idList
     """ Extracts member id from guild """
 
     idList = []
+    # [member.id for member in ctx.guild.members if not member.bot]
     for member in ctx.guild.members:
         if member.bot:
             pass
@@ -306,6 +315,24 @@ def get_members_ids(ctx):
             idList.append(member.id)
 
     return idList
+
+def get_member_id(ctx,msg):
+    # Returns member id from name
+
+    member_id = 0
+    name = msg.lower()
+    for member in ctx.guild.members:
+        if member.name.lower().startswith(name):
+            member_id = member.id
+            return member_id
+        try:
+            if member.nick.lower().startswith(name):
+                member_id = member.id
+                return member_id
+        except:
+            pass
+
+    return member_id
 
 def get_blacklist(member):
     sql = """ SELECT added_by, reason
@@ -633,6 +660,17 @@ def welcome_channel(member):
     data, rows, string = sql_query(sql)
 
     return int(data[0])
+
+def sql_get_tbl_member_id(ctx,member_id):
+    sql = """ {0}
+              WHERE g.guild_id = {1}
+              AND u.real_user_id = {2}
+              ORDER BY u.real_user_id DESC """
+    sql = sql.format(_query,ctx.guild.id,member_id)
+
+    data, rows, string = sql_query(sql)
+
+    return data
 
 def sql_all_guild_id(guild_id):
     sql = """ {0}
