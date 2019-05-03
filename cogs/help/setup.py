@@ -10,13 +10,6 @@ class SetupCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    def is_allowed():
-        async def predicate(ctx):
-            if ctx.author.guild_permissions.administrator:
-                return True
-            elif ctx.author.id == zb_config.ownerID:
-                return True
-
     # Hidden means it won't show up on the default help.
     @commands.command(name='setup', hidden=True)
     async def server_setup(self, ctx):
