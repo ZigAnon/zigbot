@@ -1,0 +1,44 @@
+import discord
+from discord.ext import commands
+from bin import zb
+
+class onmessagedeleteCog(commands.Cog):
+
+    def __init__(self, bot):
+        self.bot = bot
+
+    # Events on member join
+    @commands.Cog.listener()
+    async def on_message_delete(self, message):
+
+        try:
+            # Ignore self
+            if message.author == self.bot.user:
+                return
+
+            # Ignore certain phrases
+            if message.content.lower().startswith('.god'):
+                return
+
+            embed=discord.Embed(description="**Message sent by " +
+                    message.author.mention + " deleted in " +
+                    message.channel.mention + "**\n" + message.clean_content,
+                    color=0xff470f)
+            try:
+                atch = message.attachments[0].url
+                embed.set_author(name=message.author, url=atch,
+                        icon_url=message.author.avatar_url)
+                embed.set_thumbnail(url=atch)
+            except:
+                embed.set_author(name=message.author,
+                        icon_url=message.author.avatar_url)
+            embed.add_field(name="Channel ID: " + str(message.channel.id)
+                    ,value="Message ID: " + str(message.id))
+            await zb.print_log(self,message.author,embed)
+
+        except Exception as e:
+            await zb.bot_errors(self,e)
+
+
+def setup(bot):
+    bot.add_cog(onmessagedeleteCog(bot))

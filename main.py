@@ -35,7 +35,8 @@ initial_extensions = ['cogs.admin.serverinfo',
                       'cogs.help.help',
                       'cogs.utility.members',
                       'event.onmemberjoin',
-                      'event.onmessage']
+                      'event.onmessage',
+                      'event.onmessagedelete']
 
 # Here we load our extensions(cogs) listed above in [initial_extensions].
 if __name__ == '__main__':
