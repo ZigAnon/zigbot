@@ -767,6 +767,15 @@ def sql_update(sql):
 ##  Printers   ##
 ##             ##
 #################
+async def print_log(ctx,member,embed):
+    try:
+        channel = ctx.bot.get_channel(log_channel(member))
+        embed.set_footer(text="ID: " + str(member.id) +
+                " • Today at " + f"{datetime.now():%I:%M %p}")
+        await channel.send(embed=embed)
+    except Exception as e:
+        await bot_errors(ctx,e)
+
 async def bot_errors(ctx,e):
     """ Or bot_errors(self,e) """
     try:

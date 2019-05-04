@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 from bin import zb
 
@@ -13,9 +14,13 @@ class OwnerCog(commands.Cog):
     async def tool_dev(self, ctx):
         """ Command that tests modules. """
         try:
-            string = 'Good pass'
-            if ctx.author.guild_permissions.administrator:
-                await ctx.send(string)
+            embed = discord.Embed(description=ctx.author.mention + " " +
+                    ctx.author.name, color=0x23d160)
+            embed.add_field(name="Account Creation Date",
+                    value=ctx.author.created_at, inline=False)
+            embed.set_thumbnail(url=ctx.author.avatar_url)
+            embed.set_author(name="Member Joined", icon_url=ctx.author.avatar_url)
+            await zb.print_log(self,ctx.author,embed)
             # member = ctx.guild.get_member(341744189324918794)
             # def dump(obj):
             #     for attr in dir(obj):

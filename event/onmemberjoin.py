@@ -33,12 +33,9 @@ class onmemberjoinCog(commands.Cog):
                         value=member.created_at, inline=False)
                 embed.set_thumbnail(url=member.avatar_url)
                 embed.set_author(name="Member Joined", icon_url=member.avatar_url)
-                embed.set_footer(text="ID: " + str(member.id) +
-                        " • Today at " + f"{datetime.now():%I:%M %p}")
-
-                await channel.send(embed=embed)
+                await zb.print_log(self,member,embed)
             except Exception as e:
-                print(f'**`ERROR:`** {type(e).__name__} - {e}')
+                await zb.bot_errors(self,e)
 
             # Main tasks
             try:
@@ -128,9 +125,9 @@ class onmemberjoinCog(commands.Cog):
                     await zb.timed_msg(joinChan,msg,_var.timeout*2)
 
             except Exception as e:
-                print(f'**`ERROR:`** {type(e).__name__} - {e}')
+                await zb.bot_errors(self,e)
         except Exception as e:
-            print(f'**`ERROR:`** {type(e).__name__} - {e}')
+            await zb.bot_errors(self,e)
 
 
 def setup(bot):

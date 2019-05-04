@@ -25,7 +25,8 @@ class onmessageCog(commands.Cog):
 
             # I'm hungry
             if zb.is_pattern(message.content.lower(),
-                    """^((\s+)?i((\s+)?|[']|)m\s+?)\w+(\W+)?$"""):
+                    """^(((\s+)?i((\s+)?|[']|)m\s+?)|(\s+)?i(\s+)?am\s+?)\w+(\W+)?$"""):
+                #"""^((\s+)?i((\s+)?|[']|)m\s+?)\w+(\W+)?$"""):
                 hungry = zb.get_pattern(message.content.lower(),"""[^i'm(\s)]\w+""")
                 msg = 'Hi {0}, I\'m {1}.'.format(hungry.capitalize(),
                     self.bot.user.display_name)
