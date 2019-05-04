@@ -16,6 +16,9 @@ class onmessageCog(commands.Cog):
             if message.author == self.bot.user:
                 return
 
+            # Checks for good nickname
+            await zb.is_good_nick(self,message.author)
+
             reminders = zb.get_startswith(message.guild.id)
             if message.content.lower().startswith(reminders):
                 # Get Context

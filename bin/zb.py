@@ -578,7 +578,7 @@ def is_closed(guild_id):
 async def is_good_nick(ctx,member):
     try:
         try:
-            found = get_pattern(member.display_name, '([A-z]{3,})\w+')
+            found = get_pattern(member.display_name, '([A-z]{2,})\w+')
             return True
         except:
             await member.edit(nick='Invalid Nickname')
