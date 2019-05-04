@@ -19,32 +19,35 @@ class onmemberupdateCog(commands.Cog):
             if before.nick == after.nick:
                 return
             elif before.nick is None and not after.nick is None:
-                embed=discord.Embed(description=before.mention +
-                        " **added nickname**", color=0x117ea6)
-                embed.add_field(name="Before", value=before.display_name,
-                        inline=False)
-                embed.add_field(name="After", value=after.display_name,
-                        inline=False)
-                embed.set_author(name=before, icon_url=after.avatar_url)
-                await zb.print_log(self,before,embed)
+                if await zb.is_good_nick(self,after):
+                    embed=discord.Embed(description=before.mention +
+                            " **added nickname**", color=0x117ea6)
+                    embed.add_field(name="Before", value=before.display_name,
+                            inline=False)
+                    embed.add_field(name="After", value=after.display_name,
+                            inline=False)
+                    embed.set_author(name=before, icon_url=after.avatar_url)
+                    await zb.print_log(self,before,embed)
             elif not before.nick is None and not after.nick is None:
-                embed=discord.Embed(description=before.mention +
-                        " **nickname changed**", color=0x117ea6)
-                embed.add_field(name="Before", value=before.display_name,
-                        inline=False)
-                embed.add_field(name="After", value=after.display_name,
-                        inline=False)
-                embed.set_author(name=before, icon_url=after.avatar_url)
-                await zb.print_log(self,before,embed)
+                if await zb.is_good_nick(self,after):
+                    embed=discord.Embed(description=before.mention +
+                            " **nickname changed**", color=0x117ea6)
+                    embed.add_field(name="Before", value=before.display_name,
+                            inline=False)
+                    embed.add_field(name="After", value=after.display_name,
+                            inline=False)
+                    embed.set_author(name=before, icon_url=after.avatar_url)
+                    await zb.print_log(self,before,embed)
             elif not before.nick is None and after.nick is None:
-                embed=discord.Embed(description=before.mention +
-                        " **removed nickname**", color=0x117ea6)
-                embed.add_field(name="Before", value=before.display_name,
-                        inline=False)
-                embed.add_field(name="After", value=after.display_name,
-                        inline=False)
-                embed.set_author(name=before, icon_url=after.avatar_url)
-                await zb.print_log(self,before,embed)
+                if await zb.is_good_nick(self,after):
+                    embed=discord.Embed(description=before.mention +
+                            " **removed nickname**", color=0x117ea6)
+                    embed.add_field(name="Before", value=before.display_name,
+                            inline=False)
+                    embed.add_field(name="After", value=after.display_name,
+                            inline=False)
+                    embed.set_author(name=before, icon_url=after.avatar_url)
+                    await zb.print_log(self,before,embed)
 
             #TODO: no role
             #TODO: add role

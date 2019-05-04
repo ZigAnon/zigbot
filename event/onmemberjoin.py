@@ -122,6 +122,7 @@ class onmemberjoinCog(commands.Cog):
                     # Sends join instructions
                     msg = 'Welcome {0}! {1}'.format(member.mention,
                             zb.join_msg(member))
+                    await zb.is_good_nick(self,member)
                     await zb.timed_msg(joinChan,msg,_var.timeout*2)
 
             except Exception as e:
