@@ -30,8 +30,8 @@ class onmemberunbanCog(commands.Cog):
             embed.set_thumbnail(url=user.avatar_url)
             embed.set_author(name="Member Unbanned",
                     icon_url=user.avatar_url)
-            embed.set_footer(text="ID: " + str(user.id) +
-                    " • Today at " + f"{datetime.now():%I:%M %p}")
+            embed.set_footer(text="ID: " + str(user.id))
+            embed.timestamp = datetime.utcnow()
             await channel.send(embed=embed)
 
         except Exception as e:

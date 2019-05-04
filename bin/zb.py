@@ -770,8 +770,8 @@ def sql_update(sql):
 async def print_log(ctx,member,embed):
     try:
         channel = ctx.bot.get_channel(log_channel(member))
-        embed.set_footer(text="ID: " + str(member.id) +
-                " • Today at " + f"{datetime.now():%I:%M %p}")
+        embed.set_footer(text="ID: " + str(member.id))
+        embed.timestamp = datetime.utcnow()
         await channel.send(embed=embed)
     except Exception as e:
         await bot_errors(ctx,e)
