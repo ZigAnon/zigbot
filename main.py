@@ -44,14 +44,14 @@ if __name__ == '__main__':
     for extension in initial_extensions:
         bot.load_extension(extension)
 
-# Main loop, do not comment this area out
+# Main loop adds a heartbeat to the bot for automated tasks
 async def main_loop():
     await bot.wait_until_ready()
     while not bot.is_closed():
         beat = 60 - await hb._heartbeat(bot)
         await asyncio.sleep(beat)
 
-
+# Ping tests to see if the bot is active independent from cogs
 @bot.command()
 async def ping(ctx):
     await ctx.send('pong')
