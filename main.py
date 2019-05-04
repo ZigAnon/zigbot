@@ -37,6 +37,7 @@ initial_extensions = ['cogs.admin.serverinfo',
                       'event.onmemberjoin',
                       'event.onmemberban',
                       'event.onmemberunban',
+                      'event.onmemberremove',
                       'event.onmessage',
                       'event.onmessagedelete']
 
