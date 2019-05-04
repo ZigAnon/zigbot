@@ -25,7 +25,7 @@ class onmessagedeleteCog(commands.Cog):
                     message.channel.mention + "**\n" + message.clean_content,
                     color=0xff470f)
             try:
-                atch = message.attachments[0].url
+                atch = message.attachments[0].proxy_url
                 embed.set_author(name=message.author, url=atch,
                         icon_url=message.author.avatar_url)
                 embed.set_thumbnail(url=atch)
