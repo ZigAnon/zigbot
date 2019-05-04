@@ -28,9 +28,10 @@ bot.remove_command('help')
 # Below cogs represents our folder our cogs are in. Following is the file name. So 'meme.py' in cogs, would be cogs.meme
 # Think of it like a dot path import
 initial_extensions = ['cogs.admin.serverinfo',
-                      'cogs.admin.owner',
-                      'cogs.admin.lookup',
                       'cogs.admin.inactive',
+                      'cogs.admin.lookup',
+                      'cogs.admin.owner',
+                      'cogs.admin.punish',
                       'cogs.help.setup',
                       'cogs.help.help',
                       'cogs.utility.members',

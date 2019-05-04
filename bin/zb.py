@@ -860,11 +860,11 @@ async def print_select(ctx,data2):
         def check(m):
             try:
                 test = int(m.content)
+                return (0 < test <= len(data) and
+                        m.channel == ctx.channel and
+                        m.author == ctx.author)
             except:
-                test = 0
-            return (0 < test <= len(data) and
-                    m.channel == ctx.channel and
-                    m.author == ctx.author)
+                return False
 
         try:
             msg = await ctx.bot.wait_for('message',
