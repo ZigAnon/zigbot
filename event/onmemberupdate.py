@@ -16,8 +16,8 @@ class onmemberupdateCog(commands.Cog):
             if before == self.bot.user:
                 return
 
-            if before.nick is after.nick:
-                pass
+            if before.nick == after.nick:
+                return
             elif before.nick is None and not after.nick is None:
                 embed=discord.Embed(description=before.mention +
                         " **added nickname**", color=0x117ea6)
