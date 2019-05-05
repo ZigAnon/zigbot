@@ -43,7 +43,6 @@ initial_extensions = ['cogs.admin.serverinfo',
                       'event.onmessage',
                       'event.onmessageedit',
                       'event.onmessagedelete',
-                      'event.onrawbulkmessagedelete',
                       'event.onvoicestateupdate']
 
 # Here we load our extensions(cogs) listed above in [initial_extensions].

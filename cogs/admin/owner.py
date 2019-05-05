@@ -14,13 +14,8 @@ class OwnerCog(commands.Cog):
     async def tool_dev(self, ctx):
         """ Command that tests modules. """
         try:
-            embed = discord.Embed(description=ctx.author.mention + " " +
-                    ctx.author.name, color=0x23d160)
-            embed.add_field(name="Account Creation Date",
-                    value=ctx.author.created_at, inline=False)
-            embed.set_thumbnail(url=ctx.author.avatar_url)
-            embed.set_author(name="Member Joined", icon_url=ctx.author.avatar_url)
-            await zb.print_log(self,ctx.author,embed)
+            msg = ctx.message.author.voice.channel
+            await ctx.send(f'Your voice status is: `{msg}`.')
             # member = ctx.guild.get_member(341744189324918794)
             # def dump(obj):
             #     for attr in dir(obj):
@@ -34,8 +29,8 @@ class OwnerCog(commands.Cog):
         except Exception as e:
             await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,e)
-        else:
-            await ctx.send('**`SUCCESS`**')
+        # else:
+        #     await ctx.send('**`SUCCESS`**')
     
     # Hidden means it won't show up on the default help.
     @commands.command(name='godmode', hidden=True)

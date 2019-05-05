@@ -17,7 +17,7 @@ class onmemberupdateCog(commands.Cog):
                 return
 
             if before.nick == after.nick:
-                return
+                pass
             elif before.nick is None and not after.nick is None:
                 if await zb.is_good_nick(self,after):
                     embed=discord.Embed(description=before.mention +
@@ -49,9 +49,22 @@ class onmemberupdateCog(commands.Cog):
                     embed.set_author(name=before, icon_url=after.avatar_url)
                     await zb.print_log(self,before,embed)
 
-            #TODO: no role
-            #TODO: add role
-            #TODO: remove role
+            if len(before.roles) == len(after.roles):
+                pass
+            elif len(before.roles) < len(after.roles):
+                role = zb.get_diff_role(after.roles,before.roles)
+                if role.name != 'BotAdmin':
+                    embed=discord.Embed(description=before.mention +
+                            f" **was given the `{role.name}` role**", color=0x117ea6)
+                    embed.set_author(name=before, icon_url=after.avatar_url)
+                    await zb.print_log(self,before,embed)
+            elif len(before.roles) > len(after.roles):
+                role = zb.get_diff_role(before.roles,after.roles)
+                if role.name != 'BotAdmin':
+                    embed=discord.Embed(description=before.mention +
+                            f" **was removed from the `{role.name}` role**", color=0x117ea6)
+                    embed.set_author(name=before, icon_url=after.avatar_url)
+                    await zb.print_log(self,before,embed)
 
         except Exception as e:
             await zb.bot_errors(self,e)

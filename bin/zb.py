@@ -387,6 +387,15 @@ def get_trusted_number(ctx, role_perms):
         return True
     else:
         return False
+
+def get_diff_role(more_roles,less_roles):
+    data = []
+
+    for role in more_roles:
+        if not role in less_roles:
+            data = role
+            return data
+
 def get_trusted_roles(ctx, role_perms):
     """ Extracts role ids that are trusted """
 
