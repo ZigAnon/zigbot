@@ -20,7 +20,8 @@ class CoffeePolCog(commands.Cog):
     async def shitpost(self, ctx, member: discord.Member):
         """ Banishes member to shitpost chat. """
         try:
-            if zb.is_trusted(ctx,3):
+            if(zb.is_trusted(ctx,4) and
+                    cp.is_outranked(ctx.message.author,member,4)):
                 shitchan = ctx.guild.get_channel(533390486845653027)
                 punishchan = ctx.guild.get_channel(517882333752459264)
                 embed=discord.Embed(title="Shitposter!",
@@ -53,7 +54,8 @@ class CoffeePolCog(commands.Cog):
     async def mute(self, ctx, member: discord.Member):
         """ Removes all write permissions from all channels """
         try:
-            if zb.is_trusted(ctx,3):
+            if(zb.is_trusted(ctx,4) and
+                    cp.is_outranked(ctx.message.author,member,4)):
                 punishchan = ctx.guild.get_channel(517882333752459264)
                 embed=discord.Embed(title="User Muted!",
                         description=f'**{member}** was muted by ' +
@@ -82,7 +84,8 @@ class CoffeePolCog(commands.Cog):
         """ Removes all chats and allows user to state case
             in jail chat."""
         try:
-            if zb.is_trusted(ctx,3):
+            if(zb.is_trusted(ctx,4) and
+                    cp.is_outranked(ctx.message.author,member,4)):
                 punishchan = ctx.guild.get_channel(517882333752459264)
                 embed=discord.Embed(title="User Jailed!",
                         description=f'**{member}** was jailed by ' +
@@ -110,7 +113,8 @@ class CoffeePolCog(commands.Cog):
     async def cleanpost(self, ctx, member: discord.Member):
         """ Removes shitpost tag. """
         try:
-            if zb.is_trusted(ctx,3):
+            if(zb.is_trusted(ctx,4) and
+                    cp.is_outranked(ctx.message.author,member,4)):
                 punishchan = ctx.guild.get_channel(517882333752459264)
                 embed=discord.Embed(title="Good Job!",
                         description=f'**{member}** it seems ' +
@@ -136,7 +140,8 @@ class CoffeePolCog(commands.Cog):
     async def unmute(self, ctx, member: discord.Member):
         """ Removes mute status. """
         try:
-            if zb.is_trusted(ctx,3):
+            if(zb.is_trusted(ctx,4) and
+                    cp.is_outranked(ctx.message.author,member,4)):
                 punishchan = ctx.guild.get_channel(517882333752459264)
                 embed=discord.Embed(title="User unmuted.",
                         description=f'**{member}** follow the rules.',
@@ -161,7 +166,8 @@ class CoffeePolCog(commands.Cog):
     async def free(self, ctx, member: discord.Member):
         """ Frees member from jail """
         try:
-            if zb.is_trusted(ctx,3):
+            if(zb.is_trusted(ctx,4) and
+                    cp.is_outranked(ctx.message.author,member,4)):
                 punishchan = ctx.guild.get_channel(517882333752459264)
                 embed=discord.Embed(title="User Jailed!",
                         description=f'**{member}** was freed by ' +
