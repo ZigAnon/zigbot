@@ -158,7 +158,7 @@ def add_blacklist(message,member_id,reason):
     VALUES ({0},{1},False,{2},'{3}') """
     sql = sql.format(message.guild.id,member_id,message.author.id,reason)
 
-    #TODO: Add sql insert function
+    rows, string = sql_update(sql)
     return
 
 def close_server(guild_id):

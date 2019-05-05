@@ -15,6 +15,58 @@ class CoffeePolCog(commands.Cog):
             return ctx.guild and ctx.guild.id == guild_id
         return commands.check(predicate)
 
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        # Ignore self
+        if message.author == self.bot.user:
+            return
+
+        # Adds people to blacklist
+        guild = self.bot.get_guild(509242768401629204)
+        if(message.author in guild.members and
+                message.guild is None):
+            channel = guild.get_channel(509244241776738304)
+
+            # Sets static values
+            member = message.author
+            carryMsg = message
+            # Looks for last message in admin chats
+            while True:
+                async for message in channel.history(limit=500):
+                    if message.author == member:
+                        msg = message
+                        break
+                break
+
+            # Try to get message ctx if found
+            try:
+                ctx = await self.bot.get_context(msg)
+            except:
+                return
+
+            # If ctx found, test for permissions
+            if(zb.is_trusted(ctx,4) and
+                    zb.is_pattern(carryMsg.content,
+                        '^([0-9]{14,})\s+(((\w+\s+)+(\w+)?)|(\w+)).+')):
+                data = carryMsg.content.split(' ',1)
+                sql = """ SELECT real_user_id
+                          FROM blacklist
+                          WHERE guild_id = {0}
+                          AND real_user_id = {1} """
+                sql = sql.format(guild.id,data[0])
+
+                junk, rows, junk2 = zb.sql_query(sql)
+
+                # Checks if already in list
+                if rows > 0:
+                    await carryMsg.author.send('Thank you for reporting ' +
+                            f'`{data[0]}`, but it already exists for **{guild.name}**.')
+                    return
+                else:
+                    await carryMsg.author.send(f'I have added `{data[0]}` ' +
+                            f'to the blacklist for **{guild.name}**')
+                    zb.add_blacklist(message,data[0],data[1])
+
     @commands.command(name='shitpost', hidden=True)
     @is_in_guild(509242768401629204)
     async def shitpost(self, ctx, member: discord.Member):
