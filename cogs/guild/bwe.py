@@ -11,7 +11,8 @@ _query = """ SELECT g.guild_id,u.real_user_id,r.role_id,u.name,g.nick,u.int_user
              LEFT JOIN role_membership r ON u.int_user_id = r.int_user_id """
 
 rmvRoles = [[562694658933653524],[562995654079545365],[562995727844900865],
-        [562995775940984832],[562998542986379264]]
+        [562995775940984832],[562998542986379264],[562695065789530132],
+        [562695118310604810],[562387019188273155]]
 
 _int_user_id = """ SELECT int_user_id
                    FROM users
