@@ -12,6 +12,10 @@ class onmessageCog(commands.Cog):
     async def on_message(self, message):
 
         try:
+            # If any bot
+            if message.author.bot:
+                return
+
             # Ignore self
             if message.author == self.bot.user:
                 return
