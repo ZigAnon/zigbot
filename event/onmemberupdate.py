@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 from bin import zb
 
+_ignore_guilds = [509242768401629204]
+
 class onmemberupdateCog(commands.Cog):
 
     def __init__(self, bot):
@@ -51,6 +53,8 @@ class onmemberupdateCog(commands.Cog):
 
             if len(before.roles) == len(after.roles):
                 pass
+            elif before.guild.id in _ignore_guilds:
+                return
             elif len(before.roles) < len(after.roles):
                 role = zb.get_diff_role(after.roles,before.roles)
                 if role.name != 'BotAdmin':
