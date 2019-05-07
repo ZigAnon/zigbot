@@ -118,13 +118,16 @@ class CoffeePolCog(commands.Cog):
                 i = [(i, _voice_roles.index(after.channel.id))
                         for i, _voice_roles in enumerate(_voice_roles)
                         if after.channel.id in _voice_roles][0][0]
-                j = [(i, _voice_roles.index(before.channel.id))
-                        for i, _voice_roles in enumerate(_voice_roles)
-                        if before.channel.id in _voice_roles][0][0]
+                try:
+                    j = [(i, _voice_roles.index(before.channel.id))
+                            for i, _voice_roles in enumerate(_voice_roles)
+                            if before.channel.id in _voice_roles][0][0]
+                    rmv = member.guild.get_role(_voice_roles[j][0])
+                    await member.remove_roles(rmv,reason='Left voice')
+                except:
+                    pass
                 add = member.guild.get_role(_voice_roles[i][0])
-                rmv = member.guild.get_role(_voice_roles[j][0])
                 await member.add_roles(add,reason='Joined voice')
-                await member.remove_roles(rmv,reason='Left voice')
                 await zb.toggle_updating(*args)
             # Left voice channel
             elif not before.channel is None and after.channel is None:
