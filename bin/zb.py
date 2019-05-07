@@ -334,6 +334,16 @@ def get_member_id(ctx,msg):
 
     return member_id
 
+def get_member_sql_int(member_id):
+    sql = """ SELECT int_user_id
+              FROM users
+              WHERE real_user_id = {0} """
+    sql = sql.format(member_id)
+
+    data, rows, string = sql_query(sql)
+
+    return int(data[0][0])
+
 def get_blacklist(member):
     sql = """ SELECT added_by, reason
               FROM blacklist
@@ -514,6 +524,25 @@ def get_hammer_ban(guild_id):
 
     return data, rows
 
+async def toggle_updating(ctx, sqlTbl, sqlCol, guild_id, member_id):
+    """ Toggle updating """
+
+    if is_updating(ctx, sqlTbl, sqlCol, guild_id, member_id):
+        toggle = 'FALSE'
+    else:
+        toggle = 'TRUE'
+
+    int_id = get_member_sql_int(member_id)
+
+    sql = """ UPDATE {0}
+              SET {1} = {2}
+              WHERE guild_id = {3}
+              AND int_user_id = {4}"""
+    sql = sql.format(sqlTbl,sqlCol,toggle,guild_id,int_id)
+
+    rows, string = sql_update(sql)
+    return
+
 
 #################
 ##             ##
@@ -522,6 +551,24 @@ def get_hammer_ban(guild_id):
 #################
 def is_owner(ctx):
     if int(ctx.author.id) == int(_var.ownerID):
+        return True
+    else:
+        return False
+
+def is_updating(ctx, sqlTbl, sqlCol, guild_id, member_id):
+    """ Updateing check """
+
+    int_id = get_member_sql_int(member_id)
+
+    sql = """ SELECT {0}
+              FROM {1}
+              WHERE guild_id = {2}
+              AND int_user_id = {3}
+              AND {0} = TRUE """
+    sql = sql.format(sqlCol,sqlTbl,guild_id,int_id)
+    data, rows, string = sql_query(sql)
+
+    if rows > 0:
         return True
     else:
         return False

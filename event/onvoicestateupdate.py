@@ -12,6 +12,10 @@ class onvoicestateupdateCog(commands.Cog):
     async def on_voice_state_update(self, member, before, after):
 
         try:
+            # Ignore bots
+            if member.bot:
+                return
+
             # Ignore self
             if member == self.bot.user:
                 return
