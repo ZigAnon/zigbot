@@ -24,6 +24,13 @@ async def _heartbeat(bot):
         #TODO: autoPurge needs to be added
         # grab channels to purge, msg limit, time, checks bot/text
 
+        # Count all users across all servers
+        sql = """ SELECT is_bot
+                  FROM users
+                  WHERE is_bot = FALSE """
+        data, rows, string = zb.sql_query(sql)
+        await bot.change_presence(activity=discord.Game(name=f'with {rows} users', type=1))
+
         for guild in guilds:
             sql = """ SELECT * FROM reminders
                       WHERE guild_id = {0}
