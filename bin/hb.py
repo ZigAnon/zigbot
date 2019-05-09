@@ -84,7 +84,8 @@ async def _heartbeat(bot):
 
             # RSS Feeds
             try:
-                sql = """ SELECT test_value, hook_url, embed_color, avatar_url, parse_url
+                sql = """ SELECT test_value, hook_url, embed_color,
+                          avatar_url, parse_url
                           FROM webhooks
                           WHERE guild_id = {0}
                           AND type = 'rss'
@@ -98,8 +99,6 @@ async def _heartbeat(bot):
                 if rows > 0:
                     i = 0
                     while i < len(data):
-                        recent = int(data[i][0])
-                        largest = recent
                         rss = fp.parse(data[i][4])
 
                         # cURL import
@@ -108,25 +107,31 @@ async def _heartbeat(bot):
                             'Content-Type': 'application/json',
                         }
 
+                        dateformat = '%a, %d %b %Y %H:%M:%S %z'
+                        lastPost = datetime.strptime(data[i][0],dateformat)
+                        oldest = lastPost
                         for post in reversed(rss.entries):
-                            date = zb.get_pattern(post.link,'[0-9]{5,}')
-                            if int(date) > int(largest):
-                                largest = date
-                            if int(date) > int(recent):
+                            articleDate = datetime.strptime(post.published,dateformat)
+                            if articleDate > lastPost:
                                 try:
                                     soup = bs(post.content[0]['value'], features='html.parser')
                                     thumb = soup.find('img')['src']
                                 except:
                                     thumb = ""
+                                try:
+                                    author = post.author
+                                except:
+                                    author = rss.feed.title
                                 push = ('{' +
-                                        '"username": ' + f'"{rss.feed.title}",' +
+                                        '"username": ' + f'"{rss.feed.title}",'
                                         '"embeds": [{' +
                                             '"title": ' + f'"{post.title}",'
                                             '"color": ' + f'{data[i][2]},'
                                             '"url": ' + f'"{post.link}",'
                                             '"description": ' + f'"{post.summary}",'
                                             '"thumbnail": {"url": ' + f'"{thumb}"' + '},'
-                                            '"footer": {"text": ' + f'"Published: {post.published}"' + '}}],'
+                                            '"footer": {"text": ' + f'"Published by: {author}"' + '},'
+                                            '"timestamp": ' + f'"{articleDate}"' + '}],'
                                             '"avatar_url": ' + f'"{data[i][3]}"' + '}')
 
                                 try:
@@ -140,14 +145,16 @@ async def _heartbeat(bot):
                                 except:
                                     pass
 
-                        if largest != recent:
-                            # Update recent push
-                            sql = """ UPDATE webhooks
-                                      SET test_value = {0}
-                                      WHERE hook_url = '{1}' """
-                            sql = sql.format(largest,data[i][1])
-                            junk1, junk2 = zb.sql_update(sql)
+                                if articleDate > oldest:
+                                    oldest = articleDate
+                                    # Update recent push
+                                    sql = """ UPDATE webhooks
+                                              SET test_value = '{0}'
+                                              WHERE hook_url = '{1}' """
+                                    sql = sql.format(post.published,data[i][1])
+                                    junk1, junk2 = zb.sql_update(sql)
                         i+=1
+
             except Exception as e:
                 print(f'**`ERROR:`** {type(e).__name__} - {e}')
 
