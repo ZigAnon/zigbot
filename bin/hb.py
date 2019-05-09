@@ -1,8 +1,12 @@
 #!/usr/local/bin/python3.6
 import discord
+import asyncio
+import requests
 from discord.ext import commands
 from datetime import datetime
 from datetime import timedelta
+from bs4 import BeautifulSoup as bs
+import feedparser as fp
 import numpy as np
 from bin import zb_config
 from bin import zb
@@ -78,70 +82,75 @@ async def _heartbeat(bot):
                     pass
                 i+=1
 
-            #TODO: SQL check for bump
+            # RSS Feeds
             try:
-                #TODO: if bump found get last bump time
-                # found = 1
-                found = 0
-            except:
-                found = 0
+                sql = """ SELECT test_value, hook_url, embed_color, avatar_url, parse_url
+                          FROM webhooks
+                          WHERE guild_id = {0}
+                          AND type = 'rss'
+                          AND is_active = TRUE """
+                sql = sql.format(guild.id)
 
-            # If server has time
-            if found:
-                pass
-                # Member Count
-                #TODO: count all members
-                # update count
-                # count = humans
-                # game = "with {0} humans".format(count)
-                # await bot.change_presence(activity=discord.Game(name=game, type=1))
+                data, rows, string = zb.sql_query(sql)
+                data = data.tolist()
 
-                # Checks for ping
-                if pinged[x-1] == 0:
-                    pass
-                    # lastBump = datetime.strptime(oldTime, _var.dateFormat)
-                    # c = open(filePath + '.channel')
-                    # cStrip = c.readlines()
-                    # bumChan = cStrip[0].rstrip()
-                    # c.close()
-                    # channel = discord.Object(id=bumChan)
+                # If webhook active, grab test_value
+                if rows > 0:
+                    i = 0
+                    while i < len(data):
+                        recent = int(data[i][0])
+                        largest = recent
+                        rss = fp.parse(data[i][4])
 
-                    # # Check Time
-                    # if lastBump < curTime:
-                    #     pinged[x-1] = 1
-                    #     lastBump += timedelta(hours=1)
+                        # cURL import
+                        url = data[i][1]
+                        headers = {
+                            'Content-Type': 'application/json',
+                        }
 
-                    #     # Ping all Admins
-                    #     if lastBump < curTime:
-                    #         await bot.send_message(channel, '@here, helps us grow: ' + '\n Please `!disboard bump` again!')
+                        for post in reversed(rss.entries):
+                            date = zb.get_pattern(post.link,'[0-9]{5,}')
+                            if int(date) > int(largest):
+                                largest = date
+                            if int(date) > int(recent):
+                                try:
+                                    soup = bs(post.content[0]['value'], features='html.parser')
+                                    thumb = soup.find('img')['src']
+                                except:
+                                    thumb = ""
+                                push = ('{' +
+                                        '"username": ' + f'"{rss.feed.title}",' +
+                                        '"embeds": [{' +
+                                            '"title": ' + f'"{post.title}",'
+                                            '"color": ' + f'{data[i][2]},'
+                                            '"url": ' + f'"{post.link}",'
+                                            '"description": ' + f'"{post.summary}",'
+                                            '"thumbnail": {"url": ' + f'"{thumb}"' + '},'
+                                            '"footer": {"text": ' + f'"Published: {post.published}"' + '}}],'
+                                            '"avatar_url": ' + f'"{data[i][3]}"' + '}')
 
-                    #     # Ping member only
-                    #     else:
-                    #         m = open(filePath + '.member')
-                    #         mStrip = m.readlines()
-                    #         bumMemb = mStrip[0].rstrip()
-                    #         m.close()
-                    #         pMemb = '<@' + bumMemb + '>'
-                    #         await bot.send_message(channel, '%s Friendly reminder to `!disboard bump` again!' % pMemb)
+                                try:
+                                    j = 0
+                                    response = requests.post(url, headers=headers, data=push)
+                                    if response.status_code == 400:
+                                        while response.status_code == 400 and j < 3:
+                                            await asyncio.sleep(1)
+                                            response = requests.post(url, headers=headers, data=push)
+                                            j+=1
+                                except:
+                                    pass
 
-                # Has it been an hour since last ping?
-                else:
-                    pass
-                    # try:
-                    #     l = open(filePath + '.lping')
-                    #     lStrip = l.readlines()
-                    #     lPing = lStrip[0].rstrip()
-                    #     lastPing = datetime.strptime(lPing, dateFormat) + timedelta(hours=1) - timedelta(minutes=2)
-                    # except:
-                    #     l = open(filePath + '.lping', 'w+')
-                    #     l.write("%s\r\n" % (curTime))
-                    #     lastPing = curTime + timedelta(hours=1) - timedelta(minutes=2)
-                    # l.close()
+                        if largest != recent:
+                            # Update recent push
+                            sql = """ UPDATE webhooks
+                                      SET test_value = {0}
+                                      WHERE hook_url = '{1}' """
+                            sql = sql.format(largest,data[i][1])
+                            junk1, junk2 = zb.sql_update(sql)
+                        i+=1
+            except Exception as e:
+                print(f'**`ERROR:`** {type(e).__name__} - {e}')
 
-                    # # Resets ping timer
-                    # if lastPing < curTime:
-                    #     pinged[x-1] = 0
-                    #     os.remove(filePath + '.lping')
     except Exception as e:
         print(f'**`ERROR:`** {type(e).__name__} - {e}')
 
