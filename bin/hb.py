@@ -79,6 +79,30 @@ async def _heartbeat(bot):
                     pass
                 i+=1
 
+            # Every 15 mins
+            try:
+                time = datetime.utcnow().minute
+                vRoles = zb.get_roles_special(guild.id,50)
+                if time in [0,15,30,45]:
+                    # SQL TASKS
+                    zb.reset_voice_updating(guild)
+                    if len(vRoles) > 0:
+                        for member in guild.members:
+                            if member.voice:
+                                sql = """ SELECT role_id
+                                          FROM roles
+                                          WHERE guild_id = {0}
+                                          AND channel_id = {1} """
+                                sql = sql.format(guild.id,member.voice.channel.id)
+                                role_id, junk, junk1 = zb.sql_query(sql)
+
+                                add = guild.get_role(role_id[0])
+                                await member.add_roles(add,reason='Voice chat fix')
+                            else:
+                                zb.remove_roles(bot,member,vRoles,'Voice chat fix')
+            except Exception as e:
+                print(f'**`ERROR:`** {type(e).__name__} - {e}')
+
             # Auto purge channels
             try:
                 sql = """ SELECT channel_id, message_limit, days_to_keep, del_check

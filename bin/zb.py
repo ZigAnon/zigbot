@@ -882,6 +882,14 @@ def sql_update(sql):
 
     return rows, string
 
+def reset_voice_updating(guild):
+    # In event Discord fails, reset
+    sql = """ UPDATE guild_membership
+              SET voice_updating = FALSE
+              AND guild_id = {0} """
+    sql = sql.format(guild.id)
+    rows, string = sql_update(sql)
+
 
 #################
 ##             ##

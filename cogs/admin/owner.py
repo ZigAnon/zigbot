@@ -14,6 +14,8 @@ class OwnerCog(commands.Cog):
     async def tool_dev(self, ctx):
         """ Command that tests modules. """
         try:
+            for channel in ctx.guild.voice_channels:
+                await ctx.send(f'{channel.name} of id {channel.id} has object properties of {channel.members}')
             pass
         except Exception as e:
             await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
