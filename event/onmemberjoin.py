@@ -42,7 +42,7 @@ class onmemberjoinCog(commands.Cog):
                 # Checks if server is closed
                 if zb.is_closed(member.guild.id):
                     # If closed prevents exploiting API by joining quickly
-                    if zb.hammering(member) > 1:
+                    if zb.hammering(member) > 2:
                         await channel.send(member.mention +
                                 ' can\'t read so I banned them.')
                         await member.send('**"{0}"** has banned you for '.format(member.guild.name) +

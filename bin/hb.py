@@ -29,6 +29,10 @@ async def _heartbeat(bot):
         await bot.change_presence(activity=discord.Game(name=f'with {rows} users', type=1))
 
         for guild in guilds:
+            # Remove bans from users that hammered server
+            zb.reset_hammer(guild)
+
+            # Perform reminders
             sql = """ SELECT * FROM reminders
                       WHERE guild_id = {0}
                       AND NOT interval = 0 """

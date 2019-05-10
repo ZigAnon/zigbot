@@ -461,7 +461,49 @@ def get_punish_num(member):
     data, rows, string = sql_query(sql)
     return int(data[0][0])
 
+def mention_spamming(member):
+    # Set hammer
+    sql = """ UPDATE guild_membership g
+              SET hammer = hammer + 1
+              FROM (SELECT int_user_id, real_user_id
+              FROM users) AS u
+              WHERE g.int_user_id = u.int_user_id
+              AND g.guild_id = {0}
+              AND u.real_user_id = {1} """
+    sql = sql.format(member.guild.id,member.id)
+    rows, string = sql_update(sql)
+
+    # How many times?
+    sql = """ SELECT g.hammer
+              FROM guild_membership g
+              LEFT JOIN users u ON g.int_user_id = u.int_user_id
+              WHERE g.is_member = TRUE
+              AND g.guild_id = {0}
+              AND u.real_user_id = {1} """
+    sql = sql.format(member.guild.id,member.id)
+    data, rows, string = sql_query(sql)
+
+    # Count
+    try:
+        count = int(data[0])
+        return count
+    except:
+        return 0
+
 def hammering(member):
+    # Set hammer
+    sql = """ UPDATE guild_membership g
+              SET hammer = hammer + 1
+              FROM (SELECT int_user_id, real_user_id
+              FROM users) AS u
+              WHERE g.int_user_id = u.int_user_id
+              AND g.joined_at >= CURRENT_TIMESTAMP AT TIME ZONE 'ZULU' - INTERVAL '5 minutes'
+              AND g.guild_id = {0}
+              AND u.real_user_id = {1} """
+    sql = sql.format(member.guild.id,member.id)
+    rows, string = sql_update(sql)
+
+    # How many times?
     sql = """ SELECT g.hammer
               FROM guild_membership g
               LEFT JOIN users u ON g.int_user_id = u.int_user_id
@@ -469,60 +511,58 @@ def hammering(member):
               AND g.guild_id = {0}
               AND u.real_user_id = {1} """
     sql = sql.format(member.guild.id,member.id)
-
-    sqlu = """ UPDATE guild_membership g
-               SET hammer = {2}
-               FROM (SELECT int_user_id, real_user_id
-               FROM users) AS u
-               WHERE g.int_user_id = u.int_user_id
-               AND g.guild_id = {0}
-               AND u.real_user_id = {1} """
-
     data, rows, string = sql_query(sql)
+
+    # Count
     try:
         count = int(data[0])
-        if count > 1:
-            return count
-        elif count > 0:
-            sqlu = sqlu.format(member.guild.id,member.id,2)
-            rows, string = sql_update(sqlu)
-            return count
+        return count
     except:
-        sqlu = sqlu.format(member.guild.id,member.id,1)
-        rows, string = sql_update(sqlu)
         return 0
 
 def reset_hammer(guild):
     # unbans users banned for hammering
-    data, rows = get_hammer_ban(guild.id)
+    sql = """ SELECT g.hammer,u.real_user_id
+              FROM guild_membership g
+              LEFT JOIN users u ON g.int_user_id = u.int_user_id
+              WHERE g.joined_at <= CURRENT_TIMESTAMP AT TIME ZONE 'ZULU' - INTERVAL '3 days'
+              AND g.is_member = FALSE
+              AND g.guild_id = {0}
+              AND g.hammer = 1 """
+    sql = sql.format(guild.id)
+    data, rows, string = sql_query(sql)
+
+    # Member not hammering
     if rows > 0:
-        #TODO: return list of hammered users auto unban
+        print(f'would have unbanned {data[0][1]}')
+        #TODO: unban
+        #TODO: send @here to serverlog of unbanned
         pass
 
+    # lowers hammer for non-members
     sql = """ UPDATE guild_membership g
-              SET hammer = NULL
+              SET hammer = hammer - 1
               FROM (SELECT int_user_id, real_user_id
               FROM users) AS u
               WHERE g.int_user_id = u.int_user_id
-              AND g.guild_id = {0}
-              AND g.joined_at <= now() - INTERVAL '3 days' """
+              AND g.joined_at <= CURRENT_TIMESTAMP AT TIME ZONE 'ZULU' - INTERVAL '3 days'
+              AND NOT g.hammer = 0
+              AND g.is_member = FALSE
+              AND g.guild_id = {0} """
     sql = sql.format(guild.id)
-
     rows, string = sql_update(sql)
-    return
 
-def get_hammer_ban(guild_id):
-    sql = """ SELECT u.real_user_id
-              FROM guild_membership g
-              LEFT JOIN users u ON g.int_user_id = u.int_user_id
-              WHERE g.joined_at <= now() - INTERVAL '3 days'
-              AND g.guild_id = {0}
-              AND g.hammer = 2 """
-    sql = sql.format(str(guild_id))
-
-    data, rows, string = sql_query(sql)
-
-    return data, rows
+    # lowers hammer for members
+    sql = """ UPDATE guild_membership g
+              SET hammer = hammer - 1
+              FROM (SELECT int_user_id, real_user_id
+              FROM users) AS u
+              WHERE g.int_user_id = u.int_user_id
+              AND g.is_member = TRUE
+              AND NOT g.hammer = 0
+              AND g.guild_id = {0} """
+    sql = sql.format(guild.id)
+    rows, string = sql_update(sql)
 
 async def toggle_updating(ctx, sqlTbl, sqlCol, guild_id, member_id):
     """ Toggle updating """
