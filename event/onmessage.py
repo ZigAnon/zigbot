@@ -93,7 +93,7 @@ class onmessageCog(commands.Cog):
                             f'{message.author.mention}' + f'{message.author.mention}',
                             delete_after=90)
                 # if 3 or more, log
-                if 10 > count > 3:
+                if 10 > count > 2:
                     # Truncates long messages
                     msg = (message.clean_content[:1021] + '...') if len(message.clean_content) > 1024 else message.clean_content
 
