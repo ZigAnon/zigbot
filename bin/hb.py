@@ -22,12 +22,6 @@ async def _heartbeat(bot):
         guilds = list(bot.guilds)
         pinged = [0] * len(guilds)
 
-        # Auto Purges specified channels in database
-        #await zb.autoPurge(bot)
-
-        #TODO: autoPurge needs to be added
-        # grab channels to purge, msg limit, time, checks bot/text
-
         # Count all users across all servers
         sql = """ SELECT is_bot
                   FROM users
@@ -81,6 +75,53 @@ async def _heartbeat(bot):
                         msg = await channel.send(data[9])
                     pass
                 i+=1
+
+            # Auto purge channels
+            try:
+                sql = """ SELECT channel_id, message_limit, days_to_keep, del_check
+                          FROM channels
+                          WHERE guild_id = {0}
+                          AND auto_purge = TRUE
+                          AND is_deleted = FALSE """
+                sql = sql.format(guild.id)
+
+                data, rows, string = zb.sql_query(sql)
+                data = data.tolist()
+
+                # if purge channels found
+                if rows > 0:
+                    i = 0
+                    while i < rows:
+                        pChan = guild.get_channel(int(data[i][0]))
+                        limit = int(data[i][1])
+                        days = int(data[i][2])
+                        beforeTime = datetime.now() - timedelta(days=days)
+                        try:
+                            def is_bot(m):
+                                return m.author.bot
+                            def is_text(m):
+                                if 'http' in m.content.lower():
+                                    return False
+                                try:
+                                    url = m.attachments[0].url
+                                    return False
+                                except:
+                                    return True
+
+                            if data[i][3] == 'bot':
+                                await pChan.purge(limit=limit, before=beforeTime,
+                                        check=is_bot)
+                            elif data[i][3] == 'text':
+                                await pChan.purge(limit=limit, before=beforeTime,
+                                        check=is_text)
+                            else:
+                                await pChan.purge(limit=limit, before=beforeTime)
+                        except:
+                            pass
+                        i+=1
+
+            except Exception as e:
+                print(f'**`ERROR:`** {type(e).__name__} - {e}')
 
             # RSS Feeds
             try:
