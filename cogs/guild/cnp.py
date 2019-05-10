@@ -101,7 +101,6 @@ class CoffeePolCog(commands.Cog):
             if before.channel is after.channel:
                 return
             elif zb.is_updating(*args):
-                print('updating')
                 return
             # Joined voice channel
             elif before.channel is None and not after.channel is None:

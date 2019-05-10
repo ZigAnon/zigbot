@@ -274,6 +274,7 @@ def get_roles_special(guild_id,group_id):
     # 10 = shitpost role
     # 11 = mute role
     # 12 = jail role
+    # 50 = voice role
     # 90 = BotAdmin
     sql = """ SELECT role_id FROM roles
               WHERE guild_id = {0}
@@ -449,6 +450,17 @@ def get_member_with_role(ctx,roles):
 ## Punishments ##
 ##             ##
 #################
+def punish_user(member,number):
+    sql = """ UPDATE guild_membership g
+              SET punished = {2}
+              FROM (SELECT int_user_id, real_user_id
+              FROM users) AS u
+              WHERE g.int_user_id = u.int_user_id
+              AND g.guild_id = {0}
+              AND u.real_user_id = {1} """
+    sql = sql.format(member.guild.id,member.id,number)
+    rows, string = sql_update(sql)
+
 def get_punish_num(member):
     sql = """ SELECT g.punished
               FROM guild_membership g

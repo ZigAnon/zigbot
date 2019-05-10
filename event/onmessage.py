@@ -43,6 +43,61 @@ class onmessageCog(commands.Cog):
                     self.bot.user.display_name)
                 await zb.timed_msg(message.channel,msg,30)
 
+            if len(message.mentions) > 0:
+                count = zb.mention_spamming(message.author)
+
+                # Determins action to take
+                # if 10 or more, ban
+                if count >= 10:
+                    # Truncates long messages
+                    msg = (message.clean_content[:1021] + '...') if len(message.clean_content) > 1024 else message.clean_content
+
+                    # Sends edited message
+                    embed=discord.Embed(description="**Too many mentions in " +
+                            message.channel.mention + "** " +
+                            f'[Jump to Message]({message.jump_url})', color=0x117ea6)
+                    embed.add_field(name="Message", value=msg,
+                            inline=False)
+                    embed.set_author(name=message.author, icon_url=message.author.avatar_url)
+                    await zb.print_log(self,message.author,embed)
+                    await message.channel.send(f'I have banned {message.author.mention} ' +
+                            'for mention spamming.', delete_after=90)
+                    await message.author.ban(delete_message_days=0,reason='Mention spamming')
+                # if 5 or more, mute
+                elif count >= 5:
+                    role = zb.get_roles_special(message.guild.id,11)
+                    if not role:
+                        zb.punish_user(message.author,1)
+                        await message.channel.send(f'Careful {message.author.mention}, ' +
+                                'I don\'t want to ban you.', delete_after=90)
+                    else:
+                        talk = zb.get_roles_special(message.guild.id,2)
+                        await zb.remove_roles(self,message.author,talk,'Mention spamming')
+                        mute = zb.get_roles_special(message.guild.id,11)
+                        await zb.add_roles(self,message.author,mute,'Mention spamming')
+                        zb.punish_user(message.author,1)
+                        await message.channel.send(f'I have muted {message.author.mention} ' +
+                                'for mention spamming.', delete_after=90)
+                # if 3 or more, warn
+                elif count == 3:
+                    await message.channel.send(f'{message.author.mention}' +
+                            f'{message.author.mention}' + f'{message.author.mention} ' +
+                            '__**STOP MENTION SPAMMING**__' + f' {message.author.mention} ' +
+                            f'{message.author.mention}' + f'{message.author.mention}',
+                            delete_after=90)
+                # if 3 or more, log
+                if 10 > count > 3:
+                    # Truncates long messages
+                    msg = (message.clean_content[:1021] + '...') if len(message.clean_content) > 1024 else message.clean_content
+
+                    # Sends edited message
+                    embed=discord.Embed(description="**Member mention spammed in " +
+                            message.channel.mention + "** " +
+                            f'[Jump to Message]({message.jump_url})', color=0x117ea6)
+                    embed.add_field(name="Message", value=msg,
+                            inline=False)
+                    embed.set_author(name=message.author, icon_url=message.author.avatar_url)
+                    await zb.print_log(self,message.author,embed)
 
             #TODO: disboard bump
             #TODO: get server, member, channel
