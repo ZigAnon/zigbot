@@ -14,8 +14,8 @@ from bin import zb
 _var = zb_config
 
 async def _heartbeat(bot):
+    lub = datetime.now()
     timeoff = 0
-    count = 0
     try:
         print('working')
         curTime = datetime.now()
@@ -201,5 +201,14 @@ async def _heartbeat(bot):
 
     except Exception as e:
         print(f'**`ERROR:`** {type(e).__name__} - {e}')
+
+    # Keeps heartbeat stable
+    dub = datetime.now()
+    lubDub = (dub-lub).total_seconds()
+    print(lubDub)
+    if int(lubDub) > 60:
+        timeoff = 60
+    else:
+        timeoff = int(lubDub)
 
     return timeoff
