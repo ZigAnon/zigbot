@@ -14,18 +14,7 @@ class OwnerCog(commands.Cog):
     async def tool_dev(self, ctx):
         """ Command that tests modules. """
         try:
-            msg = ctx.message.author.voice.channel
-            await ctx.send(f'Your voice status is: `{msg}`.')
-            # member = ctx.guild.get_member(341744189324918794)
-            # def dump(obj):
-            #     for attr in dir(obj):
-            #         if hasattr(obj, attr):
-            #             print( "obj.%s = %s" % (attr, getattr(obj, attr)))
-            # await member.edit(voice_channel=None)
-            # number = 12
-            # string = ['string 1','string 2']
-            # lst = ['bacon', 'eggs', 'foo', 'bar']
-            # await ctx.send('the number is {0}'.format(number))
+            pass
         except Exception as e:
             await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,e)

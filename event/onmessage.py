@@ -38,7 +38,7 @@ class onmessageCog(commands.Cog):
             if zb.is_pattern(message.content.lower(),
                     """^(((\s+)?i((\s+)?|[']|)m\s+?)|(\s+)?i(\s+)?am\s+?)\w+(\W+)?$"""):
                 #"""^((\s+)?i((\s+)?|[']|)m\s+?)\w+(\W+)?$"""):
-                hungry = zb.get_pattern(message.content.lower(),"""[^i'm(\s)]\w+""")
+                hungry = zb.get_pattern(message.content.lower(),"""[^(i'm)(am)(\s)]\w+""")
                 msg = 'Hi {0}, I\'m {1}.'.format(hungry.capitalize(),
                     self.bot.user.display_name)
                 await zb.timed_msg(message.channel,msg,30)
