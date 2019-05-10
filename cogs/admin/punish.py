@@ -27,7 +27,7 @@ class PunishCog(commands.Cog):
                           WHERE guild_id = {1} """
             # Open Server
             if choice == 0:
-                sql = sql.format('NULL',ctx.guild.id)
+                sql = sql.format('TRUE',ctx.guild.id)
                 await ctx.send('__**`RAID OFF:`**__ Server is open to public!')
             if choice == 1:
                 sql = sql.format('FALSE',ctx.guild.id)

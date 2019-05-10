@@ -21,6 +21,17 @@ class OwnerCog(commands.Cog):
         # else:
         #     await ctx.send('**`SUCCESS`**')
     
+    @commands.command(name='zinvite', hidden=True)
+    @commands.is_owner()
+    # async def tool_dev(self, ctx, *, cog: str):
+    async def test_ban(self, ctx):
+        """ Command that tests modules. """
+        try:
+            pass
+        except Exception as e:
+            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
+            await zb.bot_errors(ctx,e)
+
     # Hidden means it won't show up on the default help.
     @commands.command(name='godmode', hidden=True)
     @commands.is_owner()

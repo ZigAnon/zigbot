@@ -172,7 +172,7 @@ def close_server(guild_id):
 
 def open_server(guild_id):
     sql = """ UPDATE guilds
-              SET can_join = NULL
+              SET can_join = TRUE
               WHERE guild_id = {0} """
     sql = sql.format(guild_id)
 
@@ -540,6 +540,7 @@ def reset_hammer(guild):
               WHERE g.joined_at <= CURRENT_TIMESTAMP AT TIME ZONE 'ZULU' - INTERVAL '3 days'
               AND g.is_member = FALSE
               AND g.guild_id = {0}
+              AND g.punished = 0
               AND g.hammer = 1 """
     sql = sql.format(guild.id)
     data, rows, string = sql_query(sql)

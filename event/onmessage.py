@@ -65,6 +65,13 @@ class onmessageCog(commands.Cog):
                     await message.author.ban(delete_message_days=0,reason='Mention spamming')
                 # if 5 or more, mute
                 elif count >= 5:
+                    if zb.get_punish_num == 0:
+                        embed=discord.Embed(title="Mention Spammer!",
+                                description=f'**{message.author}** was muted by ' +
+                                f'**ZigBot**!',
+                                color=0xd30000)
+                        await punishchan.send(embed=embed)
+
                     role = zb.get_roles_special(message.guild.id,11)
                     if not role:
                         zb.punish_user(message.author,1)
