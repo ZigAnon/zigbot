@@ -96,10 +96,12 @@ async def _heartbeat(bot):
                                 sql = sql.format(guild.id,member.voice.channel.id)
                                 role_id, junk, junk1 = zb.sql_query(sql)
 
-                                add = guild.get_role(role_id[0])
+                                add = guild.get_role(role_id[0][0])
                                 await member.add_roles(add,reason='Voice chat fix')
                             else:
-                                zb.remove_roles(bot,member,vRoles,'Voice chat fix')
+                                for role in member.roles:
+                                    if role.id in vRoles:
+                                        await member.remove_roles(role,reason='Voice chat fix')
             except Exception as e:
                 print(f'**`ERROR:`** {type(e).__name__} - {e}')
 
