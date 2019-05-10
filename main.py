@@ -57,6 +57,7 @@ async def main_loop():
     await bot.wait_until_ready()
     while not bot.is_closed():
         beat = 60 - await hb._heartbeat(bot)
+        print(f'Heartbeat is {beat} seconds')
         await asyncio.sleep(beat)
 
 # Ping tests to see if the bot is active independent from cogs

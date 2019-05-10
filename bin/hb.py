@@ -17,7 +17,6 @@ async def _heartbeat(bot):
     lub = datetime.now()
     timeoff = 0
     try:
-        print('working')
         curTime = datetime.now()
         guilds = list(bot.guilds)
         pinged = [0] * len(guilds)
@@ -205,7 +204,6 @@ async def _heartbeat(bot):
     # Keeps heartbeat stable
     dub = datetime.now()
     lubDub = (dub-lub).total_seconds()
-    print(lubDub)
     if int(lubDub) > 60:
         timeoff = 60
     else:
