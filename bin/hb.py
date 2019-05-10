@@ -85,7 +85,7 @@ async def _heartbeat(bot):
             # RSS Feeds
             try:
                 sql = """ SELECT test_value, hook_url, embed_color,
-                          avatar_url, parse_url
+                          avatar_url, parse_url, date_format
                           FROM webhooks
                           WHERE guild_id = {0}
                           AND type = 'rss'
@@ -107,7 +107,7 @@ async def _heartbeat(bot):
                             'Content-Type': 'application/json',
                         }
 
-                        dateformat = '%a, %d %b %Y %H:%M:%S %z'
+                        dateformat = data[i][5]
                         lastPost = datetime.strptime(data[i][0],dateformat)
                         oldest = lastPost
                         for post in reversed(rss.entries):
