@@ -157,6 +157,18 @@ class CoffeePolCog(commands.Cog):
         except Exception as e:
             await zb.bot_errors(ctx,e)
 
+    @commands.command(name='roles', description='Redirects to roles page')
+    @is_in_guild(509242768401629204)
+    async def roles(self, ctx):
+        """ When member tries to get all roles,
+            this redirects to listed roles """
+        try:
+            await ctx.channel.send('You can view roles by typing `.lsar` ' +
+                    'or going to <#512473259376246808>', delete_after=15)
+            await ctx.message.delete()
+        except Exception as e:
+            await zb.bot_errors(ctx,e)
+
     @commands.command(name='shitpost', hidden=True)
     @is_in_guild(509242768401629204)
     async def shitpost(self, ctx, member: discord.Member):
