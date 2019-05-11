@@ -146,6 +146,17 @@ class CoffeePolCog(commands.Cog):
     #     except Exception as e:
     #         await zb.bot_errors(ctx,e)
 
+    @commands.command(name='hotchicks', description='Posts hot chicks')
+    @is_in_guild(509242768401629204)
+    async def hotchicks(self, ctx):
+        """ Posts SFW hot chicks """
+        try:
+            await ctx.channel.send('**All these hot chicks**\nhttps://media.giphy.com/media/madDH4fTGefvvL8P96/giphy.gif',
+                    delete_after=30)
+            await ctx.message.delete()
+        except Exception as e:
+            await zb.bot_errors(ctx,e)
+
     @commands.command(name='shitpost', hidden=True)
     @is_in_guild(509242768401629204)
     async def shitpost(self, ctx, member: discord.Member):
