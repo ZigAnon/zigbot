@@ -137,6 +137,15 @@ class CoffeePolCog(commands.Cog):
         except Exception as e:
             await zb.bot_errors(self,e)
 
+    # @commands.command(name='template', description='defined')
+    # @is_in_guild(509242768401629204)
+    # async def template(self, ctx, member: discord.Member):
+    #     """ DESCRIBE """
+    #     try:
+    #         pass
+    #     except Exception as e:
+    #         await zb.bot_errors(ctx,e)
+
     @commands.command(name='shitpost', hidden=True)
     @is_in_guild(509242768401629204)
     async def shitpost(self, ctx, member: discord.Member):
