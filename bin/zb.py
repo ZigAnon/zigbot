@@ -930,6 +930,111 @@ async def print_string(ctx,string):
     except Exception as e:
         await bot_errors(ctx,e)
 
+def nav_large_message(maxInt,curInt,nav):
+    if nav == 0:
+        return 0
+    elif nav == 1 and (curInt - 5) > 0:
+        return curInt - 5
+    elif nav == 2 and (curInt - 1) > 0:
+        return curInt - 1
+    elif nav < 3:
+        return 0
+    elif nav == 3 and (curInt + 1) < maxInt:
+        return curInt + 1
+    elif nav == 4 and (curInt + 5) < maxInt:
+        return curInt + 5
+    else:
+        return maxInt
+
+def nav_med_message(maxInt,curInt,nav):
+    if nav == 0 and (curInt - 5) > 0:
+        return curInt - 5
+    elif nav == 1 and (curInt - 1) > 0:
+        return curInt - 1
+    elif nav == 2 and (curInt + 1) < maxInt:
+        return curInt + 1
+    elif nav == 3 and (curInt + 5) < maxInt:
+        return curInt + 5
+    elif nav <= 1:
+        return 0
+    else:
+        return maxInt
+
+def nav_small_message(maxInt,curInt,nav):
+    if nav == 0 and (curInt - 1) > 0:
+        return curInt - 1
+    elif nav == 1 and (curInt + 1) < maxInt:
+        return curInt + 1
+    elif nav == 0:
+        return 0
+    else:
+        return maxInt
+
+async def print_embed_nav(self,ctx,initialEmbed,embedList,maxInt):
+    count = 0
+    maxInt = maxInt - 1
+    initialEmbed.set_footer(text=f'{count+1} of {maxInt+1} | Requested by ID: {ctx.author.id}')
+    initialEmbed.timestamp = datetime.utcnow()
+    msg = await ctx.send(embed=initialEmbed)
+
+    if maxInt > 9:
+        ids = ['\U000023EE','\U000023EA','\U000025C0',
+                '\U000025B6','\U000023E9','\U000023ED']
+    elif maxInt > 4:
+        ids = ['\U000023EA','\U000025C0','\U000025B6','\U000023E9']
+    else:
+        ids = ['\U000025C0','\U000025B6']
+
+    def r_check(reaction, user):
+        return (reaction.message.id == msg.id and user == ctx.author and
+                reaction.message.channel == ctx.message.channel and
+                str(reaction) in ids)
+
+    if maxInt > 0:
+        for id in ids:
+            try:
+                await msg.add_reaction(emoji=id)
+            except:
+                await ctx.send(f'I could not find emoji.id = {id}',
+                        delete_after=5)
+
+    while True:
+        done, pending = await asyncio.wait([
+                            self.bot.wait_for('reaction_add', check=r_check),
+                            self.bot.wait_for('reaction_remove', check=r_check)
+                        ], timeout = 10, return_when=asyncio.FIRST_COMPLETED)
+
+        try:
+            stuff = done.pop().result()
+        except Exception as e:
+            break
+
+        try:
+            try:
+                emoji_id = int(get_pattern(str(stuff), '(?<=Emoji\sid=)((\w+)(?=\s))'))
+            except:
+                emoji_id = get_pattern(str(stuff), "(?<=emoji=')((.{1})(?='\s))")
+            nav = ids.index(emoji_id)
+            if maxInt > 9:
+                count = nav_large_message(maxInt,count,nav)
+            elif maxInt > 4:
+                count = nav_med_message(maxInt,count,nav)
+            else:
+                count = nav_small_message(maxInt,count,nav)
+            embed = embedList[count]
+            embed.set_footer(text=f'{count+1} of {maxInt+1} | Requested by ID: {ctx.author.id}')
+            embed.timestamp = datetime.utcnow()
+            await msg.edit(embed=embed)
+        except Exception as e:
+            await bot_errors(ctx,e)
+    try:
+        for future in pending:
+            future.cancel()
+    except Exception as e:
+        await bot_errors(ctx,e)
+    await msg.clear_reactions()
+
+    return msg
 
 def print_2000lim(string):
     try:
