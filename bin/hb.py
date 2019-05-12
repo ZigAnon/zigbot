@@ -29,6 +29,24 @@ async def _heartbeat(bot):
         await bot.change_presence(activity=discord.Game(name=f'with {rows} users', type=1))
 
         for guild in guilds:
+            # Update member count
+            memberChan = False
+            memCount = 0
+            for member in ctx.guild.members:
+                if not member.bot:
+                    memCount += 1
+            for channel in ctx.guild.voice_channels:
+                if channel.name.lower().startswith('members: '):
+                    channel.edit(name=f'Members: {memCount}',
+                            reason='Member count')
+                    memberChan = True
+                    await channel.edit(position=0)
+            if not memberChan:
+                await ctx.send('no member channel')
+                chan = await ctx.guild.create_voice_channel(name=f'Members: {memCount}',
+                        reason='Member count')
+                await chan.edit(position=0)
+
             # Remove bans from users that hammered server
             zb.reset_hammer(guild)
 
