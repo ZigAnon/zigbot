@@ -14,13 +14,7 @@ class DictionaryCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    def is_in_guild(guild_id):
-        async def predicate(ctx):
-            return ctx.guild and ctx.guild.id == guild_id
-        return commands.check(predicate)
-
     @commands.command(name='define', description='Defines word using Oxford Living Dictionary.')
-    @is_in_guild(507208948760182800)
     async def define(self, ctx, *, word: str):
         """ Posts navigateable Oxford dictionary list """
         try:
@@ -75,7 +69,6 @@ class DictionaryCog(commands.Cog):
         except Exception as e:
             await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,e)
-
 
 def setup(bot):
     bot.add_cog(DictionaryCog(bot))
