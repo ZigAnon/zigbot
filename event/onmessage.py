@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from bin import zb
+from bin import zb_config as _var
 
 class onmessageCog(commands.Cog):
 
@@ -44,6 +45,8 @@ class onmessageCog(commands.Cog):
                 await zb.timed_msg(message.channel,msg,30)
 
             if len(message.mentions) > 0:
+                if(zb.is_trusted(message,_var.maxRoleRanks)):
+                    return
                 count = zb.mention_spamming(message.author)
 
                 # Determins action to take
