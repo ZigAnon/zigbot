@@ -32,6 +32,7 @@ class CoffeePolCog(commands.Cog):
     #TODO: Add to main loop
     @commands.Cog.listener()
     async def on_message(self, message):
+        guild = self.bot.get_guild(509242768401629204)
         # If any bot
         if message.author.bot:
             return
@@ -41,7 +42,6 @@ class CoffeePolCog(commands.Cog):
             return
 
         # Adds people to blacklist
-        guild = self.bot.get_guild(509242768401629204)
         if(message.author in guild.members and
                 message.guild is None):
             channel = guild.get_channel(509244241776738304)
@@ -50,12 +50,9 @@ class CoffeePolCog(commands.Cog):
             member = message.author
             carryMsg = message
             # Looks for last message in admin chats
-            while True:
-                async for message in channel.history(limit=500):
-                    if message.author == member:
-                        msg = message
-                        break
-                break
+            async for message in channel.history(limit=500):
+                if message.author == member:
+                    msg = message
 
             # Try to get message ctx if found
             try:
@@ -85,6 +82,23 @@ class CoffeePolCog(commands.Cog):
                     await carryMsg.author.send(f'I have added `{data[0]}` ' +
                             f'to the blacklist for **{guild.name}**')
                     zb.add_blacklist(message,data[0],data[1])
+
+        # Ignore if not guild
+        if not message.guild is guild:
+            return
+
+        # If discord link
+        if(not zb.is_trusted(message,5) and zb.is_pattern(message.content.lower(),
+                '(https?:\/\/)?(www\.)?(discord\.(gg|io|me|li)|disboard\.org\/server|discordapp\.com\/invite)\/.+([0-9]|[a-z])')):
+            punishchan = message.guild.get_channel(517882333752459264)
+            embed=discord.Embed(title="Banned!",
+                    description=f'**{message.author}** was given Banned by ' +
+                    '**ZigBot#1002** for violation of rule 8!',
+                    color=0xd30000)
+            await punishchan.send(embed=embed)
+            await message.author.send('It\'s in the rules, no sharing discord ' +
+                    'links.\n Bye bye!')
+            await message.author.ban(reason='Posted invite')
 
     # Events on member join voice
     @commands.Cog.listener()

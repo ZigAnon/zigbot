@@ -48,7 +48,8 @@ class onmemberjoinCog(commands.Cog):
                         await member.send('**"{0}"** has banned you for '.format(member.guild.name) +
                                 'being unable to read. ' +
                                 'Sorry, go play roblox elsewhere.')
-                        await member.ban(delete_message_days=0)
+                        await member.ban(delete_message_days=0,
+                                reason='Continued to join after being told to wait')
                         return
                     else:
                         await channel.send(member.mention + ' tried to join ' +
@@ -76,7 +77,8 @@ class onmemberjoinCog(commands.Cog):
                         await member.send('**"{0}"** has banned you for '.format(member.guild.name) +
                                 'being unable to read. ' +
                                 'Sorry, go play roblox elsewhere.')
-                        await member.ban(delete_message_days=0)
+                        await member.ban(delete_message_days=0,
+                                reason='Continued to join after being told to wait')
                         return
                     else:
                         await member.send('Your account is too new to for "{0}". '.format(member.guild.name) +
