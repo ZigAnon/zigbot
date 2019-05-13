@@ -112,7 +112,7 @@ class CoffeePolCog(commands.Cog):
             joined = message.author.joined_at
             diff = (now - joined).days
             if diff >= 14:
-                require = -(diff*diff)*2.2+2000
+                require = -(80*diff)+2200
                 if require < 200:
                     require = 200
                 sql = """ SELECT m.message_id
