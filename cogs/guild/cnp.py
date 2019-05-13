@@ -111,12 +111,10 @@ class CoffeePolCog(commands.Cog):
             now = datetime.utcnow()
             joined = message.author.joined_at
             diff = (now - joined).days
-            require = -(diff*diff)*2.2+2000
-            if require < 0:
-                add = message.guild.get_role(509861871193423873)
-                await message.author.add_roles(add,
-                        reason=f'Member for {diff} days')
-            else:
+            if diff >= 14:
+                require = -(diff*diff)*2.2+2000
+                if require < 200:
+                    require = 200
                 sql = """ SELECT m.message_id
                           FROM users u
                           LEFT JOIN messages m ON u.int_user_id = m.int_user_id
@@ -124,7 +122,6 @@ class CoffeePolCog(commands.Cog):
                           AND u.real_user_id = {1} """
                 sql = sql.format(message.guild.id,message.author.id)
                 data, rows, string = zb.sql_query(sql)
-                await message.channel.send(rows)
                 if int(rows) > require:
                     add = message.guild.get_role(509861871193423873)
                     await message.author.add_roles(add,
