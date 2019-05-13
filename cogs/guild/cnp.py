@@ -1,6 +1,7 @@
 import discord
 import asyncio
 from discord.ext import commands
+from datetime import datetime
 import numpy as np
 from bin import zb
 from bin import cp
@@ -82,6 +83,7 @@ class CoffeePolCog(commands.Cog):
                     await carryMsg.author.send(f'I have added `{data[0]}` ' +
                             f'to the blacklist for **{guild.name}**')
                     zb.add_blacklist(message,data[0],data[1])
+                    return
 
         # Ignore if not guild
         if not message.guild is guild:
@@ -99,6 +101,35 @@ class CoffeePolCog(commands.Cog):
             await message.author.send('It\'s in the rules, no sharing discord ' +
                     'links.\n Bye bye!')
             await message.author.ban(reason='Posted invite')
+
+        # Gives trusted
+        if zb.get_punish_num(message.author) > 0:
+            pass
+        elif zb.is_trusted(message,5):
+            pass
+        else:
+            now = datetime.utcnow()
+            joined = message.author.joined_at
+            diff = (now - joined).days
+            require = -(diff*diff)*2.2+2000
+            if require < 0:
+                add = message.guild.get_role(509861871193423873)
+                await message.author.add_roles(add,
+                        reason=f'Member for {diff} days')
+            else:
+                sql = """ SELECT m.message_id
+                          FROM users u
+                          LEFT JOIN messages m ON u.int_user_id = m.int_user_id
+                          WHERE m.guild_id = {0}
+                          AND u.real_user_id = {1} """
+                sql = sql.format(message.guild.id,message.author.id)
+                data, rows, string = zb.sql_query(sql)
+                await message.channel.send(rows)
+                if int(rows) > require:
+                    add = message.guild.get_role(509861871193423873)
+                    await message.author.add_roles(add,
+                            reason=f'{rows} messages in {diff} days.')
+
 
     # Events on member join voice
     @commands.Cog.listener()
