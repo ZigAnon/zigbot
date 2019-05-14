@@ -32,19 +32,32 @@ async def _heartbeat(bot):
             # Update member count
             memberChan = False
             memCount = 0
+            sql = """ SELECT members
+                      FROM guilds
+                      WHERE guild_id = {0} """
+            sql = sql.format(guild.id)
+            data, rows, string = zb.sql_query(sql)
+
             for member in guild.members:
                 if not member.bot:
                     memCount += 1
-            for channel in guild.voice_channels:
-                if channel.name.lower().startswith('members: '):
-                    await channel.edit(name=f'Members: {memCount}',
+            if memCount != data[0]:
+                sql = """ UPDATE guilds
+                          SET members = {0}
+                          WHERE guild_id = {1} """
+                sql = sql.format(memCount,guild.id)
+                junk, junk1 = zb.sql_update(sql)
+
+                for channel in guild.voice_channels:
+                    if channel.name.lower().startswith('members: '):
+                        await channel.edit(name=f'Members: {memCount}',
+                                reason='Member count')
+                        memberChan = True
+                if not memberChan:
+                    print('non member chan')
+                    chan = await guild.create_voice_channel(name=f'Members: {memCount}',
                             reason='Member count')
-                    memberChan = True
-                    await channel.edit(position=0)
-            if not memberChan:
-                chan = await guild.create_voice_channel(name=f'Members: {memCount}',
-                        reason='Member count')
-                await chan.edit(position=0)
+                    await chan.edit(position=0)
 
             # Remove bans from users that hammered server
             zb.reset_hammer(guild)
@@ -103,22 +116,22 @@ async def _heartbeat(bot):
                 if time in [0,15,30,45]:
                     # SQL TASKS
                     zb.reset_voice_updating(guild)
-                    if len(vRoles) > 0:
-                        for member in guild.members:
-                            if member.voice:
-                                sql = """ SELECT role_id
-                                          FROM roles
-                                          WHERE guild_id = {0}
-                                          AND channel_id = {1} """
-                                sql = sql.format(guild.id,member.voice.channel.id)
-                                role_id, junk, junk1 = zb.sql_query(sql)
+                    # if len(vRoles) > 0:
+                    #     for member in guild.members:
+                    #         if member.voice:
+                    #             sql = """ SELECT role_id
+                    #                       FROM roles
+                    #                       WHERE guild_id = {0}
+                    #                       AND channel_id = {1} """
+                    #             sql = sql.format(guild.id,member.voice.channel.id)
+                    #             role_id, junk, junk1 = zb.sql_query(sql)
 
-                                add = guild.get_role(role_id[0][0])
-                                await member.add_roles(add,reason='Voice chat fix')
-                            else:
-                                for role in member.roles:
-                                    if role.id in vRoles:
-                                        await member.remove_roles(role,reason='Voice chat fix')
+                    #             add = guild.get_role(role_id[0][0])
+                    #             await member.add_roles(add,reason='Voice chat fix')
+                    #         else:
+                    #             for role in member.roles:
+                    #                 if role.id in vRoles:
+                    #                     await member.remove_roles(role,reason='Voice chat fix')
             except Exception as e:
                 print(f'**`ERROR:`** {type(e).__name__} - {e}')
 
