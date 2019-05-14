@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-from datetime import datetime
 from bin import zb
 
 
@@ -8,16 +7,6 @@ class OwnerCog(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-
-    # @commands.Cog.listener()
-    # async def on_message(self, message):
-    #     guild = self.bot.get_guild(507208948760182800)
-
-    #     # Ignore if not guild
-    #     if(not message.guild is guild or
-    #             not zb.is_owner(message)):
-    #         return
-
 
     @commands.command(name='dev', hidden=True)
     @commands.is_owner()
@@ -33,7 +22,7 @@ class OwnerCog(commands.Cog):
             await zb.bot_errors(ctx,e)
         # else:
         #     await ctx.send('**`SUCCESS`**')
-
+    
     @commands.command(name='zinvite', hidden=True)
     @commands.is_owner()
     # async def tool_dev(self, ctx, *, cog: str):
