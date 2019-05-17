@@ -54,7 +54,7 @@ class onmemberjoinCog(commands.Cog):
                     else:
                         await channel.send(member.mention + ' tried to join ' +
                                 'but I kicked them because server is closed.  ' +
-                                'To open server, please `!disboard bump`.')
+                                'To open server, use `.raid` command.')
                         # Lets member join when server opens again
                         await member.send('**"{0}"** is currently not accepting members'.format(member.guild.name) +
                                  ' at this time.  If you wish to join our discussions please' +

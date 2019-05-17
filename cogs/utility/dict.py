@@ -119,5 +119,24 @@ class DictionaryCog(commands.Cog):
             await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,e)
 
+    @commands.command(name='inspire', description='Generatates inspirational quote with InspiroBot')
+    async def inspire(self, ctx):
+        """ Posts embeded inspirational image """
+        try:
+            url = 'http://inspirobot.me/api?generate=true'
+            r = requests.get(url)
+            embed=discord.Embed(title="I'm InspiroBot.",
+                    url='http://inspirobot.me/',
+                    color=0x14380D,
+                    description='I am an artificial intelligence dedicated to ' +
+                    'generating unlimited amounts of unique inspirational quotes ' +
+                    'for endless enrichment of pointless human existence.')
+            embed.set_thumbnail(url='http://inspirobot.me/website/images/inspirobot-dark-green.png')
+            embed.set_image(url=r.text)
+            await zb.print_embed_ts(ctx,ctx.author,embed)
+        except Exception as e:
+            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
+            await zb.bot_errors(ctx,e)
+
 def setup(bot):
     bot.add_cog(DictionaryCog(bot))

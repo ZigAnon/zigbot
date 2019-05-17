@@ -905,6 +905,14 @@ async def print_log(ctx,member,embed):
     except Exception as e:
         await bot_errors(ctx,e)
 
+async def print_embed_ts(ctx,member,embed):
+    try:
+        embed.set_footer(text="ID: " + str(member.id))
+        embed.timestamp = datetime.utcnow()
+        await ctx.channel.send(embed=embed)
+    except Exception as e:
+        await bot_errors(ctx,e)
+
 async def bot_errors(ctx,e):
     """ Or bot_errors(self,e) """
     try:
