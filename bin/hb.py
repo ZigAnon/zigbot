@@ -116,22 +116,41 @@ async def _heartbeat(bot):
 
                     # SQL TASKS
                     zb.reset_voice_updating(guild)
-                    # if len(vRoles) > 0:
-                    #     for member in guild.members:
-                    #         if member.voice:
-                    #             sql = """ SELECT role_id
-                    #                       FROM roles
-                    #                       WHERE guild_id = {0}
-                    #                       AND channel_id = {1} """
-                    #             sql = sql.format(guild.id,member.voice.channel.id)
-                    #             role_id, junk, junk1 = zb.sql_query(sql)
+            except Exception as e:
+                print(f'**`ERROR:`** {type(e).__name__} - {e}')
 
-                    #             add = guild.get_role(role_id[0][0])
-                    #             await member.add_roles(add,reason='Voice chat fix')
-                    #         else:
-                    #             for role in member.roles:
-                    #                 if role.id in vRoles:
-                    #                     await member.remove_roles(role,reason='Voice chat fix')
+            # Voice role check
+            try:
+                sql = """ SELECT miss.real_user_id, rr.role_id
+                          FROM (
+                              SELECT u.real_user_id,g.guild_id,g.voice_channel
+                              FROM guild_membership g
+                              LEFT JOIN roles r ON g.voice_channel = r.channel_id
+                              LEFT JOIN users u ON g.int_user_id = u.int_user_id
+                              LEFT JOIN role_membership m ON (
+                                  r.role_id = m.role_id
+                                  AND m.role_id in (
+                                      SELECT role_id
+                                      FROM roles
+                                      WHERE group_id = 50)
+                                  )
+                              WHERE g.guild_id = {0}
+                              AND g.is_member = TRUE
+                              AND m.guild_id IS NULL
+                              AND NOT g.voice_channel = 0) miss
+                          LEFT JOIN roles rr ON miss.voice_channel = rr.channel_id """
+                sql = sql.format(guild.id)
+
+                data, rows, string = zb.sql_query(sql)
+                if rows > 0:
+                    i = 0
+                    while i < rows:
+                        member = guild.get_member(data[i][0])
+                        add = guild.get_role(data[i][1])
+                        await member.add_roles(add,reason='Voice chat fix')
+                        i+=1
+
+                #TODO: Add sql remove roles
             except Exception as e:
                 print(f'**`ERROR:`** {type(e).__name__} - {e}')
 
