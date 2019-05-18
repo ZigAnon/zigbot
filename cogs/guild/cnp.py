@@ -118,16 +118,33 @@ class CoffeePolCog(commands.Cog):
                 return
             # Joined voice channel
             elif before.channel is None and not after.channel is None:
-                await zb.toggle_updating(*args)
+                sql = """ UPDATE guild_membership g
+                          SET voice_channel = {0}
+                          FROM (SELECT int_user_id, real_user_id
+                          FROM users) AS u
+                          WHERE g.int_user_id = u.int_user_id
+                          AND g.guild_id = {1}
+                          AND u.real_user_id = {2} """
+                sql = sql.format(after.channel.id,member.guild.id,member.id)
+                junk1, junk2 = zb.sql_update(sql)
+
                 i = [(i, _voice_roles.index(after.channel.id))
                         for i, _voice_roles in enumerate(_voice_roles)
                         if after.channel.id in _voice_roles][0][0]
                 role = member.guild.get_role(_voice_roles[i][0])
                 await member.add_roles(role,reason='Joined voice')
-                await zb.toggle_updating(*args)
             # Switched voice channel
             elif not before.channel is None and not after.channel is None:
-                await zb.toggle_updating(*args)
+                sql = """ UPDATE guild_membership g
+                          SET voice_channel = {0}
+                          FROM (SELECT int_user_id, real_user_id
+                          FROM users) AS u
+                          WHERE g.int_user_id = u.int_user_id
+                          AND g.guild_id = {1}
+                          AND u.real_user_id = {2} """
+                sql = sql.format(after.channel.id,member.guild.id,member.id)
+                junk1, junk2 = zb.sql_update(sql)
+
                 i = [(i, _voice_roles.index(after.channel.id))
                         for i, _voice_roles in enumerate(_voice_roles)
                         if after.channel.id in _voice_roles][0][0]
@@ -141,13 +158,20 @@ class CoffeePolCog(commands.Cog):
                     pass
                 add = member.guild.get_role(_voice_roles[i][0])
                 await member.add_roles(add,reason='Joined voice')
-                await zb.toggle_updating(*args)
             # Left voice channel
             elif not before.channel is None and after.channel is None:
-                await zb.toggle_updating(*args)
+                sql = """ UPDATE guild_membership g
+                          SET voice_channel = 0
+                          FROM (SELECT int_user_id, real_user_id
+                          FROM users) AS u
+                          WHERE g.int_user_id = u.int_user_id
+                          AND g.guild_id = {0}
+                          AND u.real_user_id = {1} """
+                sql = sql.format(member.guild.id,member.id)
+                junk1, junk2 = zb.sql_update(sql)
+
                 roles = np.array([x[0] for x in _voice_roles])
                 await zb.remove_roles(self,member,roles,'Left voice')
-                await zb.toggle_updating(*args)
         except Exception as e:
             await zb.bot_errors(self,e)
 
