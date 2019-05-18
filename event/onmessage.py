@@ -28,6 +28,13 @@ class onmessageCog(commands.Cog):
             # Checks for good nickname
             await zb.is_good_nick(self,message.author)
 
+            # Timestamps last message
+            sql = """ UPDATE channels
+                      SET last_message = date_trunc('minute', timezone('ZULU', NOW()))
+                      WHERE channel_id = {0} """
+            sql = sql.format(message.channel.id)
+            junk, junk1 = zb.sql_update(sql)
+
             reminders = zb.get_startswith(message.guild.id)
             if message.content.lower().startswith(reminders):
                 # Get Context

@@ -21,13 +21,6 @@ async def _heartbeat(bot):
         guilds = list(bot.guilds)
         pinged = [0] * len(guilds)
 
-        # Count all users across all servers
-        sql = """ SELECT is_bot
-                  FROM users
-                  WHERE is_bot = FALSE """
-        data, rows, string = zb.sql_query(sql)
-        await bot.change_presence(activity=discord.Game(name=f'with {rows} users', type=1))
-
         for guild in guilds:
             # Update member count
             memberChan = False
@@ -112,8 +105,15 @@ async def _heartbeat(bot):
             # Every 15 mins
             try:
                 time = datetime.utcnow().minute
-                vRoles = zb.get_roles_special(guild.id,50)
                 if time in [0,15,30,45]:
+                    vRoles = zb.get_roles_special(guild.id,50)
+                    # Count all users across all servers
+                    sql = """ SELECT is_bot
+                              FROM users
+                              WHERE is_bot = FALSE """
+                    data, rows, string = zb.sql_query(sql)
+                    await bot.change_presence(activity=discord.Game(name=f'with {rows} users', type=1))
+
                     # SQL TASKS
                     zb.reset_voice_updating(guild)
                     # if len(vRoles) > 0:
@@ -140,6 +140,10 @@ async def _heartbeat(bot):
                 sql = """ SELECT channel_id, message_limit, days_to_keep, del_check
                           FROM channels
                           WHERE guild_id = {0}
+                          AND (
+                              last_message >= CURRENT_TIMESTAMP AT TIME ZONE 'ZULU' - INTERVAL '5 minutes'
+                              OR last_message <= CURRENT_TIMESTAMP AT TIME ZONE 'ZULU' - INTERVAL '1 week'
+                          )
                           AND auto_purge = TRUE
                           AND is_deleted = FALSE """
                 sql = sql.format(guild.id)
@@ -178,6 +182,17 @@ async def _heartbeat(bot):
                         except:
                             pass
                         i+=1
+
+                # Reset Weekly inactive channels
+                sql = """ UPDATE channels
+                          SET last_message = CURRENT_TIMESTAMP AT TIME ZONE 'ZULU'
+                          WHERE guild_id = {0}
+                          AND last_message <= CURRENT_TIMESTAMP AT TIME ZONE 'ZULU' - INTERVAL '1 week'
+                          AND auto_purge = TRUE
+                          AND is_deleted = FALSE """
+                sql = sql.format(guild.id)
+
+                junk1, junk2 = zb.sql_update(sql)
 
             except Exception as e:
                 print(f'**`ERROR:`** {type(e).__name__} - {e}')
