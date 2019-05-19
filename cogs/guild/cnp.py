@@ -170,8 +170,14 @@ class CoffeePolCog(commands.Cog):
                 sql = sql.format(member.guild.id,member.id)
                 junk1, junk2 = zb.sql_update(sql)
 
-                roles = np.array([x[0] for x in _voice_roles])
-                await zb.remove_roles(self,member,roles,'Left voice')
+                try:
+                    j = [(i, _voice_roles.index(before.channel.id))
+                            for i, _voice_roles in enumerate(_voice_roles)
+                            if before.channel.id in _voice_roles][0][0]
+                    rmv = member.guild.get_role(_voice_roles[j][0])
+                    await member.remove_roles(rmv,reason='Left voice')
+                except:
+                    pass
         except Exception as e:
             await zb.bot_errors(self,e)
 
