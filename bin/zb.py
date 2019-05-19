@@ -138,6 +138,7 @@ def pad_spaces(data):
 
     i = 0
     while i < length:
+        print(f'looping {i} for pad spaces')
         spaces = spaces + ' '
         i+=1
     lst = [' {0}{1} '.format(x, spaces[0:length-len(x)]) for x in data]
@@ -278,6 +279,7 @@ def get_roles_obj(guild,lst):
     data = []
     i = 0
     while i < len(lst):
+        print(f'looping {i} for get_roles')
         for role in guild.roles:
             if role.id == int(lst[i]):
                 data.append(role)
@@ -449,6 +451,7 @@ def get_member_with_role(ctx,roles):
     found = False
     i = 0
     while i < len(roles):
+        print(f'looping {i} for member with roles')
         for member in ctx.guild.members:
             for role in member.roles:
                 if int(roles[i]) == role.id:
@@ -925,6 +928,7 @@ async def print_string(ctx,string):
             await ctx.send(string)
         else:
             while i < len(string):
+                print(f'looping {i} for print string')
                 await ctx.send(string[i])
                 i+=1
     except Exception as e:
@@ -999,6 +1003,7 @@ async def print_embed_nav(self,ctx,initialEmbed,embedList,maxInt):
                         delete_after=5)
 
     while True:
+        print(f'looping true for reaction add or remove')
         done, pending = await asyncio.wait([
                             self.bot.wait_for('reaction_add', check=r_check),
                             self.bot.wait_for('reaction_remove', check=r_check)
@@ -1054,7 +1059,9 @@ def print_2000lim(string):
         i = 2
         j = 0
         while j < msgs:
+            print(f'looping {j} for print limit')
             while i < rows:
+                print(f'looping {i} for print limit build')
                 string[j] = string[j] + build[i] + '\n'
                 i+=1
             rows += rows
@@ -1115,6 +1122,7 @@ async def print_lookup(ctx,rows,data,title,string):
         bar = '---==='
         i = 0
         while i < maxTitle:
+            print(f'looping {i} for print lookup')
             bar = bar + '='
             i+=1
         top = bar + '===---'
@@ -1144,6 +1152,7 @@ async def print_lookup(ctx,rows,data,title,string):
         if lenTotal > maxTitle:
             i = 0
             while i < test:
+                print(f'looping {i} for some test')
                 bar = bar + '='
                 i+=1
             bar = bar + '===---'
@@ -1153,15 +1162,18 @@ async def print_lookup(ctx,rows,data,title,string):
         string = '```\n      ' + title + '\n' + bar + '\n'
         i = 0
         while i < rows:
+            print(f'looping {i} for rows of test')
             string = string + '||'
             j = 0
             while j < len(data[0]):
+                print(f'looping {j} for j of test')
                 string = string + matrix[j][i]
                 if j+1 != len(data[0]) and test < 0:
                     string = string + '||'
                 else:
                     k = test
                     while k < 0:
+                        print(f'looping {k} for k of test')
                         string = string + ' '
                         k+=1
                     string = string + '||'

@@ -41,6 +41,7 @@ class DictionaryCog(commands.Cog):
                 # Loads embeded terms
                 i = 0
                 while i < howmany:
+                    print(f'looping {i} for webster')
                     embed=discord.Embed(title="Merriam-Webster Dictionary:",
                             url='https://www.merriam-webster.com/dictionary/' \
                                     f'{search}', color=0xf5d28a)
@@ -97,6 +98,7 @@ class DictionaryCog(commands.Cog):
                 # Loads embeded terms
                 i = 0
                 while i < howmany:
+                    print(f'looping {i} for oxford')
                     embed=discord.Embed(title="Oxford Living Dictionary:",
                             url=f'https://{language}.oxforddictionaries.com/' \
                                     f'definition/{search}',
