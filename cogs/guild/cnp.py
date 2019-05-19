@@ -8,17 +8,6 @@ from bin import cp
 # Settings for guild_id
 _guild_check = 509242768401629204
 
-# role_id, role_name, channel_id
-_voice_roles = [[538750807538008084,'VC1',509242768829317141],
-        [538750916694638602,'VC2',527947459981213696],[538751001881083938,'VC3',0],
-        [538751040523337728,'VC5',0],[538751077705842728,'VC6',0],
-        [538751116842631168,'VC7',0],[538751158802579456,'VC8',0],
-        [538751195725168649,'MC1',513096462335213569],[538751267908878336,'MC2',0],
-        [538751306513514508,'MC3',0],[538773262700773380,'SC1',521862351461548033],
-        [538773299744997386,'SC2',509243691098177547],[538773327796502546,'SC3',521862247585284098],
-        [538773357039058944,'SC4',0],[538773384679522345,'SC5',0]]
-
-
 class CoffeePolCog(commands.Cog):
 
     def __init__(self, bot):
@@ -111,6 +100,11 @@ class CoffeePolCog(commands.Cog):
             return
 
         try:
+            sql = """ SELECT role_id,channel_id
+                      FROM roles
+                      WHERE group_id = 50 """
+            data, junk1, junk2 = zb.sql_query(sql)
+            _voice_roles = data.astype(int).tolist()
             if before.channel is after.channel:
                 return
             # Joined voice channel
