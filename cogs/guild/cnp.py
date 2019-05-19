@@ -100,11 +100,14 @@ class CoffeePolCog(commands.Cog):
             return
 
         try:
+            # Gather voice channel roles
             sql = """ SELECT role_id,channel_id
                       FROM roles
                       WHERE group_id = 50 """
             data, junk1, junk2 = zb.sql_query(sql)
             _voice_roles = data.astype(int).tolist()
+
+            # If voice channel doesn't change
             if before.channel is after.channel:
                 return
             # Joined voice channel
