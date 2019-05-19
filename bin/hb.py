@@ -47,7 +47,6 @@ async def _heartbeat(bot):
                                 reason='Member count')
                         memberChan = True
                 if not memberChan:
-                    print('non member chan')
                     chan = await guild.create_voice_channel(name=f'Members: {memCount}',
                             reason='Member count')
                     await chan.edit(position=0)
@@ -121,6 +120,7 @@ async def _heartbeat(bot):
 
             # Voice role check
             try:
+                # Adds missing role
                 sql = """ SELECT miss.real_user_id, rr.role_id
                           FROM (
                               SELECT u.real_user_id,g.guild_id,g.voice_channel
@@ -150,7 +150,30 @@ async def _heartbeat(bot):
                         await member.add_roles(add,reason='Voice chat fix')
                         i+=1
 
-                #TODO: Add sql remove roles
+                # Removes extra roles
+                sql = """ SELECT u.real_user_id, m.role_id
+                          FROM role_membership m
+                          LEFT JOIN users u ON m.int_user_id = u.int_user_id
+                          LEFT JOIN guild_membership g ON m.int_user_id = g.int_user_id
+                          WHERE role_id in (
+                              SELECT role_id
+                              FROM roles
+                              WHERE group_id = 50)
+                          AND m.guild_id = {0}
+                          AND g.guild_id = {0}
+                          AND g.is_member = TRUE
+                          AND g.voice_channel = 0 """
+                sql = sql.format(guild.id)
+
+                data, rows, string = zb.sql_query(sql)
+                if rows > 0:
+                    i = 0
+                    while i < rows:
+                        member = guild.get_member(data[i][0])
+                        rmv = guild.get_role(data[i][1])
+                        await member.remove_roles(rmv,reason='Voice chat fix')
+                        i+=1
+
             except Exception as e:
                 print(f'**`ERROR:`** {type(e).__name__} - {e}')
 
