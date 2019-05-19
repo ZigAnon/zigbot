@@ -2,8 +2,6 @@ import discord
 from discord.ext import commands
 from bin import zb
 
-_ignore_guilds = [509242768401629204]
-
 class onmemberupdateCog(commands.Cog):
 
     def __init__(self, bot):
@@ -51,12 +49,20 @@ class onmemberupdateCog(commands.Cog):
                     embed.set_author(name=before, icon_url=after.avatar_url)
                     await zb.print_log(self,before,embed)
 
+            # Checks for ignored role (voice)
+            sql = """ SELECT role_id
+                      FROM roles
+                      WHERE guild_id = {0}
+                      AND group_id = 50
+                      AND role_id = {1} """
             if len(before.roles) == len(after.roles):
                 pass
-            elif before.guild.id in _ignore_guilds:
-                return
             elif len(before.roles) < len(after.roles):
                 role = zb.get_diff_role(after.roles,before.roles)
+                sql = sql.format(before.guild.id,role.id)
+                junk, rows, junk2 = zb.sql_query(sql)
+                if rows > 0:
+                    return
                 if role.name != 'BotAdmin':
                     embed=discord.Embed(description=before.mention +
                             f" **was given the `{role.name}` role**", color=0x117ea6)
@@ -64,6 +70,10 @@ class onmemberupdateCog(commands.Cog):
                     await zb.print_log(self,before,embed)
             elif len(before.roles) > len(after.roles):
                 role = zb.get_diff_role(before.roles,after.roles)
+                sql = sql.format(before.guild.id,role.id)
+                junk, rows, junk2 = zb.sql_query(sql)
+                if rows > 0:
+                    return
                 if role.name != 'BotAdmin':
                     embed=discord.Embed(description=before.mention +
                             f" **was removed from the `{role.name}` role**", color=0x117ea6)
