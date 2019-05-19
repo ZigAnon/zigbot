@@ -161,6 +161,24 @@ def add_blacklist(message,member_id,reason):
     rows, string = sql_update(sql)
     return
 
+def add_special_role(values):
+    sql = """ INSERT INTO special_roles (type,int_user_id,real_user_id,guild_id,role_id)
+              VALUES {0} """
+    sql = sql.format(values)
+
+    rows, string = sql_update(sql)
+    return
+
+def rmv_special_role(guild_id,type_num,member_id):
+    sql = """ DELETE FROM special_roles
+              WHERE guild_id = {0}
+              AND type = {1}
+              AND real_user_id = {2} """
+    sql = sql.format(guild_id,type_num,member_id)
+
+    rows, string = sql_update(sql)
+    return
+
 def close_server(guild_id):
     sql = """ UPDATE guilds
               SET can_join = FALSE
@@ -275,6 +293,7 @@ def get_roles_special(guild_id,group_id):
     # 11 = mute role
     # 12 = jail role
     # 50 = voice role
+    # 51 = busy role
     # 90 = BotAdmin
     sql = """ SELECT role_id FROM roles
               WHERE guild_id = {0}
