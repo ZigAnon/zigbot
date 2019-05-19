@@ -654,7 +654,17 @@ async def is_good_nick(ctx,member):
                     '(([A-z]{2,})|([0-9]{2,}))\w+')
             return True
         except:
+            if member.nick is None:
+                nickName = member.name
+            else:
+                nickName = member.nick
             await member.edit(nick='Invalid Nickname')
+            await member.send(f'**{nickName}** does not have enough ' \
+                    f'ASCII characters.\n' \
+                    f'Your nickname for **{member.guild.name}** is now set to ' \
+                    f'*Invalid Nickname*.\n\n' \
+                    f'To change your nickname visit this link:\n' \
+                    f'https://support.discordapp.com/hc/en-us/articles/219070107-Server-Nicknames')
             return False
     except Exception as e:
         await bot_errors(ctx,e)
