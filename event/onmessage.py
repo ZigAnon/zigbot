@@ -116,13 +116,44 @@ class onmessageCog(commands.Cog):
                     embed.set_author(name=message.author, icon_url=message.author.avatar_url)
                     await zb.print_log(self,message.author,embed)
 
-            #TODO: disboard bump
-            #TODO: get server, member, channel
-            #TODO: open_server
-            #TODO: log time
+            # Special Channels
+            # 1 = poll strict chan
+            # 2 = poll and talk chan
+            sql = """ SELECT channel_id, group_id
+                      FROM channels
+                      WHERE channel_id = {0}
+                      AND NOT group_id = 0 """
+            sql = sql.format(message.channel.id)
 
-            #TODO: disboard stop
-            #TODO: close_server
+            data, rows, string = zb.sql_query(sql)
+            if not rows > 0:
+                return
+
+            i = 0
+            while i < rows:
+                # poll channel
+                if int(data[i][1]) == 1:
+                    if message.content.lower().startswith('poll:'):
+                        await message.add_reaction(emoji='\U0001F44D')
+                        await message.add_reaction(emoji='\U0001F44E')
+                        await message.add_reaction(emoji='\U0001F937')
+                    else:
+                        await message.channel.send('**Your message will be removed. ' +
+                                '__Copy it now!__**\nYou can read this message after ' +
+                                'you copy yours.\n\nThis is not in a valid poll ' +
+                                'format "Poll: ".\nIf this was  poll, please type ' +
+                                '"Poll: " first, then paste in your message.\n' +
+                                'Thank you.',delete_after=90)
+                        await message.delete(delay=30)
+
+                # General + poll channel
+                if int(data[i][1]) == 2:
+                    if message.content.lower().startswith('poll:'):
+                        await message.add_reaction(emoji='\U0001F44D')
+                        await message.add_reaction(emoji='\U0001F44E')
+                        await message.add_reaction(emoji='\U0001F937')
+            # Increment
+                i+=1
 
             #TODO: check chat and voice xp for trusted
             #    TODO: if trusted removed, nope
