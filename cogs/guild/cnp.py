@@ -110,11 +110,8 @@ class CoffeePolCog(commands.Cog):
         except:
             return
 
-        args = [self, 'guild_membership', 'voice_updating', _guild_check, member.id]
         try:
             if before.channel is after.channel:
-                return
-            elif zb.is_updating(*args):
                 return
             # Joined voice channel
             elif before.channel is None and not after.channel is None:
