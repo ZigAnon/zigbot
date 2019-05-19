@@ -52,6 +52,7 @@ class onmessageCog(commands.Cog):
                     self.bot.user.display_name)
                 await zb.timed_msg(message.channel,msg,30)
 
+            # Mass mentions
             if(len(message.mentions) > 0 and
                     not zb.is_trusted(message,_var.maxRoleRanks)):
                 count = zb.mention_spamming(message.author)

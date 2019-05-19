@@ -89,6 +89,17 @@ class CoffeePolCog(commands.Cog):
                     'links.\n Bye bye!')
             await message.author.ban(reason='Posted invite')
 
+        # If IQ, stop topic
+        if(' iq' in message.content.lower() or
+                'iq ' in message.content.lower()):
+            await message.channel.send(f'{message.author.mention}, there are ' \
+                    f'better arguments than IQ to make your case.\n' \
+                    f'https://www.independent.co.uk/news/science/iq-tests' \
+                    f'-are-fundamentally-flawed-and-using-them-alone-to-measure' \
+                    f'-intelligence-is-a-fallacy-study-8425911.html\n' \
+                    f'https://www.cell.com/neuron/fulltext/S0896-6273(12)00584-3',
+                    delete_after=300)
+
     # Events on member join voice
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
