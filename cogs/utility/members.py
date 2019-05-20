@@ -17,7 +17,7 @@ class MembersCog(commands.Cog):
     @commands.command(name='lsar', hidden=True)
     @commands.guild_only()
     async def list_self_assignable_roles(self, ctx, *args):
-        """Adds roles"""
+        """Lists roles"""
         try:
             # Checks for group 3 roles
             sql = """ SELECT name
@@ -180,6 +180,11 @@ class MembersCog(commands.Cog):
                     sql = sql.format(ctx.guild.id,cmd.lower())
                     add, rows, junk1 = zb.sql_query(sql)
 
+                    # Role doesn't exist
+                    if rows == 0:
+                        #TODO: role doesnt exist or check spelling
+                        return
+
                     # Does member have role
                     for role in ctx.author.roles:
                         if role.id == add[0][0]:
@@ -188,11 +193,6 @@ class MembersCog(commands.Cog):
                                     color=0xee281f)
                             await ctx.send(embed=embed)
                             return
-
-                    # Role doesn't exist
-                    if rows == 0:
-                        #TODO: role doesnt exist or check spelling
-                        return
 
                     # Add role
                     if add[0][1] == 3:
