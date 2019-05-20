@@ -291,6 +291,7 @@ def get_roles_special(guild_id,group_id):
     # 1 = join role
     # 2 = chat role
     # 3 = ideology role
+    # 4 = assignable role
     # 10 = shitpost role
     # 11 = mute role
     # 12 = jail role
