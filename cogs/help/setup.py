@@ -84,6 +84,7 @@ class SetupCog(commands.Cog):
             sql = """ UPDATE roles
                       SET role_perms = {0}
                       WHERE guild_id = {1}
+                      AND group_id = 0
                       AND role_id = {2} """
             sql = sql.format(role_perms, ctx.guild.id, role_id)
             rows, string = zb.sql_update(sql)
