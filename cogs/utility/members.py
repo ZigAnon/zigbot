@@ -68,9 +68,22 @@ class MembersCog(commands.Cog):
                               AND lower(name) = '{1}' """
                     sql = sql.format(ctx.guild.id,cmd.lower())
                     add, rows, junk1 = zb.sql_query(sql)
+
+                    # Does member have role
+                    for role in ctx.author.roles:
+                        if role.id == add[0][0]:
+                            embed=discord.Embed(description=f'**{ctx.author}** You already have ' \
+                                    f'the **{cmd.capitalize()}** role.',
+                                    color=0xee281f)
+                            await ctx.send(embed=embed)
+                            return
+
+                    # Role doesn't exist
                     if rows == 0:
                         #TODO: role doesnt exist or check spelling
                         return
+
+                    # Add role
                     if add[0][1] == 3:
                         embed=discord.Embed(description=f'**{ctx.author}** You now have ' \
                                 f'the **{cmd.capitalize()}** role.',
