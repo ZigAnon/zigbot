@@ -1,3 +1,4 @@
+import math
 import discord
 from discord.ext import commands
 from bin import zb
@@ -12,6 +13,116 @@ class MembersCog(commands.Cog):
     async def say_remove(self, ctx):
         """Removes bot commands."""
         await ctx.message.delete()
+
+    @commands.command(name='lsar', hidden=True)
+    @commands.guild_only()
+    async def list_self_assignable_roles(self, ctx, *args):
+        """Adds roles"""
+        try:
+            # Checks for group 3 roles
+            sql = """ SELECT name
+                      FROM roles
+                      WHERE guild_id = {0}
+                      AND group_id = 3
+                      ORDER BY group_id ASC, name ASC """
+            sql = sql.format(ctx.guild.id)
+            roles, rows, junk1 = zb.sql_query(sql)
+            # If none found, return
+            if rows == 0:
+                return
+
+            # Checks for group 4+ roles
+            sql = """ SELECT name
+                      FROM roles
+                      WHERE guild_id = {0}
+                      AND group_id >= 4
+                      AND group_id <= 5
+                      ORDER BY group_id ASC, name ASC """
+            sql = sql.format(ctx.guild.id)
+            rolesP, rowsP, junk1 = zb.sql_query(sql)
+
+            # Calculate pages
+            header = 0
+            if rows > 0:
+                header += 1
+            if rowsP > 0:
+                header += 1
+            totalRows = rows+rowsP+header
+            pages = int(math.ceil((totalRows)/20))
+            # Starting page
+            try:
+                page = int(args[0])
+                if page < 1:
+                    page = 1
+                elif page > pages:
+                    page = pages
+            except:
+                page = 1
+
+            # Build Chat Roles
+            embeds = []
+            strings = []
+            if pages > 1:
+                count = 0
+                string = '⟪**Chat Roles**⟫\n' + roles[0][0]
+                count += 3
+                i = 1
+                j = 0
+                while (count) < (totalRows+(pages*2)):
+                    while i < rows and not count%21 == 0:
+                        string = string + '\n' + roles[i][0]
+                        # Increment loop
+                        i+=1
+                        count+=1
+                    # Build Vanity Roles
+                    while j < rowsP and not count%21 == 0:
+                        if j == 0:
+                            string = string + '\n⟪**Vanity Roles**⟫\n' + rolesP[0][0]
+                            count+=1
+                        elif count%20 == 1:
+                            string = string + rolesP[j][0]
+                        else:
+                            string = string + '\n' + rolesP[j][0]
+                        # Increment loop
+                        j+=1
+                        count+=1
+                    # Increment count
+                    count+=1
+                    strings.append(string)
+                    string = ''
+            else:
+                string = '⟪**Chat Roles**⟫\n' + roles[0][0]
+                i = 1
+                while i < rows:
+                    string = string + '\n' + roles[i][0]
+                    # Increment loop
+                    i+=1
+                # Build Vanity Roles
+                if rowsP > 0:
+                    string = string + '\n⟪**Vanity Roles**⟫\n' + rolesP[0][0]
+                    i = 1
+                    while i < rowsP:
+                        string = string + '\n' + rolesP[i][0]
+                        # Increment loop
+                        i+=1
+                strings.append(string)
+
+            initialEmbed=discord.Embed(color=0xf5d28a)
+            initialEmbed.add_field(name=f'**There are {rows+rowsP} self assignable roles**',
+                    value=f'{strings[page-1]}')
+            i = 0
+            while i < pages:
+                embed=discord.Embed(color=0xf5d28a)
+                embed.add_field(name=f'**There are {rows+rowsP} self assignable roles**',
+                        value=f'{strings[i]}')
+                embeds.append(embed)
+                # Increment loop
+                i+=1
+
+            await zb.print_embed_nav(self,ctx,initialEmbed,embeds,pages,page)
+
+        except Exception as e:
+            await zb.bot_errors(ctx,e)
 
     @commands.command(name='iam', hidden=True)
     @commands.guild_only()
@@ -170,6 +281,7 @@ class MembersCog(commands.Cog):
                     f'the **{cmd.capitalize()}** role.\nAll other roles are ' \
                     f'removed.', color=0xf5d28a)
             await ctx.send(embed=embed)
+            await ctx.author.send('Join voice channel to type `.iamn busy`.')
             string = string[:-2]
             zb.add_special_role(string)
         except Exception as e:
