@@ -219,6 +219,18 @@ class MembersCog(commands.Cog):
                         #TODO: role doesnt exist or check spelling
                         return
 
+                    # Does member have role
+                    found = False
+                    for role in ctx.author.roles:
+                        if role.id == rmv[0][0]:
+                            found = True
+                    if not found:
+                        embed=discord.Embed(description=f'**{ctx.author}** You don\'t have ' \
+                                f'the **{cmd.capitalize()}** role.',
+                                color=0xee281f)
+                        await ctx.send(embed=embed)
+                        return
+
                     # Remove found role
                     rmv = ctx.guild.get_role(rmv[0][0])
                     await ctx.author.remove_roles(rmv)
