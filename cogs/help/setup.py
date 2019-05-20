@@ -146,6 +146,7 @@ class SetupCog(commands.Cog):
             sql = """ SELECT role_id,group_id,name
                       FROM roles
                       WHERE guild_id = {0}
+                      AND role_perms = 0
                       AND lower(name) = '{1}' """
             sql = sql.format(ctx.guild.id,role_name.lower())
             mod, rows, junk1 = zb.sql_query(sql)
@@ -230,19 +231,23 @@ class SetupCog(commands.Cog):
                     await zb.bot_errors(ctx,e)
 
                 # Assign group id
-                group_id = nav + 3
-                sql = """ UPDATE roles
-                          SET group_id = {0}
-                          WHERE role_id = {1} """
-                sql = sql.format(group_id,role_id)
-                rows, string = zb.sql_update(sql)
-
+                try:
+                    group_id = nav + 3
+                    sql = """ UPDATE roles
+                              SET group_id = {0}
+                              WHERE role_id = {1} """
+                    sql = sql.format(group_id,role_id)
+                    rows, string = zb.sql_update(sql)
+                    embed=discord.Embed(description=f'**{ctx.author}** Role **{role_name}** ' \
+                            f'has been added to the list in group **{group_id}**',
+                            color=0xf5d28a)
+                    await msg.edit(embed=embed,delete_after=30)
+                except:
+                    embed=discord.Embed(description=f'**{ctx.author}** Role **{role_name}** ' \
+                            f'not changed. Please .asar {role_name} again.',
+                            color=0xf5d28a)
+                    await msg.edit(embed=embed,delete_after=30)
                 await msg.clear_reactions()
-                embed=discord.Embed(description=f'**{ctx.author}** Role **{role_name}** ' \
-                        f'has been added to the list in group **{group_id}**',
-                        color=0xf5d28a)
-                await msg.edit(embed=embed,delete_after=30)
-
         except Exception as e:
             await zb.bot_errors(ctx,e)
 
