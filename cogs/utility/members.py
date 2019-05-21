@@ -171,7 +171,7 @@ class MembersCog(commands.Cog):
                         canTalk = False
 
                     # Get role id
-                    sql = """ SELECT role_id,group_id,name
+                    sql = """ SELECT role_id,group_id
                               FROM roles
                               WHERE guild_id = {0}
                               AND group_id >= 3
@@ -189,7 +189,7 @@ class MembersCog(commands.Cog):
                     for role in ctx.author.roles:
                         if role.id == add[0][0]:
                             embed=discord.Embed(description=f'**{ctx.author}** You already have ' \
-                                    f'the **{add[0][2]}** role.',
+                                    f'the **{cmd.capitalize()}** role.',
                                     color=0xee281f)
                             await ctx.send(embed=embed)
                             return
@@ -197,7 +197,7 @@ class MembersCog(commands.Cog):
                     # Add role
                     if add[0][1] == 3:
                         embed=discord.Embed(description=f'**{ctx.author}** You now have ' \
-                                f'the **{add[0][2]}** role.',
+                                f'the **{cmd.capitalize()}** role.',
                                 color=0xf5d28a)
                         await ctx.send(embed=embed)
                         add = ctx.guild.get_role(add[0][0])
@@ -209,7 +209,7 @@ class MembersCog(commands.Cog):
                             await ctx.author.remove_roles(join,reason='Added political role')
                     elif add[0][1] == 4:
                         embed=discord.Embed(description=f'**{ctx.author}** You now have ' \
-                                f'the **{add[0][2]}** role.',
+                                f'the **{cmd.capitalize()}** role.',
                                 color=0xf5d28a)
                         await ctx.send(embed=embed)
                         add = ctx.guild.get_role(add[0][0])
@@ -319,7 +319,7 @@ class MembersCog(commands.Cog):
                     join = zb.get_roles_special(ctx.guild.id,1)
 
                     # Get role id
-                    sql = """ SELECT role_id,group_id,name
+                    sql = """ SELECT role_id,group_id
                               FROM roles
                               WHERE guild_id = {0}
                               AND group_id >= 3
@@ -338,7 +338,7 @@ class MembersCog(commands.Cog):
                             found = True
                     if not found:
                         embed=discord.Embed(description=f'**{ctx.author}** You don\'t have ' \
-                                f'the **{rmv[0][2]}** role.',
+                                f'the **{cmd.capitalize()}** role.',
                                 color=0xee281f)
                         await ctx.send(embed=embed)
                         return
@@ -347,7 +347,7 @@ class MembersCog(commands.Cog):
                     rmv = ctx.guild.get_role(rmv[0][0])
                     await ctx.author.remove_roles(rmv)
                     embed=discord.Embed(description=f'**{ctx.author}** You no ' \
-                            f'longer have the **{rmv[0][2]}** role.',
+                            f'longer have the **{cmd.capitalize()}** role.',
                             color=0xf5d28a)
                     await ctx.send(embed=embed)
 
