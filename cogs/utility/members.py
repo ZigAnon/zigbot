@@ -41,6 +41,20 @@ class MembersCog(commands.Cog):
             sql = sql.format(ctx.guild.id)
             rolesP, rowsP, junk1 = zb.sql_query(sql)
 
+            # Checks if user can talk
+            sql = """ SELECT m.role_id
+                      FROM role_membership m
+                      LEFT JOIN users u ON m.int_user_id = u.int_user_id
+                      LEFT JOIN roles r ON m.role_id = r.role_id
+                      WHERE m.guild_id = {0}
+                      AND u.real_user_id = {1}
+                      AND r.group_id = 3 """
+            sql = sql.format(ctx.guild.id,ctx.author.id)
+            junk1, canTalk, junk2 = zb.sql_query(sql)
+            if int(canTalk) == 0:
+                rolesP = [[]]
+                rowsP = 0
+
             # Calculate pages
             header = 0
             if rows > 0:
