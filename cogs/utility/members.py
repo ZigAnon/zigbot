@@ -77,31 +77,30 @@ class MembersCog(commands.Cog):
             embeds = []
             strings = []
             if pages > 1:
-                count = 0
                 string = '⟪**Chat Roles**⟫\n' + roles[0][0]
-                count += 3
                 i = 1
                 j = 0
-                while (count) < (totalRows+(pages*2)):
-                    while i < rows and not count%21 == 0:
+                limit = 19
+                while i < rows or j < rowsP:
+                    while i < rows and i < limit:
                         string = string + '\n' + roles[i][0]
                         # Increment loop
                         i+=1
-                        count+=1
+                        if i == rows:
+                            limit = limit - i
                     # Build Vanity Roles
-                    while j < rowsP and not count%21 == 0:
+                    while j < rowsP and i == rows and j < limit:
                         if j == 0:
                             string = string + '\n⟪**Vanity Roles**⟫\n' + rolesP[0][0]
-                            count+=1
-                        elif count%20 == 1:
-                            string = string + rolesP[j][0]
+                            limit-=1
                         else:
                             string = string + '\n' + rolesP[j][0]
                         # Increment loop
                         j+=1
-                        count+=1
-                    # Increment count
-                    count+=1
+                    if i == rows:
+                        limit = j + 20
+                    else:
+                        limit = i + 20
                     strings.append(string)
                     string = ''
             else:
