@@ -133,7 +133,7 @@ class MembersCog(commands.Cog):
                 # Increment loop
                 i+=1
 
-            await zb.print_embed_nav(self,ctx,initialEmbed,embeds,pages,page)
+            await zb.print_embed_nav(self,ctx,initialEmbed,embeds,pages,page,'')
 
         except Exception as e:
             await zb.bot_errors(ctx,e)

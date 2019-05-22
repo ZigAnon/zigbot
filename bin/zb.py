@@ -975,11 +975,13 @@ def nav_small_message(maxInt,curInt,nav):
     else:
         return maxInt
 
-async def print_embed_nav(self,ctx,initialEmbed,embedList,maxInt,initialIndex):
+async def print_embed_nav(self,ctx,initialEmbed,embedList,
+        maxInt,initialIndex,footer):
     count = initialIndex - 1
     maxInt = maxInt - 1
-    initialEmbed.set_footer(text=f'{count+1} of {maxInt+1} | ID: {ctx.author.id}')
-    initialEmbed.timestamp = datetime.utcnow()
+    if footer == '':
+        initialEmbed.set_footer(text=f'{count+1} of {maxInt+1} | ID: {ctx.author.id}')
+        initialEmbed.timestamp = datetime.utcnow()
     msg = await ctx.send(embed=initialEmbed)
 
     if maxInt > 9:
@@ -1028,8 +1030,9 @@ async def print_embed_nav(self,ctx,initialEmbed,embedList,maxInt,initialIndex):
             else:
                 count = nav_small_message(maxInt,count,nav)
             embed = embedList[count]
-            embed.set_footer(text=f'{count+1} of {maxInt+1} | ID: {ctx.author.id}')
-            embed.timestamp = datetime.utcnow()
+            if footer == '':
+                embed.set_footer(text=f'{count+1} of {maxInt+1} | ID: {ctx.author.id}')
+                embed.timestamp = datetime.utcnow()
             await msg.edit(embed=embed)
         except Exception as e:
             await bot_errors(ctx,e)

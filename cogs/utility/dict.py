@@ -58,7 +58,7 @@ class DictionaryCog(commands.Cog):
                     embedList.append(embed)
                     i+=1
                 msg = await zb.print_embed_nav(self,ctx,initialEmbed,
-                        embedList,howmany,1)
+                        embedList,howmany,1,'')
             else:
                 msg = await ctx.send(f'Unable to find **{word.capitalize()}** ' \
                         'in Merriam-Webster', delete_after=10)
@@ -112,7 +112,7 @@ class DictionaryCog(commands.Cog):
                     embedList.append(embed)
                     i+=1
                 msg = await zb.print_embed_nav(self,ctx,initialEmbed,
-                        embedList,howmany,1)
+                        embedList,howmany,1,'')
             else:
                 msg = await ctx.send(f'Unable to find **{word.capitalize()}** ' \
                         'in Oxford Living', delete_after=10)
