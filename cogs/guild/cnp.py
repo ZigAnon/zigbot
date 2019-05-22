@@ -76,6 +76,10 @@ class CoffeePolCog(commands.Cog):
         if not message.guild is guild:
             return
 
+        # Delete @everyone post
+        if not zb.is_trusted(message,5) and '@everyone' in message.content.lower():
+            await message.delete()
+
         # If discord link
         if(not zb.is_trusted(message,5) and zb.is_pattern(message.content.lower(),
                 '(https?:\/\/)?(www\.)?(discord\.(gg|io|me|li)|disboard\.org\/server|discordapp\.com\/invite)\/.+([0-9]|[a-z])')):
