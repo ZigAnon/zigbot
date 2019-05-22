@@ -96,8 +96,9 @@ class CoffeePolCog(commands.Cog):
             await message.author.ban(reason='Posted invite')
 
         # If IQ, stop topic
-        if(' iq' in message.content.lower() or
-                'iq ' in message.content.lower()):
+        if(not zb.is_trusted(message,5) and
+                (' iq' in message.content.lower() or
+                    'iq ' in message.content.lower())):
             await message.channel.send(f'{message.author.mention}, there are ' \
                     f'better arguments than IQ to make your case.\n' \
                     f'https://www.independent.co.uk/news/science/iq-tests' \
