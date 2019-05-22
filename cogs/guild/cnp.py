@@ -77,7 +77,9 @@ class CoffeePolCog(commands.Cog):
             return
 
         # Delete @everyone post
-        if not zb.is_trusted(message,5) and '@everyone' in message.content.lower():
+        if(not zb.is_trusted(message,5) and
+                ('@everyone' in message.content.lower() or
+                    '@here' in message.content.lower())):
             await message.delete()
 
         # If discord link
