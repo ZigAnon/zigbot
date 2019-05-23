@@ -284,19 +284,20 @@ class MembersCog(commands.Cog):
             int_id = zb.get_member_sql_int(ctx.author.id)
             string = '('
             rmv = []
-            for role in ctx.author.roles:
-                if not role.name == '@everyone':
-                    string += f'51,{int_id},{ctx.author.id},{ctx.guild.id},{role.id}),('
-                    rmv.append(role)
-            await ctx.author.remove_roles(*rmv,reason='Is Busy')
-            await zb.add_roles(self,ctx.author,add,'Is Busy')
-            embed=discord.Embed(description=f'**{ctx.author}** You now have ' \
-                    f'the **{cmd.capitalize()}** role.\nAll other roles are ' \
-                    f'removed.', color=0xf5d28a)
-            await ctx.send(embed=embed)
-            await ctx.author.send('Join voice channel to type `.iamn busy`.')
-            string = string[:-2]
-            zb.add_special_role(string)
+            async with ctx.channel.typing():
+                for role in ctx.author.roles:
+                    if not role.name == '@everyone':
+                        string += f'51,{int_id},{ctx.author.id},{ctx.guild.id},{role.id}),('
+                        rmv.append(role)
+                await ctx.author.remove_roles(*rmv,reason='Is Busy')
+                await zb.add_roles(self,ctx.author,add,'Is Busy')
+                embed=discord.Embed(description=f'**{ctx.author}** You now have ' \
+                        f'the **{cmd.capitalize()}** role.\nAll other roles are ' \
+                        f'removed.', color=0xf5d28a)
+                await ctx.send(embed=embed)
+                await ctx.author.send('Join voice channel to type `.iamn busy`.')
+                string = string[:-2]
+                zb.add_special_role(string)
         except Exception as e:
             await zb.bot_errors(ctx,e)
 
@@ -420,14 +421,15 @@ class MembersCog(commands.Cog):
                       AND real_user_id = {1} """
             sql = sql.format(ctx.guild.id,ctx.author.id)
             data, rows, junk2 = zb.sql_query(sql)
-            if rows == 0:
-                await ctx.send('You aren\'t busy.\n Please `.iam busy` if you wish to become busy.',
-                        delete_after=15)
-                await ctx.message.delete()
-                return
-            await zb.add_roles(self,ctx.author,data,'No longer busy')
-            await zb.remove_roles(self,ctx.author,rmv,'No longer busy')
-            zb.rmv_special_role(ctx.guild.id,51,ctx.author.id)
+            async with ctx.channel.typing():
+                if rows == 0:
+                    await ctx.send('You aren\'t busy.\n Please `.iam busy` if you wish to become busy.',
+                            delete_after=15)
+                    await ctx.message.delete()
+                    return
+                await zb.add_roles(self,ctx.author,data,'No longer busy')
+                await zb.remove_roles(self,ctx.author,rmv,'No longer busy')
+                zb.rmv_special_role(ctx.guild.id,51,ctx.author.id)
         except Exception as e:
             await zb.bot_errors(ctx,e)
 

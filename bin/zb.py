@@ -997,13 +997,14 @@ async def print_embed_nav(self,ctx,initialEmbed,embedList,
                 reaction.message.channel == ctx.message.channel and
                 str(reaction) in ids)
 
-    if maxInt > 0:
-        for id in ids:
-            try:
-                await msg.add_reaction(emoji=id)
-            except:
-                await ctx.send(f'I could not find emoji.id = {id}',
-                        delete_after=5)
+    async with ctx.channel.typing():
+        if maxInt > 0:
+            for id in ids:
+                try:
+                    await msg.add_reaction(emoji=id)
+                except:
+                    await ctx.send(f'I could not find emoji.id = {id}',
+                            delete_after=5)
 
     while True:
         print(f'looping true for reaction add or remove')
@@ -1044,6 +1045,74 @@ async def print_embed_nav(self,ctx,initialEmbed,embedList,
     await msg.clear_reactions()
 
     return msg
+
+async def print_embed_choice(self,ctx,embedMsg,lowChoice,maxChoices,footer):
+    lowChoice-=1
+    if footer == '':
+        embedMsg.set_footer(text=f'ID: {ctx.author.id}')
+        embedMsg.timestamp = datetime.utcnow()
+    else:
+        embedMsg.timestamp = datetime.utcnow()
+    msg = await ctx.send(embed=embedMsg)
+
+    # Reactions
+    ids = ['1\N{combining enclosing keycap}',
+            '2\N{combining enclosing keycap}',
+            '3\N{combining enclosing keycap}',
+            '4\N{combining enclosing keycap}',
+            '5\N{combining enclosing keycap}',
+            '6\N{combining enclosing keycap}',
+            '7\N{combining enclosing keycap}',
+            '8\N{combining enclosing keycap}',
+            '9\N{combining enclosing keycap}',
+            '0\N{combining enclosing keycap}']
+
+    # Check reaction
+
+    # Check reaction
+    def r_check(reaction, user):
+        return (reaction.message.id == msg.id and user == ctx.author and
+                reaction.message.channel == ctx.message.channel and
+                str(reaction) in ids)
+
+    async with ctx.channel.typing():
+        # Add reactions
+        i = lowChoice
+        while i < maxChoices:
+            try:
+                await msg.add_reaction(emoji=ids[i])
+            except:
+                await ctx.send(f'I could not find emoji.id = {ids[i]}',
+                        delete_after=5)
+            # increment loop
+            i+=1
+    while True:
+        print(f'looping true for reaction add or remove')
+        done, pending = await asyncio.wait([
+                            self.bot.wait_for('reaction_add', check=r_check),
+                            self.bot.wait_for('reaction_remove', check=r_check)
+                        ], timeout = 10, return_when=asyncio.FIRST_COMPLETED)
+
+        try:
+            stuff = done.pop().result()
+        except Exception as e:
+            break
+
+        try:
+            emoji_id = get_pattern(str(stuff), "(?<=emoji=')((.{2})(?='\s))")
+            selected = int(ids.index(emoji_id))
+            break
+        except Exception as e:
+            selected = -1
+
+    try:
+        for future in pending:
+            future.cancel()
+    except Exception as e:
+        await bot_errors(ctx,e)
+    await msg.clear_reactions()
+
+    return msg, selected
 
 def print_2000lim(string):
     try:

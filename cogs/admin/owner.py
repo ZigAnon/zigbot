@@ -74,9 +74,12 @@ class OwnerCog(commands.Cog):
                     sql = """ UPDATE rules
                               SET message_id = {0}
                               WHERE description = '{1}'
-                              AND title = '{2}'
-                              AND channel_id = {3} """
-                    sql = sql.format(msg.id,desc,title,channel.id)
+                              AND "order" = {2}
+                              AND title = '{3}'
+                              AND channel_id = {4} """
+                    sql = sql.format(msg.id,desc,int(data[i][0]),
+                            title,channel.id)
+                    await ctx.send(sql)
                     junk1, junk2 = zb.sql_update(sql)
                 else:
                     # Edit message if exists
