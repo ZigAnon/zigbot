@@ -79,20 +79,24 @@ class OwnerCog(commands.Cog):
                     sql = sql.format(msg.id,desc,title,channel.id)
                     junk1, junk2 = zb.sql_update(sql)
                 else:
-                    # Build and edit embed structure
+                    # Edit message if exists
+                    # Check for changes
                     msg = await channel.fetch_message(int(data[i][10]))
+                    for embed in msg.embeds:
+                        test = embed.description
 
-                    embed=discord.Embed(title=f'{title}',
-                            description=f'{desc}',
-                            color=color)
-                    #TODO: for field not equal to 'none', add field
-                    embed.set_author(name=f'{a_name}',
-                            icon_url=f'{a_icon}')
-                    embed.set_footer(text=f'{f_text}',
-                            icon_url=f'{f_icon}')
-                    embed.timestamp = datetime.utcnow()
-                    await msg.edit(embed=embed)
-
+                    # If changed, update
+                    if test != desc:
+                        embed=discord.Embed(title=f'{title}',
+                                description=f'{desc}',
+                                color=color)
+                        #TODO: for field not equal to 'none', add field
+                        embed.set_author(name=f'{a_name}',
+                                icon_url=f'{a_icon}')
+                        embed.set_footer(text=f'{f_text}',
+                                icon_url=f'{f_icon}')
+                        embed.timestamp = datetime.utcnow()
+                        await msg.edit(embed=embed)
 
                 #increment loop
                 i+=1

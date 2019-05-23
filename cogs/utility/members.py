@@ -159,7 +159,7 @@ class MembersCog(commands.Cog):
                           AND group_id = 3 """
                 sql = sql.format(ctx.guild.id)
                 chan, rows, junk2 = zb.sql_query(sql)
-                if rows == 0 or ctx.message.channel.id != chan[0][0]:
+                if rows == 0 or not ctx.message.channel.id in chan:
                     return
 
                 # Get talk role
@@ -322,7 +322,7 @@ class MembersCog(commands.Cog):
                           AND group_id = 3 """
                 sql = sql.format(ctx.guild.id)
                 chan, rows, junk2 = zb.sql_query(sql)
-                if rows == 0 or ctx.message.channel.id != chan[0][0]:
+                if rows == 0 or not ctx.message.channel.id in chan:
                     return
 
                 # Get talk role
