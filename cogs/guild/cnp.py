@@ -22,6 +22,10 @@ class CoffeePolCog(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         guild = self.bot.get_guild(509242768401629204)
+        # If message in #landing
+        if message.channel.id == 574748648072544273:
+            await message.delete(delay=120)
+
         # If any bot
         if message.author.bot:
             return
