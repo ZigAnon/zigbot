@@ -504,22 +504,6 @@ def punish_user(member,number):
     sql = sql.format(member.guild.id,member.id,number)
     rows, string = sql_update(sql)
 
-async def punish_log(guild,embed):
-    try:
-        # If no punish chan, skip log
-        sql = """ SELECT channel_id
-                  FROM channels
-                  WHERE guild_id = {0}
-                  AND group_id = 80 """
-        sql = sql.format(guild.id)
-
-        chan, rows, junk2 = sql_query(sql)
-        if rows != 0:
-            punishchan = guild.get_channel(int(chan[0][0]))
-            await punishchan.send(embed=embed)
-    except Exception as e:
-        await bot_errors(ctx,e)
-
 def get_punish_num(member):
     sql = """ SELECT g.punished
               FROM guild_membership g
@@ -934,6 +918,22 @@ async def print_log(ctx,member,embed):
         embed.set_footer(text="ID: " + str(member.id))
         embed.timestamp = datetime.utcnow()
         await channel.send(embed=embed)
+    except Exception as e:
+        await bot_errors(ctx,e)
+
+async def print_log_by_group_id(guild,group_id,embed):
+    try:
+        # If no punish chan, skip log
+        sql = """ SELECT channel_id
+                  FROM channels
+                  WHERE guild_id = {0}
+                  AND group_id = {1} """
+        sql = sql.format(guild.id,group_id)
+
+        chan, rows, junk2 = sql_query(sql)
+        if rows != 0:
+            printchan = guild.get_channel(int(chan[0][0]))
+            await printchan.send(embed=embed)
     except Exception as e:
         await bot_errors(ctx,e)
 

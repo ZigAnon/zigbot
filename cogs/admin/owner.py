@@ -17,10 +17,8 @@ class OwnerCog(commands.Cog):
     async def tool_dev(self, ctx):
         """ Command that tests modules. """
         try:
-            async with aiohttp.ClientSession() as cs:
-                async with cs.get('https://www.washingtonexaminer.com/tag/politics.rss') as r:
-                    res = await r.read()
-                    print(res)
+            permissions = ctx.author.permissions_in(ctx.channel)
+            print(permissions.send_messages)
         except Exception as e:
             await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,e)

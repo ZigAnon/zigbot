@@ -86,7 +86,7 @@ class PunishCog(commands.Cog):
                         description=f'**{member}** was given Shitposter by ' +
                         f'**{ctx.message.author}**!',
                         color=0xd30000)
-                await zb.punish_log(ctx.guild,embed)
+                await zb.print_log_by_group_id(ctx.guild,80,embed)
 
                 # If no shit chan, skip notify
                 sql = """ SELECT channel_id

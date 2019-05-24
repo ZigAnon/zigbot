@@ -65,7 +65,8 @@ class onmemberupdateCog(commands.Cog):
                     return
                 if role.name != 'BotAdmin':
                     embed=discord.Embed(description=before.mention +
-                            f" **was given the `{role.name}` role**", color=0x117ea6)
+                            f" **was given the `{role.name}` role**",
+                            color=0x117ea6)
                     embed.set_author(name=before, icon_url=after.avatar_url)
                     await zb.print_log(self,before,embed)
             elif len(before.roles) > len(after.roles):
@@ -76,7 +77,8 @@ class onmemberupdateCog(commands.Cog):
                     return
                 if role.name != 'BotAdmin':
                     embed=discord.Embed(description=before.mention +
-                            f" **was removed from the `{role.name}` role**", color=0x117ea6)
+                            f" **was removed from the `{role.name}` role**",
+                            color=0x117ea6)
                     embed.set_author(name=before, icon_url=after.avatar_url)
                     await zb.print_log(self,before,embed)
 

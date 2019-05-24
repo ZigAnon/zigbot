@@ -110,7 +110,7 @@ class onmemberjoinCog(commands.Cog):
                             description=f'**{member}** was jailed for ' \
                                     f'punishment evasion!',
                             color=0xd30000)
-                    await zb.punish_log(member.guild,embed)
+                    await zb.print_log_by_group_id(member.guild,80,embed)
                     punishNum = zb.get_punish_num(member)
                     data = zb.get_roles_by_group_id(member.guild.id,12)
                     reason = 'Left and rejoined after punishment {0}'.format(punishNum)
