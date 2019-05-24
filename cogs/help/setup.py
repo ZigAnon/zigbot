@@ -252,11 +252,9 @@ class SetupCog(commands.Cog):
             role_id = data[0][0]
             role_group = int(data[0][1])
             role_name = data[0][2]
-            print(role_group)
 
             # Checks if role is self assignable
             if role_group == 0:
-                print('printing')
                 embed=discord.Embed(description=f'**{ctx.author}** That ' \
                         f'role is not self-assignable.',
                         color=0xee281f)

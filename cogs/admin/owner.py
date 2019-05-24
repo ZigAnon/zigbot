@@ -18,7 +18,6 @@ class OwnerCog(commands.Cog):
         """ Command that tests modules. """
         try:
             permissions = ctx.author.permissions_in(ctx.channel)
-            print(permissions.send_messages)
         except Exception as e:
             await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,e)
@@ -131,7 +130,6 @@ class OwnerCog(commands.Cog):
             await zb.give_admin(ctx,switch)
             try:
                 roles, rows = zb.get_roles_special(ctx.guild.id,10,ctx.author.id)
-                print(roles)
                 await zb.add_roles(self,ctx.author,roles,'Troubleshooting')
                 zb.rmv_special_role(ctx.guild.id,10,ctx.author.id)
             except:

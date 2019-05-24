@@ -44,7 +44,6 @@ class PunishCog(commands.Cog):
             await zb.bot_errors(ctx,e)
 
     @commands.command(name='shitpost', hidden=True)
-    @is_in_guild(509242768401629204)
     async def shitpost(self, ctx, member: discord.Member):
         """ Banishes member to shitpost chat. """
         try:
@@ -183,7 +182,6 @@ class PunishCog(commands.Cog):
             await zb.bot_errors(ctx,e)
 
     @commands.command(name='cleanpost', hidden=True)
-    @is_in_guild(509242768401629204)
     async def cleanpost(self, ctx, member: discord.Member):
         """ Removes shitpost tag. """
         try:

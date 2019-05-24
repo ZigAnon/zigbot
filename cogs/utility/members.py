@@ -231,7 +231,6 @@ class MembersCog(commands.Cog):
                                   WHERE guild_id = {0} """
                         sql = sql.format(ctx.guild.id)
                         role_name, rows, junk2 = zb.sql_query(sql)
-                        print(rows)
                         if rows == 0:
                             return
                         elif cmd in role_name:
@@ -335,7 +334,6 @@ class MembersCog(commands.Cog):
                               WHERE guild_id = {0} """
                     sql = sql.format(ctx.guild.id)
                     role_name, rows, junk2 = zb.sql_query(sql)
-                    print(rows)
                     if rows == 0:
                         return
                     elif cmd in role_name:
