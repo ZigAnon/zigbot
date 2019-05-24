@@ -180,7 +180,20 @@ def rmv_special_role(guild_id,type_num,member_id):
     rows, string = sql_update(sql)
     return
 
-def rmv_all_special_role(guild_id,member_id):
+async def store_all_special_roles(ctx,member,group_id):
+    int_id = get_member_sql_int(member.id)
+    string = '('
+    rmv = []
+    async with ctx.channel.typing():
+        for role in member.roles:
+            if not role.name == '@everyone':
+                string += f'{group_id},{int_id},{member.id},{ctx.guild.id},{role.id}),('
+                rmv.append(role)
+        string = string[:-2]
+        add_special_role(string)
+    return rmv
+
+def del_all_special_role(guild_id,member_id):
     sql = """ DELETE FROM special_roles
               WHERE guild_id = {0}
               AND real_user_id = {1} """
@@ -510,11 +523,14 @@ def get_punish_num(member):
               LEFT JOIN users u ON g.int_user_id = u.int_user_id
               WHERE g.guild_id = {0}
               AND u.real_user_id = {1}
-              AND NOT g.punished IS NULL """
+              AND NOT g.punished = 0 """
     sql = sql.format(member.guild.id,member.id)
 
     data, rows, string = sql_query(sql)
-    return int(data[0][0])
+    try:
+        return int(data[0][0])
+    except:
+        return 0
 
 def mention_spamming(member):
     # Set hammer

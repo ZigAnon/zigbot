@@ -25,7 +25,7 @@ class onmemberremoveCog(commands.Cog):
                     icon_url=member.avatar_url)
 
             await zb.print_log(self,member,embed)
-            # junk1, junk2 = zb.rmv_all_special_role(member.guild,member.id)
+            # junk1, junk2 = zb.del_all_special_role(member.guild,member.id)
 
         except Exception as e:
             await zb.bot_errors(self,e)

@@ -22,7 +22,7 @@ class PunishCog(commands.Cog):
         """Command to show inactive members"""
         try:
             if zb.is_trusted(ctx,3):
-                data = [['Open Server', 'Lets members join'], 
+                data = [['Open Server', 'Lets members join'],
                         ['Close Server', 'Auto kicks members who join  ']]
                 choice = await zb.print_select(ctx,data)
 
@@ -51,26 +51,12 @@ class PunishCog(commands.Cog):
                     cp.is_outranked(ctx.message.author,member,4)):
 
                 # If no shitpost role for guild, ignore
-                sql = """ SELECT role_id
-                          FROM roles
-                          WHERE guild_id = {0}
-                          AND group_id = 10 """
-                sql = sql.format(ctx.guild.id)
-
-                add, rows, junk2 = zb.sql_query(sql)
-                if rows == 0:
+                add = zb.get_roles_by_group_id(ctx.guild.id,10)
+                if len(add) == 0:
                     return
 
                 # If punished, can't use command
-                sql = """ SELECT g.punished
-                          FROM guild_membership g
-                          LEFT JOIN users u ON g.int_user_id = u.int_user_id
-                          WHERE g.guild_id = {0}
-                          AND NOT punished = 0
-                          AND u.real_user_id = {1} """
-                sql = sql.format(ctx.guild.id,member.id)
-
-                junk1, rows, junk2 = zb.sql_query(sql)
+                rows = zb.get_punish_num(member)
                 if rows > 0:
                     await ctx.send('User is already punished.',
                             delete_after=15)
@@ -88,32 +74,16 @@ class PunishCog(commands.Cog):
                 await zb.print_log_by_group_id(ctx.guild,80,embed)
 
                 # If no shit chan, skip notify
-                sql = """ SELECT channel_id
-                          FROM channels
-                          WHERE guild_id = {0}
-                          AND group_id = 10 """
-                sql = sql.format(ctx.guild.id)
-
-                chan, rows, junk2 = zb.sql_query(sql)
-                if rows != 0:
-                    shitchan = ctx.guild.get_channel(int(chan[0][0]))
-                    await shitchan.send('Looks like you pushed it too far ' +
-                            f'{member.mention}. You live here now. Enjoy!!',
-                            delete_after=60)
+                embed=discord.Embed(description=f'Looks like you pushed it ' \
+                        f'too far {member.mention}. You live here now. Enjoy!!',
+                        delete_after=60)
+                await zb.print_log_by_group_id(ctx.guild,10,embed)
 
                 # Removes roles and sets shitposter
-                int_id = zb.get_member_sql_int(member.id)
-                string = '('
-                rmv = []
-                async with ctx.channel.typing():
-                    for role in member.roles:
-                        if not role.name == '@everyone':
-                            string += f'10,{int_id},{member.id},{ctx.guild.id},{role.id}),('
-                            rmv.append(role)
+                rmv = await zb.store_all_special_roles(ctx,member,10)
+                if len(rmv) != 0:
                     await member.remove_roles(*rmv,reason='Shitposted')
                     await zb.add_roles(self,member,add,'Shitposted')
-                    string = string[:-2]
-                    zb.add_special_role(string)
 
                 # Kick from voice
                 await member.edit(voice_channel=None)
