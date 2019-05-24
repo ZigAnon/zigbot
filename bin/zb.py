@@ -180,6 +180,23 @@ def rmv_special_role(guild_id,type_num,member_id):
     rows, string = sql_update(sql)
     return
 
+async def get_all_special_roles(ctx,member,low_group,high_group):
+    # Gathers removed roles
+    sql = """ SELECT role_id
+              FROM special_roles
+              WHERE guild_id = {0}
+              AND type >= {1}
+              AND type <= {2}
+              AND real_user_id = {3} """
+    sql = sql.format(ctx.guild.id,low_group,high_group,member.id)
+    roles, rows, junk2 = sql_query(sql)
+    if not rows > 0:
+        await ctx.send(f'Something went wrong {ctx.author.mention}.\n' \
+                f'**{member}** doesn\'t appear to be punished.',
+                delete_after=15)
+        await ctx.message.delete()
+    return roles
+
 async def store_all_special_roles(ctx,member,group_id):
     int_id = get_member_sql_int(member.id)
     string = '('

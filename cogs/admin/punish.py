@@ -159,44 +159,14 @@ class PunishCog(commands.Cog):
                     cp.is_outranked(ctx.message.author,member,4)):
 
                 # If no shitpost role for guild, ignore
-                sql = """ SELECT role_id
-                          FROM roles
-                          WHERE guild_id = {0}
-                          AND group_id = 10 """
-                sql = sql.format(ctx.guild.id)
+                rmv = zb.get_roles_by_group_id(ctx.guild.id,10)
+                if len(rmv) == 0:
+                    return
 
-                rmv, rows, junk2 = zb.sql_query(sql)
+                # If punished, can't use command
+                rows = zb.get_punish_num(member)
                 if rows == 0:
-                    return
-
-                # If not punished, can't use command
-                sql = """ SELECT g.punished
-                          FROM guild_membership g
-                          LEFT JOIN users u ON g.int_user_id = u.int_user_id
-                          WHERE g.guild_id = {0}
-                          AND punished = 0
-                          AND u.real_user_id = {1} """
-                sql = sql.format(ctx.guild.id,member.id)
-
-                junk1, rows, junk2 = zb.sql_query(sql)
-                if rows > 0:
-                    await ctx.send('**{member}** is not punished.',
-                            delete_after=15)
-                    await ctx.message.delete()
-                    return
-
-                # Gathers removed roles
-                sql = """ SELECT role_id
-                          FROM special_roles
-                          WHERE guild_id = {0}
-                          AND type >= 10
-                          AND type <= 12
-                          AND real_user_id = {1} """
-                sql = sql.format(ctx.guild.id,member.id)
-                data, rows, junk2 = zb.sql_query(sql)
-                if not rows > 0:
-                    await ctx.send(f'Something went wrong {ctx.author.mention}.\n' \
-                            f'**{member}** doesn\'t appear to be punished.',
+                    await ctx.send(f'**{member}** is not punished.',
                             delete_after=15)
                     await ctx.message.delete()
                     return
@@ -205,23 +175,19 @@ class PunishCog(commands.Cog):
                 cp.punish_user(member,0)
 
                 # If no punish chan, skip log
-                sql = """ SELECT channel_id
-                          FROM channels
-                          WHERE guild_id = {0}
-                          AND group_id = 80 """
-                sql = sql.format(ctx.guild.id)
+                embed=discord.Embed(title="Good Job!",
+                        description=f'**{member}** it seems ' +
+                        f'**{ctx.message.author}** has faith in you.',
+                        color=0x27d300)
+                await zb.print_log_by_group_id(ctx.guild,80,embed)
 
-                chan, rows, junk2 = zb.sql_query(sql)
-                if rows != 0:
-                    punishchan = ctx.guild.get_channel(int(chan[0][0]))
-                    embed=discord.Embed(title="Good Job!",
-                            description=f'**{member}** it seems ' +
-                            f'**{ctx.message.author}** has faith in you.',
-                            color=0x27d300)
-                    await punishchan.send(embed=embed)
+                # Gathers punishment removed roles
+                add = await zb.get_all_special_roles(ctx,member,10,12)
+                if not len(add) > 0:
+                    return
 
                 async with ctx.channel.typing():
-                    await zb.add_roles(self,member,data,'Cleanposted')
+                    await zb.add_roles(self,member,add,'Cleanposted')
                     await zb.remove_roles(self,member,rmv,'Cleanposted')
                     zb.rmv_special_role(ctx.guild.id,10,member.id)
                     zb.rmv_special_role(ctx.guild.id,11,member.id)
