@@ -132,7 +132,7 @@ class OwnerCog(commands.Cog):
             await ctx.message.delete()
             await zb.give_admin(ctx,switch)
             try:
-                roles = zb.get_roles_special(ctx.guild.id,10,ctx.author.id)
+                roles, rows = zb.get_roles_special(ctx.guild.id,10,ctx.author.id)
                 print(roles)
                 await zb.add_roles(self,ctx.author,roles,'Troubleshooting')
                 zb.rmv_special_role(ctx.guild.id,10,ctx.author.id)

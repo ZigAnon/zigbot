@@ -105,8 +105,13 @@ class onmemberjoinCog(commands.Cog):
 
                 # If member leaves after being punished and returns
                 elif zb.get_punish_num(member) != 0:
+                    # If no punish chan, skip log
+                    embed=discord.Embed(title="User Jailed!",
+                            description=f'**{member}** was jailed for ' \
+                                    f'punishment evasion!',
+                            color=0xd30000)
+                    await zb.punish_log(member.guild,embed)
                     punishNum = zb.get_punish_num(member)
-                    #TODO: public log their punishment
                     data = zb.get_roles_by_group_id(member.guild.id,12)
                     reason = 'Left and rejoined after punishment {0}'.format(punishNum)
                     await zb.add_roles(self,member,data,reason)

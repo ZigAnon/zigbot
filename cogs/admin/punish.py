@@ -82,20 +82,11 @@ class PunishCog(commands.Cog):
                 cp.punish_user(member,1)
 
                 # If no punish chan, skip log
-                sql = """ SELECT channel_id
-                          FROM channels
-                          WHERE guild_id = {0}
-                          AND group_id = 80 """
-                sql = sql.format(ctx.guild.id)
-
-                chan, rows, junk2 = zb.sql_query(sql)
-                if rows != 0:
-                    punishchan = ctx.guild.get_channel(int(chan[0][0]))
-                    embed=discord.Embed(title="Shitposter!",
-                            description=f'**{member}** was given Shitposter by ' +
-                            f'**{ctx.message.author}**!',
-                            color=0xd30000)
-                    await punishchan.send(embed=embed)
+                embed=discord.Embed(title="Shitposter!",
+                        description=f'**{member}** was given Shitposter by ' +
+                        f'**{ctx.message.author}**!',
+                        color=0xd30000)
+                await zb.punish_log(ctx.guild,embed)
 
                 # If no shit chan, skip notify
                 sql = """ SELECT channel_id

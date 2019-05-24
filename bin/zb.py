@@ -180,6 +180,15 @@ def rmv_special_role(guild_id,type_num,member_id):
     rows, string = sql_update(sql)
     return
 
+def rmv_all_special_role(guild_id,member_id):
+    sql = """ DELETE FROM special_roles
+              WHERE guild_id = {0}
+              AND real_user_id = {1} """
+    sql = sql.format(guild_id,member_id)
+
+    rows, string = sql_update(sql)
+    return
+
 def close_server(guild_id):
     sql = """ UPDATE guilds
               SET can_join = FALSE
@@ -315,7 +324,7 @@ def get_roles_special(guild_id,group_id,member_id):
     sql = sql.format(guild_id,group_id,member_id)
 
     data, rows, junk1 = sql_query(sql)
-    return data
+    return data, rows
 
 def get_roles_by_name(ctx, roleName):
     # Returns array roles
@@ -494,6 +503,22 @@ def punish_user(member,number):
               AND u.real_user_id = {1} """
     sql = sql.format(member.guild.id,member.id,number)
     rows, string = sql_update(sql)
+
+async def punish_log(guild,embed):
+    try:
+        # If no punish chan, skip log
+        sql = """ SELECT channel_id
+                  FROM channels
+                  WHERE guild_id = {0}
+                  AND group_id = 80 """
+        sql = sql.format(guild.id)
+
+        chan, rows, junk2 = sql_query(sql)
+        if rows != 0:
+            punishchan = guild.get_channel(int(chan[0][0]))
+            await punishchan.send(embed=embed)
+    except Exception as e:
+        await bot_errors(ctx,e)
 
 def get_punish_num(member):
     sql = """ SELECT g.punished

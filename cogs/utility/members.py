@@ -402,13 +402,7 @@ class MembersCog(commands.Cog):
                 return
 
             # Gathers removed roles and checks if busy
-            sql = """ SELECT role_id
-                      FROM special_roles
-                      WHERE guild_id = {0}
-                      AND type = 51
-                      AND real_user_id = {1} """
-            sql = sql.format(ctx.guild.id,ctx.author.id)
-            data, rows, junk2 = zb.sql_query(sql)
+            data, rows = zb.get_roles_special(ctx.guild.id,51,ctx.author.id)
             if rows > 0:
                 await ctx.send('Your status is still set to busy.\n Please `.iamn busy` to get your roles back.',
                         delete_after=15)
@@ -549,13 +543,7 @@ class MembersCog(commands.Cog):
                 return
 
             # Gathers removed roles and checks if busy
-            sql = """ SELECT role_id
-                      FROM special_roles
-                      WHERE guild_id = {0}
-                      AND type = 51
-                      AND real_user_id = {1} """
-            sql = sql.format(ctx.guild.id,ctx.author.id)
-            data, rows, junk2 = zb.sql_query(sql)
+            data, rows = zb.get_roles_special(ctx.guild.id,51,ctx.author.id)
             async with ctx.channel.typing():
                 if rows == 0:
                     await ctx.send('You aren\'t busy.\n Please `.iam busy` if you wish to become busy.',
