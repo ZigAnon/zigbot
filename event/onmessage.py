@@ -148,7 +148,7 @@ class onmessageCog(commands.Cog):
                         await message.delete(delay=30)
 
                 # General + poll channel
-                if int(data[i][1]) == 2:
+                if int(data[i][1]) == 2 or int(data[i][1]) == 10:
                     if message.content.lower().startswith('poll:'):
                         await message.add_reaction(emoji='\U0001F44D')
                         await message.add_reaction(emoji='\U0001F44E')
