@@ -138,65 +138,6 @@ class BanesWeebECog(commands.Cog):
     #                         f'to the blacklist for **{guild.name}**')
     #                 zb.add_blacklist(message,data[0],data[1])
 
-    @commands.command(name='bwemute', hidden=True)
-    @is_in_guild(562078425225887777)
-    async def bwemute(self, ctx, member: discord.Member):
-        """ Removes all write permissions from all channels """
-        try:
-            if(zb.is_trusted(ctx,4) and
-                    is_outranked(ctx.message.author,member,4)):
-                punishchan = ctx.guild.get_channel(562763458425126912)
-                embed=discord.Embed(title="User Muted!",
-                        description=f'**{member}** was muted by ' +
-                        f'**{ctx.message.author}**!',
-                        color=0xd30000)
-                await punishchan.send(embed=embed)
-                # Update database
-                punish_user(member,1)
-                # Get roles
-                addRole = ctx.guild.get_role(562387019188273155)
-                data = zb.grab_first_col(rmvRoles)
-                # Remove roles
-                await zb.remove_roles(self,member,data,'Muted')
-                # Add role
-                await member.add_roles(addRole,reason='Muted')
-                # Kick from voice
-                await member.edit(mute=True)
-
-        except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
-            await zb.bot_errors(ctx,e)
-
-    @commands.command(name='bwejail', hidden=True)
-    @is_in_guild(562078425225887777)
-    async def bwejail(self, ctx, member: discord.Member):
-        """ Removes all chats and allows user to state case
-            in jail chat."""
-        try:
-            if(zb.is_trusted(ctx,4) and
-                    is_outranked(ctx.message.author,member,4)):
-                punishchan = ctx.guild.get_channel(562763458425126912)
-                embed=discord.Embed(title="User Jailed!",
-                        description=f'**{member}** was jailed by ' +
-                        f'**{ctx.message.author}**!',
-                        color=0xd30000)
-                await punishchan.send(embed=embed)
-                # Update database
-                punish_user(member,1)
-                # Get roles
-                addRole = ctx.guild.get_role(562695118310604810)
-                data = zb.grab_first_col(rmvRoles)
-                # Remove roles
-                await zb.remove_roles(self,member,data,'Jailed')
-                # Add role
-                await member.add_roles(addRole,reason='Jailed')
-                # Kick from voice
-                await member.edit(voice_channel=None)
-
-        except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
-            await zb.bot_errors(ctx,e)
-
     @commands.command(name='bweunmute', hidden=True)
     @is_in_guild(562078425225887777)
     async def bweunmute(self, ctx, member: discord.Member):
