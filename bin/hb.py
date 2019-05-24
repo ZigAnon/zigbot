@@ -105,7 +105,7 @@ async def _heartbeat(bot):
             try:
                 time = datetime.utcnow().minute
                 if time in [0,15,30,45]:
-                    vRoles = zb.get_roles_special(guild.id,50)
+                    vRoles = zb.get_roles_by_group_id(guild.id,50)
                     # Count all users across all servers
                     sql = """ SELECT is_bot
                               FROM users

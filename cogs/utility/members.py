@@ -2,6 +2,7 @@ import math
 import discord
 from discord.ext import commands
 from bin import zb
+from bin import cp
 
 
 class MembersCog(commands.Cog):
@@ -144,7 +145,7 @@ class MembersCog(commands.Cog):
         try:
             if not cmd == 'busy':
                 # Is user busy
-                busy = zb.get_roles_special(ctx.guild.id,51)[0][0]
+                busy = zb.get_roles_by_group_id(ctx.guild.id,51)[0][0]
                 for role in ctx.author.roles:
                     if role.id == busy:
                         await ctx.send('Your status is still set to busy.\n Please `.iamn busy` to get your roles back.',
@@ -163,10 +164,10 @@ class MembersCog(commands.Cog):
                     return
 
                 # Get talk role
-                talk = zb.get_roles_special(ctx.guild.id,2)
+                talk = zb.get_roles_by_group_id(ctx.guild.id,2)
                 if len(talk) > 0:
                     # Get non-talk role
-                    join = zb.get_roles_special(ctx.guild.id,1)
+                    join = zb.get_roles_by_group_id(ctx.guild.id,1)
 
                     # Have chat perms
                     sql = """ SELECT m.role_id
@@ -196,6 +197,73 @@ class MembersCog(commands.Cog):
                     # Role doesn't exist
                     if rows == 0:
                         #TODO: role doesnt exist or check spelling
+
+                        # Punishments below
+                        # Trusted returns from here
+                        if zb.is_trusted(ctx,5):
+                            return
+
+                        # Check for shitpost role
+                        if not zb.is_role_group(ctx.guild.id,10):
+                            return
+
+                        # Check for meme role
+                        sql = """ SELECT role_name
+                                  FROM meme_roles
+                                  WHERE guild_id = {0} """
+                        sql = sql.format(ctx.guild.id)
+                        role_name, rows, junk2 = zb.sql_query(sql)
+                        print(rows)
+                        if rows == 0:
+                            return
+                        elif cmd in role_name:
+                            # If no shitpost role for guild, ignore
+                            sql = """ SELECT role_id
+                                      FROM roles
+                                      WHERE guild_id = {0}
+                                      AND group_id = 10 """
+                            sql = sql.format(ctx.guild.id)
+
+                            add, rows, junk2 = zb.sql_query(sql)
+                            if rows == 0:
+                                return
+
+                            await ctx.message.delete()
+
+                            # Update database
+                            cp.punish_user(ctx.author,1)
+
+                            # Removes roles and sets shitposter
+                            int_id = zb.get_member_sql_int(ctx.author.id)
+                            string = '('
+                            rmv = []
+                            async with ctx.channel.typing():
+                                for role in ctx.author.roles:
+                                    if not role.name == '@everyone':
+                                        string += f'10,{int_id},{ctx.author.id},{ctx.guild.id},{role.id}),('
+                                        rmv.append(role)
+                                await ctx.author.remove_roles(*rmv,reason='Meme role')
+                                await zb.add_roles(self,ctx.author,add,'Meme role')
+                                string = string[:-2]
+                                zb.add_special_role(string)
+
+                            await ctx.send(f'**{ctx.author}** was shitposted pending ' \
+                                    f'manual approval.')
+
+                            # If no shit chan, skip notify
+                            sql = """ SELECT channel_id
+                                      FROM channels
+                                      WHERE guild_id = {0}
+                                      AND group_id = 10 """
+                            sql = sql.format(ctx.guild.id)
+
+                            chan, rows, junk2 = zb.sql_query(sql)
+                            if rows != 0:
+                                shitchan = ctx.guild.get_channel(int(chan[0][0]))
+                                await shitchan.send(f'{ctx.author.mention} this role ' \
+                                        f'is commonly used by memers raiders.\n' \
+                                        f'Please contact admin/mod to regain access.',
+                                        delete_after=120)
                         return
 
                     # Does member have role
@@ -233,6 +301,73 @@ class MembersCog(commands.Cog):
                                     f'a role from #roles or `.lsar`.', color=0xf5d28a)
                             await ctx.send(embed=embed,delete_after=60)
                             await ctx.message.delete(delay=5)
+
+                    # Punishments below
+                    # Trusted returns from here
+                    if zb.is_trusted(ctx,5):
+                        return
+
+                    # Check for shitpost role
+                    if not zb.is_role_group(ctx.guild.id,10):
+                        return
+
+                    # Check for meme role
+                    sql = """ SELECT role_name
+                              FROM meme_roles
+                              WHERE guild_id = {0} """
+                    sql = sql.format(ctx.guild.id)
+                    role_name, rows, junk2 = zb.sql_query(sql)
+                    print(rows)
+                    if rows == 0:
+                        return
+                    elif cmd in role_name:
+                        # If no shitpost role for guild, ignore
+                        sql = """ SELECT role_id
+                                  FROM roles
+                                  WHERE guild_id = {0}
+                                  AND group_id = 10 """
+                        sql = sql.format(ctx.guild.id)
+
+                        add, rows, junk2 = zb.sql_query(sql)
+                        if rows == 0:
+                            return
+
+                        await ctx.message.delete()
+
+                        # Update database
+                        cp.punish_user(ctx.author,1)
+
+                        # Removes roles and sets shitposter
+                        int_id = zb.get_member_sql_int(ctx.author.id)
+                        string = '('
+                        rmv = []
+                        async with ctx.channel.typing():
+                            for role in ctx.author.roles:
+                                if not role.name == '@everyone':
+                                    string += f'10,{int_id},{ctx.author.id},{ctx.guild.id},{role.id}),('
+                                    rmv.append(role)
+                            await ctx.author.remove_roles(*rmv,reason='Meme role')
+                            await zb.add_roles(self,ctx.author,add,'Meme role')
+                            string = string[:-2]
+                            zb.add_special_role(string)
+
+                        await ctx.send(f'**{ctx.author}** was shitposted pending ' \
+                                f'manual approval.')
+
+                        # If no shit chan, skip notify
+                        sql = """ SELECT channel_id
+                                  FROM channels
+                                  WHERE guild_id = {0}
+                                  AND group_id = 10 """
+                        sql = sql.format(ctx.guild.id)
+
+                        chan, rows, junk2 = zb.sql_query(sql)
+                        if rows != 0:
+                            shitchan = ctx.guild.get_channel(int(chan[0][0]))
+                            await shitchan.send(f'{ctx.author.mention} this role ' \
+                                    f'is commonly used by memers raiders.\n' \
+                                    f'Please contact admin/mod to regain access.',
+                                    delete_after=120)
                     return
 
             if ctx.author.permissions_in(ctx.channel).administrator:
@@ -308,7 +443,7 @@ class MembersCog(commands.Cog):
         try:
             if not cmd == 'busy':
                 # Is user busy
-                busy = zb.get_roles_special(ctx.guild.id,51)[0][0]
+                busy = zb.get_roles_by_group_id(ctx.guild.id,51)[0][0]
                 for role in ctx.author.roles:
                     if role.id == busy:
                         await ctx.send('Your status is still set to busy.\n Please `.iamn busy` to get your roles back.',
@@ -327,10 +462,10 @@ class MembersCog(commands.Cog):
                     return
 
                 # Get talk role
-                talk = zb.get_roles_special(ctx.guild.id,2)
+                talk = zb.get_roles_by_group_id(ctx.guild.id,2)
                 if len(talk) > 0:
                     # Get non-talk role
-                    join = zb.get_roles_special(ctx.guild.id,1)
+                    join = zb.get_roles_by_group_id(ctx.guild.id,1)
 
                     # Get role id
                     sql = """ SELECT role_id,group_id

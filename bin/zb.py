@@ -230,7 +230,7 @@ def grab_first_col(rows):
 
 async def give_admin(ctx,test):
     try:
-        # data = get_roles_special(ctx.guild.id,90)
+        # data = get_roles_by_group_id(ctx.guild.id,90)
         roles = get_roles_by_name(ctx,'botadmin')
         if test == 'on':
             if len(roles) == 0:
@@ -246,9 +246,8 @@ async def give_admin(ctx,test):
                     role = grab_first_col(roles)[0]
                     await add_roles(ctx,ctx.author,role,'')
                 else:
-                    msg = await ctx.channel.send('Multiple `BotAdmin` found:')
-                    await asyncio.sleep(10)
-                    await msg.delete()
+                    msg = await ctx.channel.send('Multiple `BotAdmin` found:',
+                            delete_after=10)
         elif test == 'del':
             for role in roles:
                 bad = ctx.guild.get_role(role[0])
@@ -287,7 +286,7 @@ def get_roles_obj(guild,lst):
 
     return data
 
-def get_roles_special(guild_id,group_id):
+def get_roles_by_group_id(guild_id,group_id):
     # 1 = join role
     # 2 = chat role
     # 3 = ideology role
@@ -305,6 +304,17 @@ def get_roles_special(guild_id,group_id):
     sql = sql.format(guild_id,group_id)
 
     data, rows, string = sql_query(sql)
+    return data
+
+def get_roles_special(guild_id,group_id,member_id):
+    sql = """ SELECT role_id
+              FROM special_roles
+              WHERE guild_id = {0}
+              AND type = {1}
+              AND real_user_id = {2} """
+    sql = sql.format(guild_id,group_id,member_id)
+
+    data, rows, junk1 = sql_query(sql)
     return data
 
 def get_roles_by_name(ctx, roleName):

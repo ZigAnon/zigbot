@@ -107,7 +107,7 @@ class onmemberjoinCog(commands.Cog):
                 elif zb.get_punish_num(member) != 0:
                     punishNum = zb.get_punish_num(member)
                     #TODO: public log their punishment
-                    data = zb.get_roles_special(member.guild.id,12)
+                    data = zb.get_roles_by_group_id(member.guild.id,12)
                     reason = 'Left and rejoined after punishment {0}'.format(punishNum)
                     await zb.add_roles(self,member,data,reason)
 
@@ -115,7 +115,7 @@ class onmemberjoinCog(commands.Cog):
                 else:
                     # Adds server join roles
                     if zb.is_role_group(member.guild.id,1):
-                        data = zb.get_roles_special(member.guild.id,1)
+                        data = zb.get_roles_by_group_id(member.guild.id,1)
                         reason = 'Member joined'
                         await zb.add_roles(self,member,data,reason)
                     await welcomeChan.send('Hey ' + member.mention +

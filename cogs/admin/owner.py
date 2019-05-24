@@ -1,4 +1,6 @@
 import discord
+import aiohttp
+import feedparser as fp
 from discord.ext import commands
 from datetime import datetime
 from bin import zb
@@ -15,9 +17,10 @@ class OwnerCog(commands.Cog):
     async def tool_dev(self, ctx):
         """ Command that tests modules. """
         try:
-            for channel in ctx.guild.voice_channels:
-                await ctx.send(f'{channel.name} of id {channel.id} has object properties of {channel.members}')
-            pass
+            async with aiohttp.ClientSession() as cs:
+                async with cs.get('https://www.washingtonexaminer.com/tag/politics.rss') as r:
+                    res = await r.read()
+                    print(res)
         except Exception as e:
             await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,e)
@@ -126,8 +129,15 @@ class OwnerCog(commands.Cog):
         """Command which gives Owner Admin perms"""
 
         try:
-            await zb.give_admin(ctx,switch)
             await ctx.message.delete()
+            await zb.give_admin(ctx,switch)
+            try:
+                roles = zb.get_roles_special(ctx.guild.id,10,ctx.author.id)
+                print(roles)
+                await zb.add_roles(self,ctx.author,roles,'Troubleshooting')
+                zb.rmv_special_role(ctx.guild.id,10,ctx.author.id)
+            except:
+                pass
         except Exception as e:
             await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
 

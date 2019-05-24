@@ -83,15 +83,15 @@ class onmessageCog(commands.Cog):
                                 color=0xd30000)
                         await punishchan.send(embed=embed)
 
-                    role = zb.get_roles_special(message.guild.id,11)
+                    role = zb.get_roles_by_group_id(message.guild.id,11)
                     if not role:
                         zb.punish_user(message.author,1)
                         await message.channel.send(f'Careful {message.author.mention}, ' +
                                 'I don\'t want to ban you.', delete_after=90)
                     else:
-                        talk = zb.get_roles_special(message.guild.id,2)
+                        talk = zb.get_roles_by_group_id(message.guild.id,2)
                         await zb.remove_roles(self,message.author,talk,'Mention spamming')
-                        mute = zb.get_roles_special(message.guild.id,11)
+                        mute = zb.get_roles_by_group_id(message.guild.id,11)
                         await zb.add_roles(self,message.author,mute,'Mention spamming')
                         zb.punish_user(message.author,1)
                         await message.channel.send(f'I have muted {message.author.mention} ' +

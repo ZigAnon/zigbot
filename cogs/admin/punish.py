@@ -3,9 +3,6 @@ import asyncio
 from discord.ext import commands
 from bin import zb
 from bin import cp
-from bin import zb_config
-
-_var = zb_config
 
 
 class PunishCog(commands.Cog):
