@@ -89,66 +89,92 @@ class PunishCog(commands.Cog):
                 await member.edit(voice_channel=None)
 
         except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,e)
 
     @commands.command(name='mute', hidden=True)
-    @is_in_guild(509242768401629204)
     async def mute(self, ctx, member: discord.Member):
         """ Removes all write permissions from all channels """
         try:
             if(zb.is_trusted(ctx,4) and
                     cp.is_outranked(ctx.message.author,member,4)):
-                punishchan = ctx.guild.get_channel(517882333752459264)
+
+                # If no mute role for guild, ignore
+                add = zb.get_roles_by_group_id(ctx.guild.id,11)
+                if len(add) == 0:
+                    return
+
+                # If punished, can't use command
+                rows = zb.get_punish_num(member)
+                if rows > 0:
+                    await ctx.send('User is already punished.',
+                            delete_after=15)
+                    await ctx.message.delete()
+                    return
+
+                # Update database
+                cp.punish_user(member,1)
+
+                # If no punish chan, skip log
                 embed=discord.Embed(title="User Muted!",
                         description=f'**{member}** was muted by ' +
                         f'**{ctx.message.author}**!',
                         color=0xd30000)
-                await punishchan.send(embed=embed)
-                # Update database
-                cp.punish_user(member,1)
-                # Get roles
-                addRole = ctx.guild.get_role(517140313408536576)
-                data = zb.grab_first_col(cp.rmvRoles)
-                # Remove roles
-                await zb.remove_roles(self,member,data,'Muted')
-                # Add role
-                await member.add_roles(addRole,reason='Muted')
-                # Kick from voice
+                await zb.print_log_by_group_id(ctx.guild,80,embed)
+
+                # Removes roles and sets mute
+                rmv = await zb.store_all_special_roles(ctx,member,11)
+                if len(rmv) != 0:
+                    await member.remove_roles(*rmv,reason='Muted')
+                    await zb.add_roles(self,member,add,'Muted')
+
+                # Mute in voice
                 await member.edit(mute=True)
 
+
         except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,e)
 
     @commands.command(name='jail', hidden=True)
-    @is_in_guild(509242768401629204)
     async def jail(self, ctx, member: discord.Member):
         """ Removes all chats and allows user to state case
             in jail chat."""
         try:
             if(zb.is_trusted(ctx,4) and
                     cp.is_outranked(ctx.message.author,member,4)):
-                punishchan = ctx.guild.get_channel(517882333752459264)
+
+                # If no jail role for guild, ignore
+                add = zb.get_roles_by_group_id(ctx.guild.id,12)
+                if len(add) == 0:
+                    return
+
+                # If punished, can't use command
+                rows = zb.get_punish_num(member)
+                if rows > 0:
+                    await ctx.send('User is already punished.',
+                            delete_after=15)
+                    await ctx.message.delete()
+                    return
+
+                # Update database
+                cp.punish_user(member,1)
+
+                # If no punish chan, skip log
                 embed=discord.Embed(title="User Jailed!",
                         description=f'**{member}** was jailed by ' +
                         f'**{ctx.message.author}**!',
                         color=0xd30000)
-                await punishchan.send(embed=embed)
-                # Update database
-                cp.punish_user(member,1)
-                # Get roles
-                addRole = ctx.guild.get_role(509865275705917440)
-                data = zb.grab_first_col(cp.rmvRoles)
-                # Remove roles
-                await zb.remove_roles(self,member,data,'Jailed')
-                # Add role
-                await member.add_roles(addRole,reason='Jailed')
+                await zb.print_log_by_group_id(ctx.guild,80,embed)
+
+                # Removes roles and sets mute
+                rmv = await zb.store_all_special_roles(ctx,member,12)
+                if len(rmv) != 0:
+                    await member.remove_roles(*rmv,reason='Jailed')
+                    await zb.add_roles(self,member,add,'Jailed')
+
                 # Kick from voice
                 await member.edit(voice_channel=None)
 
         except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,e)
 
     @commands.command(name='cleanpost', hidden=True)
