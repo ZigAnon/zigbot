@@ -158,9 +158,17 @@ class PunishCog(commands.Cog):
             if(zb.is_trusted(ctx,4) and
                     cp.is_outranked(ctx.message.author,member,4)):
 
-                # If no shitpost role for guild, ignore
-                rmv = zb.get_roles_by_group_id(ctx.guild.id,10)
-                if len(rmv) == 0:
+                # If no punish role for guild, ignore
+                shit = zb.get_roles_by_group_id(ctx.guild.id,10)
+                mute = zb.get_roles_by_group_id(ctx.guild.id,11)
+                jail = zb.get_roles_by_group_id(ctx.guild.id,12)
+                if not len(shit) == 0:
+                    rmv = shit
+                elif not len(mute) == 0:
+                    rmv = mute
+                elif not len(jail) == 0:
+                    rmv = jail
+                else:
                     return
 
                 # If punished, can't use command
@@ -186,6 +194,7 @@ class PunishCog(commands.Cog):
                 if not len(add) > 0:
                     return
 
+                # Removes punishment and adds old roles
                 async with ctx.channel.typing():
                     await zb.add_roles(self,member,add,'Cleanposted')
                     await zb.remove_roles(self,member,rmv,'Cleanposted')
