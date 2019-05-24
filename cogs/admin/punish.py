@@ -53,29 +53,84 @@ class PunishCog(commands.Cog):
         try:
             if(zb.is_trusted(ctx,4) and
                     cp.is_outranked(ctx.message.author,member,4)):
-                shitchan = ctx.guild.get_channel(533390486845653027)
-                punishchan = ctx.guild.get_channel(517882333752459264)
-                embed=discord.Embed(title="Shitposter!",
-                        description=f'**{member}** was given Shitposter by ' +
-                        f'**{ctx.message.author}**!',
-                        color=0xd30000)
-                msg = await shitchan.send('Looks like you pushed it too far ' +
-                        f'{member.mention}. You live here now. Enjoy!!')
-                await punishchan.send(embed=embed)
+
+                # If no shitpost role for guild, ignore
+                sql = """ SELECT role_id
+                          FROM roles
+                          WHERE guild_id = {0}
+                          AND group_id = 10 """
+                sql = sql.format(ctx.guild.id)
+
+                add, rows, junk2 = zb.sql_query(sql)
+                if rows == 0:
+                    return
+
+                # If punished, can't use command
+                sql = """ SELECT g.punished
+                          FROM guild_membership g
+                          LEFT JOIN users u ON g.int_user_id = u.int_user_id
+                          WHERE g.guild_id = {0}
+                          AND NOT punished = 0
+                          AND u.real_user_id = {1} """
+                sql = sql.format(ctx.guild.id,member.id)
+
+                junk1, rows, junk2 = zb.sql_query(sql)
+                if rows > 0:
+                    await ctx.send('User is already punished.',
+                            delete_after=15)
+                    await ctx.message.delete()
+                    return
+
                 # Update database
                 cp.punish_user(member,1)
-                # Get roles
-                addRole = ctx.guild.get_role(509865272283496449)
-                data = zb.grab_first_col(cp.rmvRoles)
-                # Remove roles
-                await zb.remove_roles(self,member,data,'Shitposted')
-                # Add role
-                await member.add_roles(addRole,reason='Shitposted')
+
+                # If no punish chan, skip log
+                sql = """ SELECT channel_id
+                          FROM channels
+                          WHERE guild_id = {0}
+                          AND group_id = 80 """
+                sql = sql.format(ctx.guild.id)
+
+                chan, rows, junk2 = zb.sql_query(sql)
+                if rows != 0:
+                    punishchan = ctx.guild.get_channel(int(chan[0][0]))
+                    embed=discord.Embed(title="Shitposter!",
+                            description=f'**{member}** was given Shitposter by ' +
+                            f'**{ctx.message.author}**!',
+                            color=0xd30000)
+                    await punishchan.send(embed=embed)
+
+                # If no shit chan, skip notify
+                sql = """ SELECT channel_id
+                          FROM channels
+                          WHERE guild_id = {0}
+                          AND group_id = 10 """
+                sql = sql.format(ctx.guild.id)
+
+                chan, rows, junk2 = zb.sql_query(sql)
+                if rows != 0:
+                    shitchan = ctx.guild.get_channel(int(chan[0][0]))
+                    await shitchan.send('Looks like you pushed it too far ' +
+                            f'{member.mention}. You live here now. Enjoy!!',
+                            delete_after=60)
+
+                # Removes roles and sets shitposter
+                int_id = zb.get_member_sql_int(member.id)
+                string = '('
+                rmv = []
+                async with ctx.channel.typing():
+                    for role in member.roles:
+                        if not role.name == '@everyone':
+                            string += f'10,{int_id},{member.id},{ctx.guild.id},{role.id}),('
+                            rmv.append(role)
+                    await member.remove_roles(*rmv,reason='Shitposted')
+                    await zb.add_roles(self,member,add,'Shitposted')
+                    string = string[:-2]
+                    zb.add_special_role(string)
+
                 # Kick from voice
                 await member.edit(voice_channel=None)
 
-                await asyncio.sleep(60)
-                await msg.delete()
         except Exception as e:
             await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,e)
@@ -146,21 +201,75 @@ class PunishCog(commands.Cog):
         try:
             if(zb.is_trusted(ctx,4) and
                     cp.is_outranked(ctx.message.author,member,4)):
-                punishchan = ctx.guild.get_channel(517882333752459264)
-                embed=discord.Embed(title="Good Job!",
-                        description=f'**{member}** it seems ' +
-                        f'**{ctx.message.author}** has faith in you.',
-                        color=0x27d300)
-                await punishchan.send(embed=embed)
+
+                # If no shitpost role for guild, ignore
+                sql = """ SELECT role_id
+                          FROM roles
+                          WHERE guild_id = {0}
+                          AND group_id = 10 """
+                sql = sql.format(ctx.guild.id)
+
+                rmv, rows, junk2 = zb.sql_query(sql)
+                if rows == 0:
+                    return
+
+                # If not punished, can't use command
+                sql = """ SELECT g.punished
+                          FROM guild_membership g
+                          LEFT JOIN users u ON g.int_user_id = u.int_user_id
+                          WHERE g.guild_id = {0}
+                          AND punished = 0
+                          AND u.real_user_id = {1} """
+                sql = sql.format(ctx.guild.id,member.id)
+
+                junk1, rows, junk2 = zb.sql_query(sql)
+                if rows > 0:
+                    await ctx.send('**{member}** is not punished.',
+                            delete_after=15)
+                    await ctx.message.delete()
+                    return
+
+                # Gathers removed roles
+                sql = """ SELECT role_id
+                          FROM special_roles
+                          WHERE guild_id = {0}
+                          AND type >= 10
+                          AND type <= 12
+                          AND real_user_id = {1} """
+                sql = sql.format(ctx.guild.id,member.id)
+                data, rows, junk2 = zb.sql_query(sql)
+                if not rows > 0:
+                    await ctx.send(f'Something went wrong {ctx.author.mention}.\n' \
+                            f'**{member}** doesn\'t appear to be punished.',
+                            delete_after=15)
+                    await ctx.message.delete()
+                    return
+
                 # Update database
                 cp.punish_user(member,0)
-                # Get roles
-                addRole = ctx.guild.get_role(513156267024449556)
-                data = zb.grab_first_col(cp.rmvRoles)
-                # Remove roles
-                await zb.remove_roles(self,member,data,'Cleanposted')
-                # Add role
-                await member.add_roles(addRole,reason='Cleanposted')
+
+                # If no punish chan, skip log
+                sql = """ SELECT channel_id
+                          FROM channels
+                          WHERE guild_id = {0}
+                          AND group_id = 80 """
+                sql = sql.format(ctx.guild.id)
+
+                chan, rows, junk2 = zb.sql_query(sql)
+                if rows != 0:
+                    punishchan = ctx.guild.get_channel(int(chan[0][0]))
+                    embed=discord.Embed(title="Good Job!",
+                            description=f'**{member}** it seems ' +
+                            f'**{ctx.message.author}** has faith in you.',
+                            color=0x27d300)
+                    await punishchan.send(embed=embed)
+
+                async with ctx.channel.typing():
+                    await zb.add_roles(self,member,data,'Cleanposted')
+                    await zb.remove_roles(self,member,rmv,'Cleanposted')
+                    zb.rmv_special_role(ctx.guild.id,10,member.id)
+                    zb.rmv_special_role(ctx.guild.id,11,member.id)
+                    zb.rmv_special_role(ctx.guild.id,12,member.id)
 
         except Exception as e:
             await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')

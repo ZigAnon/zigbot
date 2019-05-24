@@ -297,6 +297,7 @@ def get_roles_special(guild_id,group_id):
     # 12 = jail role
     # 50 = voice role
     # 51 = busy role
+    # 80 = PunishLog
     # 90 = BotAdmin
     sql = """ SELECT role_id FROM roles
               WHERE guild_id = {0}
