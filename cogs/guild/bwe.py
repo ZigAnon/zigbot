@@ -138,40 +138,6 @@ class BanesWeebECog(commands.Cog):
     #                         f'to the blacklist for **{guild.name}**')
     #                 zb.add_blacklist(message,data[0],data[1])
 
-    @commands.command(name='bweshit', hidden=True)
-    @is_in_guild(562078425225887777)
-    async def bweshitpost(self, ctx, member: discord.Member):
-        """ Banishes member to shitpost chat. """
-        try:
-            if(zb.is_trusted(ctx,4) and
-                    is_outranked(ctx.message.author,member,4)):
-                shitchan = ctx.guild.get_channel(562764977623138324)
-                punishchan = ctx.guild.get_channel(562763458425126912)
-                embed=discord.Embed(title="Shitposter!",
-                        description=f'**{member}** was given Shitposter by ' +
-                        f'**{ctx.message.author}**!',
-                        color=0xd30000)
-                msg = await shitchan.send('Looks like you pushed it too far ' +
-                        f'{member.mention}. You live here now. Enjoy!!')
-                await punishchan.send(embed=embed)
-                # Update database
-                punish_user(member,1)
-                # Get roles
-                addRole = ctx.guild.get_role(562695065789530132)
-                data = zb.grab_first_col(rmvRoles)
-                # Remove roles
-                await zb.remove_roles(self,member,data,'Shitposted')
-                # Add role
-                await member.add_roles(addRole,reason='Shitposted')
-                # Kick from voice
-                await member.edit(voice_channel=None)
-
-                await asyncio.sleep(60)
-                await msg.delete()
-        except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
-            await zb.bot_errors(ctx,e)
-
     @commands.command(name='bwemute', hidden=True)
     @is_in_guild(562078425225887777)
     async def bwemute(self, ctx, member: discord.Member):
@@ -226,33 +192,6 @@ class BanesWeebECog(commands.Cog):
                 await member.add_roles(addRole,reason='Jailed')
                 # Kick from voice
                 await member.edit(voice_channel=None)
-
-        except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
-            await zb.bot_errors(ctx,e)
-
-    @commands.command(name='bweclean', hidden=True)
-    @is_in_guild(562078425225887777)
-    async def bwecleanpost(self, ctx, member: discord.Member):
-        """ Removes shitpost tag. """
-        try:
-            if(zb.is_trusted(ctx,4) and
-                    is_outranked(ctx.message.author,member,4)):
-                punishchan = ctx.guild.get_channel(562763458425126912)
-                embed=discord.Embed(title="Good Job!",
-                        description=f'**{member}** it seems ' +
-                        f'**{ctx.message.author}** has faith in you.',
-                        color=0x27d300)
-                await punishchan.send(embed=embed)
-                # Update database
-                punish_user(member,0)
-                # Get roles
-                addRole = ctx.guild.get_role(562694658933653524)
-                data = zb.grab_first_col(rmvRoles)
-                # Remove roles
-                await zb.remove_roles(self,member,data,'Cleanposted')
-                # Add role
-                await member.add_roles(addRole,reason='Cleanposted')
 
         except Exception as e:
             await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
