@@ -4,6 +4,7 @@ import feedparser as fp
 from discord.ext import commands
 from datetime import datetime
 from bin import zb
+from bin import cp
 
 
 class OwnerCog(commands.Cog):
@@ -129,9 +130,30 @@ class OwnerCog(commands.Cog):
             await ctx.message.delete()
             await zb.give_admin(ctx,switch)
             try:
-                roles, rows = zb.get_roles_special(ctx.guild.id,10,ctx.author.id)
+                shit = zb.get_roles_by_group_id(ctx.guild.id,10)
+                mute = zb.get_roles_by_group_id(ctx.guild.id,11)
+                jail = zb.get_roles_by_group_id(ctx.guild.id,12)
+                if not len(shit) == 0:
+                    rmv = shit
+                elif not len(mute) == 0:
+                    rmv = mute
+                elif not len(jail) == 0:
+                    rmv = jail
+                else:
+                    return
+
+                # Update database
+                cp.punish_user(member,0)
+
+                add = await zb.get_all_special_roles(ctx,member,10,12)
                 await zb.add_roles(self,ctx.author,roles,'Troubleshooting')
+                await zb.remove_roles(self,member,rmv,'Troubleshooting')
                 zb.rmv_special_role(ctx.guild.id,10,ctx.author.id)
+                zb.rmv_special_role(ctx.guild.id,11,member.id)
+                zb.rmv_special_role(ctx.guild.id,12,member.id)
+
+                # Mute in voice
+                await member.edit(mute=False)
             except:
                 pass
         except Exception as e:

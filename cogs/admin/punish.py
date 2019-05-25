@@ -80,7 +80,10 @@ class PunishCog(commands.Cog):
                     await zb.add_roles(self,member,add,'Shitposted')
 
                 # Kick from voice
-                await member.edit(voice_channel=None)
+                try:
+                    await member.edit(voice_channel=None)
+                except:
+                    pass
 
         except Exception as e:
             await zb.bot_errors(ctx,e)
@@ -122,7 +125,10 @@ class PunishCog(commands.Cog):
                     await zb.add_roles(self,member,add,'Muted')
 
                 # Mute in voice
-                await member.edit(mute=True)
+                try:
+                    await member.edit(mute=True)
+                except:
+                    pass
 
         except Exception as e:
             await zb.bot_errors(ctx,e)
@@ -165,7 +171,10 @@ class PunishCog(commands.Cog):
                     await zb.add_roles(self,member,add,'Jailed')
 
                 # Kick from voice
-                await member.edit(voice_channel=None)
+                try:
+                    await member.edit(voice_channel=None)
+                except:
+                    pass
 
         except Exception as e:
             await zb.bot_errors(ctx,e)
@@ -231,7 +240,10 @@ class PunishCog(commands.Cog):
                     zb.rmv_special_role(ctx.guild.id,12,member.id)
 
                 # Mute in voice
-                await member.edit(mute=False)
+                try:
+                    await member.edit(mute=False)
+                except:
+                    pass
 
         except Exception as e:
             await zb.bot_errors(ctx,e)
