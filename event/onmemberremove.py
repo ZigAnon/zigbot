@@ -12,8 +12,8 @@ class onmemberremoveCog(commands.Cog):
     async def on_member_remove(self, member):
 
         try:
-            # Ignore self
-            if member == self.bot.user:
+            # If any bot
+            if member.bot:
                 return
 
             embed=discord.Embed(description=member.mention + " " +

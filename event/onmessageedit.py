@@ -12,8 +12,8 @@ class onmessageeditCog(commands.Cog):
     async def on_message_edit(self, before, after):
 
         try:
-            # Ignore self
-            if before.author == self.bot.user:
+            # If any bot
+            if before.author.bot:
                 return
 
             # Counts embeded links

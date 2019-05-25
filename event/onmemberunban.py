@@ -13,8 +13,8 @@ class onmemberunbanCog(commands.Cog):
     async def on_member_unban(self, guild, user):
 
         try:
-            # Ignore self
-            if user == self.bot.user:
+            # If any bot
+            if user.bot:
                 return
 
             sql = """ SELECT log_channel

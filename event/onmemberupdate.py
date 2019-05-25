@@ -12,8 +12,8 @@ class onmemberupdateCog(commands.Cog):
     async def on_member_update(self, before, after):
 
         try:
-            # Ignore self
-            if before == self.bot.user:
+            # If any bot
+            if before.author.bot:
                 return
 
             if before.nick == after.nick:

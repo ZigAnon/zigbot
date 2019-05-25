@@ -12,8 +12,8 @@ class onmessagedeleteCog(commands.Cog):
     async def on_message_delete(self, message):
 
         try:
-            # Ignore self
-            if message.author == self.bot.user:
+            # If any bot
+            if message.author.bot:
                 return
 
             # Ignore certain phrases

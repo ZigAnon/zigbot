@@ -17,10 +17,6 @@ class onmessageCog(commands.Cog):
             if message.author.bot:
                 return
 
-            # Ignore self
-            if message.author == self.bot.user:
-                return
-
             # If bot dm
             if message.guild is None:
                 return

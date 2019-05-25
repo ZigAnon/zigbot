@@ -16,11 +16,7 @@ class onvoicestateupdateCog(commands.Cog):
             if member.bot:
                 return
 
-            # Ignore self
-            if member == self.bot.user:
-                return
-
-            if not before.afk and after.afk:
+            if before.afk or after.afk:
                 await member.edit(voice_channel=None)
 
             if not before.mute and after.mute:
