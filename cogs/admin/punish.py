@@ -190,20 +190,23 @@ class PunishCog(commands.Cog):
                 shit = zb.get_roles_by_group_id(ctx.guild.id,10)
                 mute = zb.get_roles_by_group_id(ctx.guild.id,11)
                 jail = zb.get_roles_by_group_id(ctx.guild.id,12)
-                if not len(shit) == 0:
+                sRole = ctx.guild.get_role(shit[0][0])
+                mRole = ctx.guild.get_role(mute[0][0])
+                jRole = ctx.guild.get_role(jail[0][0])
+                if not len(shit) == 0 and sRole in member.roles:
                     rmv = shit
                     embed=discord.Embed(title="Good Job!",
                             description=f'**{member}** it seems ' +
                             f'**{ctx.message.author}** has faith in you.',
                             color=0x27d300)
-                elif not len(mute) == 0:
+                elif not len(mute) == 0 and mRole in member.roles:
                     rmv = mute
-                    embed=discord.Embed(title="User unmuted.",
+                    embed=discord.Embed(title="User Unmuted!",
                             description=f'**{member}** follow the rules.',
                             color=0x27d300)
-                elif not len(jail) == 0:
+                elif not len(jail) == 0 and jRole in member.roles:
                     rmv = jail
-                    embed=discord.Embed(title="User Jailed!",
+                    embed=discord.Embed(title="User Freed!",
                             description=f'**{member}** was freed by ' +
                             f'**{ctx.message.author}**!',
                             color=0x27d300)
