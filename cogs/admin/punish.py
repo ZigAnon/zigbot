@@ -40,7 +40,6 @@ class PunishCog(commands.Cog):
                 await ctx.send('__**`RAID ON:`**__ All invite links are disabled!')
             rows, string = zb.sql_update(sql)
         except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,e)
 
     @commands.command(name='shitpost', hidden=True)
@@ -129,7 +128,6 @@ class PunishCog(commands.Cog):
 
                 # Mute in voice
                 await member.edit(mute=True)
-
 
         except Exception as e:
             await zb.bot_errors(ctx,e)
@@ -228,34 +226,56 @@ class PunishCog(commands.Cog):
                     zb.rmv_special_role(ctx.guild.id,11,member.id)
                     zb.rmv_special_role(ctx.guild.id,12,member.id)
 
+                # Mute in voice
+                await member.edit(mute=False)
+
         except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,e)
 
     @commands.command(name='unmute', hidden=True)
-    @is_in_guild(509242768401629204)
     async def unmute(self, ctx, member: discord.Member):
         """ Removes mute status. """
         try:
             if(zb.is_trusted(ctx,4) and
                     cp.is_outranked(ctx.message.author,member,4)):
-                punishchan = ctx.guild.get_channel(517882333752459264)
+
+                # If no punish role for guild, ignore
+                rmv = zb.get_roles_by_group_id(ctx.guild.id,11)
+                if len(rmv) == 0:
+                    return
+
+                # If punished, can't use command
+                rows = zb.get_punish_num(member)
+                if rows == 0:
+                    await ctx.send(f'**{member}** is not punished.',
+                            delete_after=15)
+                    await ctx.message.delete()
+                    return
+
+                # Update database
+                cp.punish_user(member,0)
+
+                # If no punish chan, skip log
                 embed=discord.Embed(title="User unmuted.",
                         description=f'**{member}** follow the rules.',
                         color=0x27d300)
-                await punishchan.send(embed=embed)
-                # Update database
-                cp.punish_user(member,0)
-                # Get roles
-                addRole = ctx.guild.get_role(513156267024449556)
-                data = zb.grab_first_col(cp.rmvRoles)
-                # Remove roles
-                await zb.remove_roles(self,member,data,'Unmuted')
-                # Add role
-                await member.add_roles(addRole,reason='Unmuted')
+                await zb.print_log_by_group_id(ctx.guild,80,embed)
+
+                # Gathers punishment removed roles
+                add = await zb.get_all_special_roles(ctx,member,10,12)
+                if not len(add) > 0:
+                    return
+
+                # Removes punishment and adds old roles
+                async with ctx.channel.typing():
+                    await zb.add_roles(self,member,add,'Unmuted')
+                    await zb.remove_roles(self,member,rmv,'Unmuted')
+                    zb.rmv_special_role(ctx.guild.id,11,member.id)
+
+                # Mute in voice
+                await member.edit(mute=False)
 
         except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,e)
 
     @commands.command(name='free', hidden=True)
