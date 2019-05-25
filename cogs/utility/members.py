@@ -251,36 +251,24 @@ class MembersCog(commands.Cog):
                             cp.punish_user(ctx.author,1)
 
                             # Removes roles and sets shitposter
-                            int_id = zb.get_member_sql_int(ctx.author.id)
-                            string = '('
-                            rmv = []
-                            async with ctx.channel.typing():
-                                for role in ctx.author.roles:
-                                    if not role.name == '@everyone':
-                                        string += f'10,{int_id},{ctx.author.id},{ctx.guild.id},{role.id}),('
-                                        rmv.append(role)
-                                await ctx.author.remove_roles(*rmv,reason='Meme role')
-                                await zb.add_roles(self,ctx.author,add,'Meme role')
-                                string = string[:-2]
-                                zb.add_special_role(string)
-
-                            await ctx.send(f'**{ctx.author}** was shitposted pending ' \
-                                    f'manual approval.')
+                            rmv = await zb.store_all_special_roles(ctx,
+                                    ctx.author,10)
+                            await ctx.author.remove_roles(*rmv,reason='Meme role')
+                            await zb.add_roles(self,ctx.author,add,'Meme role')
 
                             # If no shit chan, skip notify
-                            sql = """ SELECT channel_id
-                                      FROM channels
-                                      WHERE guild_id = {0}
-                                      AND group_id = 10 """
-                            sql = sql.format(ctx.guild.id)
+                            embed=discord.Embed(description=f'{ctx.author.mention} this role ' \
+                                    f'is commonly used by memers raiders.\n' \
+                                    f'Please contact admin/mod to regain access.',
+                                    delete_after=120)
+                            await zb.print_log_by_group_id(ctx.guild,10,embed)
 
-                            chan, rows, junk2 = zb.sql_query(sql)
-                            if rows != 0:
-                                shitchan = ctx.guild.get_channel(int(chan[0][0]))
-                                await shitchan.send(f'{ctx.author.mention} this role ' \
-                                        f'is commonly used by memers raiders.\n' \
-                                        f'Please contact admin/mod to regain access.',
-                                        delete_after=120)
+                            # If no punish chan, skip log
+                            embed=discord.Embed(title="Meme Role!",
+                                    description=f'**{ctx.author}** was shitposted pending ' \
+                                    f'manual approval.', color=0xd30000, delete_after=120)
+                            await zb.print_log_by_group_id(ctx.guild,80,embed)
+
                         return
 
                     # Does member have role

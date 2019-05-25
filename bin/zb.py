@@ -552,6 +552,28 @@ def get_punish_num(member):
     except:
         return 0
 
+def get_bot_help_counter(channel_id,group_id):
+    # Returns number of messages
+    sql = """ SELECT counter
+              FROM channels
+              WHERE channel_id = {0}
+              AND group_id = {1}"""
+    sql = sql.format(channel_id,group_id)
+    data, rows, string = sql_query(sql)
+    if rows > 0:
+        return int(data[0][0])
+    else:
+        return -1
+
+def increment_bot_help_counter(update,channel_id):
+    # Increments number of messages
+    update+=1
+    sql = """ UPDATE channels
+              SET counter = {0}
+              WHERE channel_id = {1} """
+    sql = sql.format(update,channel_id)
+    rows, string = sql_update(sql)
+
 def mention_spamming(member):
     # Set hammer
     sql = """ UPDATE guild_membership g

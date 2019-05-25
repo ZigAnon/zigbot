@@ -35,6 +35,20 @@ class onmessageCog(commands.Cog):
             sql = sql.format(message.channel.id)
             junk, junk1 = zb.sql_update(sql)
 
+            # Sends bot reminder
+            sendHelp = zb.get_bot_help_counter(message.channel.id,3)
+            if sendHelp >= 0:
+                zb.increment_bot_help_counter(sendHelp,message.channel.id)
+                if sendHelp > 5:
+                    zb.increment_bot_help_counter(-1,message.channel.id)
+                    embed=discord.Embed(title="Need Help?",
+                            description=f'For a list of assignable roles type `.LSAR` into chat.\n' \
+                                    f'Use the arrows to navigate the list.\n\n' \
+                                    f'To assign a role you want, type `.iam that role\'s name`\n' \
+                                    f'To remove a role you do not want, type `.iamn that role\'s name`\n' \
+                                    f'OR `.iamnot that role\'s name`', color=0xf5d28a)
+                    await message.channel.send(embed=embed)
+
             reminders = zb.get_startswith(message.guild.id)
             if message.content.lower().startswith(reminders):
                 # Get Context

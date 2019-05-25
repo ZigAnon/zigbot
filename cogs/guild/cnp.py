@@ -91,8 +91,8 @@ class CoffeePolCog(commands.Cog):
                 '(https?:\/\/)?(www\.)?(discord\.(gg|io|me|li)|disboard\.org\/server|discordapp\.com\/invite)\/.+([0-9]|[a-z])')):
             punishchan = message.guild.get_channel(517882333752459264)
             embed=discord.Embed(title="Banned!",
-                    description=f'**{message.author}** was given Banned by ' +
-                    '**ZigBot#1002** for violation of rule 8!',
+                    description=f'**{message.author}** was banned by ' +
+                    '**ZigBot#1002** for violation of rule 6!',
                     color=0xd30000)
             await punishchan.send(embed=embed)
             await message.author.send('It\'s in the rules, no sharing discord ' +
