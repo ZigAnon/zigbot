@@ -267,6 +267,9 @@ def grab_first_col(rows):
 
     return col
 
+async def give_trusted(guild,member):
+    pass
+
 async def give_admin(ctx,test):
     try:
         # data = get_roles_by_group_id(ctx.guild.id,90)

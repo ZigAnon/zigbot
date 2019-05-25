@@ -186,8 +186,6 @@ class PunishCog(commands.Cog):
             if(zb.is_trusted(ctx,4) and
                     cp.is_outranked(ctx.message.author,member,4)):
 
-                await ctx.send(ctx.invoked_with)
-
                 # If no punish role for guild, ignore
                 shit = zb.get_roles_by_group_id(ctx.guild.id,10)
                 mute = zb.get_roles_by_group_id(ctx.guild.id,11)

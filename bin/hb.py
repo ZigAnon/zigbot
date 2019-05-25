@@ -1,6 +1,5 @@
 #!/usr/local/bin/python3.6
 import discord
-import asyncio
 import requests
 from discord.ext import commands
 from datetime import datetime
@@ -292,13 +291,7 @@ async def _heartbeat(bot):
                                             '"avatar_url": ' + f'"{data[i][3]}"' + '}')
 
                                 try:
-                                    j = 0
                                     response = requests.post(url, headers=headers, data=push)
-                                    if response.status_code == 400:
-                                        while response.status_code == 400 and j < 3:
-                                            await asyncio.sleep(1)
-                                            response = requests.post(url, headers=headers, data=push)
-                                            j+=1
                                 except:
                                     pass
 
