@@ -11,11 +11,6 @@ class PunishCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    def is_in_guild(guild_id):
-        async def predicate(ctx):
-            return ctx.guild and ctx.guild.id == guild_id
-        return commands.check(predicate)
-
     # Hidden means it won't show up on the default help.
     @commands.command(name='raid', hidden=True)
     async def raid_control(self, ctx):
@@ -175,12 +170,14 @@ class PunishCog(commands.Cog):
         except Exception as e:
             await zb.bot_errors(ctx,e)
 
-    @commands.command(name='cleanpost', hidden=True)
+    @commands.command(name='cleanpost', aliases=['free','unmute'], hidden=True)
     async def cleanpost(self, ctx, member: discord.Member):
-        """ Removes shitpost tag. """
+        """ Removes punishment tag and gives back roles """
         try:
             if(zb.is_trusted(ctx,4) and
                     cp.is_outranked(ctx.message.author,member,4)):
+
+                await ctx.send(ctx.invoked_with)
 
                 # If no punish role for guild, ignore
                 shit = zb.get_roles_by_group_id(ctx.guild.id,10)
@@ -188,10 +185,21 @@ class PunishCog(commands.Cog):
                 jail = zb.get_roles_by_group_id(ctx.guild.id,12)
                 if not len(shit) == 0:
                     rmv = shit
+                    embed=discord.Embed(title="Good Job!",
+                            description=f'**{member}** it seems ' +
+                            f'**{ctx.message.author}** has faith in you.',
+                            color=0x27d300)
                 elif not len(mute) == 0:
                     rmv = mute
+                    embed=discord.Embed(title="User unmuted.",
+                            description=f'**{member}** follow the rules.',
+                            color=0x27d300)
                 elif not len(jail) == 0:
                     rmv = jail
+                    embed=discord.Embed(title="User Jailed!",
+                            description=f'**{member}** was freed by ' +
+                            f'**{ctx.message.author}**!',
+                            color=0x27d300)
                 else:
                     return
 
@@ -207,10 +215,6 @@ class PunishCog(commands.Cog):
                 cp.punish_user(member,0)
 
                 # If no punish chan, skip log
-                embed=discord.Embed(title="Good Job!",
-                        description=f'**{member}** it seems ' +
-                        f'**{ctx.message.author}** has faith in you.',
-                        color=0x27d300)
                 await zb.print_log_by_group_id(ctx.guild,80,embed)
 
                 # Gathers punishment removed roles
@@ -230,79 +234,6 @@ class PunishCog(commands.Cog):
                 await member.edit(mute=False)
 
         except Exception as e:
-            await zb.bot_errors(ctx,e)
-
-    @commands.command(name='unmute', hidden=True)
-    async def unmute(self, ctx, member: discord.Member):
-        """ Removes mute status. """
-        try:
-            if(zb.is_trusted(ctx,4) and
-                    cp.is_outranked(ctx.message.author,member,4)):
-
-                # If no punish role for guild, ignore
-                rmv = zb.get_roles_by_group_id(ctx.guild.id,11)
-                if len(rmv) == 0:
-                    return
-
-                # If punished, can't use command
-                rows = zb.get_punish_num(member)
-                if rows == 0:
-                    await ctx.send(f'**{member}** is not punished.',
-                            delete_after=15)
-                    await ctx.message.delete()
-                    return
-
-                # Update database
-                cp.punish_user(member,0)
-
-                # If no punish chan, skip log
-                embed=discord.Embed(title="User unmuted.",
-                        description=f'**{member}** follow the rules.',
-                        color=0x27d300)
-                await zb.print_log_by_group_id(ctx.guild,80,embed)
-
-                # Gathers punishment removed roles
-                add = await zb.get_all_special_roles(ctx,member,10,12)
-                if not len(add) > 0:
-                    return
-
-                # Removes punishment and adds old roles
-                async with ctx.channel.typing():
-                    await zb.add_roles(self,member,add,'Unmuted')
-                    await zb.remove_roles(self,member,rmv,'Unmuted')
-                    zb.rmv_special_role(ctx.guild.id,11,member.id)
-
-                # Mute in voice
-                await member.edit(mute=False)
-
-        except Exception as e:
-            await zb.bot_errors(ctx,e)
-
-    @commands.command(name='free', hidden=True)
-    @is_in_guild(509242768401629204)
-    async def free(self, ctx, member: discord.Member):
-        """ Frees member from jail """
-        try:
-            if(zb.is_trusted(ctx,4) and
-                    cp.is_outranked(ctx.message.author,member,4)):
-                punishchan = ctx.guild.get_channel(517882333752459264)
-                embed=discord.Embed(title="User Jailed!",
-                        description=f'**{member}** was freed by ' +
-                        f'**{ctx.message.author}**!',
-                        color=0x27d300)
-                await punishchan.send(embed=embed)
-                # Update database
-                cp.punish_user(member,0)
-                # Get roles
-                addRole = ctx.guild.get_role(513156267024449556)
-                data = zb.grab_first_col(cp.rmvRoles)
-                # Remove roles
-                await zb.remove_roles(self,member,data,'Freed')
-                # Add role
-                await member.add_roles(addRole,reason='Freed')
-
-        except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,e)
 
 
