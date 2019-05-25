@@ -16,8 +16,18 @@ class onvoicestateupdateCog(commands.Cog):
             if member.bot:
                 return
 
-            if before.afk or after.afk:
+            if before.afk:
+                return
+
+            if after.afk:
                 await member.edit(voice_channel=None)
+                embed=discord.Embed(description=f'**{member.mention} ' \
+                        f'was kicked from voice for being AFK for ' \
+                        f'{int(member.guild.afk_timeout/60)} minutes.**'
+                        ,color=0x23d160)
+                embed.set_author(name=member, icon_url=member.avatar_url)
+                await zb.print_log(self,member,embed)
+                return
 
             if not before.mute and after.mute:
                 #TODO: log event
