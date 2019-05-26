@@ -13,7 +13,7 @@ class onmemberupdateCog(commands.Cog):
 
         try:
             # If any bot
-            if before.author.bot:
+            if before.bot:
                 return
 
             if before.nick == after.nick:

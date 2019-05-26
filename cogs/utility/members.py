@@ -28,7 +28,7 @@ class MembersCog(commands.Cog):
 
         channel = ctx.guild.get_channel(int(data[0][0]))
         permissions = ctx.author.permissions_in(channel)
-        if permissions.send_messages and not permissions.manage_messages:
+        if permissions.send_messages and not permissions.manage_webhooks:
             embed=discord.Embed(description=f'{phrase}',
                     color=0x117ea6)
             await zb.print_log_by_group_id(ctx.guild,80,embed)
@@ -161,6 +161,11 @@ class MembersCog(commands.Cog):
     async def i_am(self, ctx, *, cmd: str):
         """Adds roles"""
         try:
+            if any(x in cmd.lower() for x in ['update','delete',
+                'database','table','truncate','commit','drop',
+                'insert','create','alter','writepage',';']):
+                return
+
             if not cmd == 'busy':
                 # Is user busy
                 busy = zb.get_roles_by_group_id(ctx.guild.id,51)[0][0]
@@ -439,6 +444,11 @@ class MembersCog(commands.Cog):
     async def i_am_not(self, ctx, *, cmd: str):
         """Remove busy role and readd others."""
         try:
+            if any(x in cmd.lower() for x in ['update','delete',
+                'database','table','truncate','commit','drop',
+                'insert','create','alter','writepage',';']):
+                return
+
             if not cmd == 'busy':
                 # Is user busy
                 busy = zb.get_roles_by_group_id(ctx.guild.id,51)[0][0]
