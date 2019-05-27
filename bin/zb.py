@@ -250,7 +250,7 @@ async def remove_roles(self,member,role_ids,reason):
             await member.remove_roles(*roles)
         return
     except Exception as e:
-        await bot_errors(self,e)
+        await bot_errors(self,sp.format(e))
 
 async def add_roles(self,member,role_ids,reason):
     try:
@@ -262,7 +262,7 @@ async def add_roles(self,member,role_ids,reason):
             await member.add_roles(*roles)
         return
     except Exception as e:
-        await bot_errors(self,e)
+        await bot_errors(self,sp.format(e))
 
 def grab_first_col(rows):
     data = np.array(rows)
@@ -1007,7 +1007,7 @@ async def print_embed_ts(ctx,member,embed):
         await bot_errors(ctx,sp.format(e))
 
 async def bot_errors(ctx,e):
-    """ Or bot_errors(self,e) """
+    """ Or bot_errors(self,sp.format(e)) """
     # await zb.bot_errors(ctx,sp.format(e))
     try:
         """ Send Bot Errors to log """

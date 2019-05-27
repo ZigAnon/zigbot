@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+import stackprinter as sp
 from bin import zb
 
 class onrawbulkmessagedeleteCog(commands.Cog):
@@ -22,7 +23,7 @@ class onrawbulkmessagedeleteCog(commands.Cog):
             await zb.print_log(self,member,embed)
 
         except Exception as e:
-            await zb.bot_errors(self,e)
+            await zb.bot_errors(self,sp.format(e))
 
 
 def setup(bot):

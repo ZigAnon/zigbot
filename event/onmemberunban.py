@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from datetime import datetime
+import stackprinter as sp
 from bin import zb
 
 class onmemberunbanCog(commands.Cog):
@@ -35,7 +36,7 @@ class onmemberunbanCog(commands.Cog):
             await channel.send(embed=embed)
 
         except Exception as e:
-            await zb.bot_errors(self,e)
+            await zb.bot_errors(self,sp.format(e))
 
 
 def setup(bot):

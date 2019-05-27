@@ -1,6 +1,7 @@
 import discord
 import aiohttp
 import feedparser as fp
+import stackprinter as sp
 from discord.ext import commands
 from datetime import datetime
 from bin import zb
@@ -19,6 +20,7 @@ class OwnerCog(commands.Cog):
         """ Command that tests modules. """
         try:
             permissions = ctx.author.permissions_in(ctx.channel)
+            a = b/c
         except Exception as e:
             await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,sp.format(e))

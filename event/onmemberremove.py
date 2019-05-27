@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+import stackprinter as sp
 from bin import zb
 
 class onmemberremoveCog(commands.Cog):
@@ -28,7 +29,7 @@ class onmemberremoveCog(commands.Cog):
             # junk1, junk2 = zb.del_all_special_role(member.guild,member.id)
 
         except Exception as e:
-            await zb.bot_errors(self,e)
+            await zb.bot_errors(self,sp.format(e))
 
 
 def setup(bot):

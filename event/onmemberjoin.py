@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from datetime import datetime
 from datetime import timedelta
+import stackprinter as sp
 from bin import zb_config
 from bin import zb
 
@@ -35,7 +36,7 @@ class onmemberjoinCog(commands.Cog):
                 embed.set_author(name="Member Joined", icon_url=member.avatar_url)
                 await zb.print_log(self,member,embed)
             except Exception as e:
-                await zb.bot_errors(self,e)
+                await zb.bot_errors(self,sp.format(e))
 
             # Main tasks
             try:
@@ -133,9 +134,9 @@ class onmemberjoinCog(commands.Cog):
                     await zb.timed_msg(joinChan,msg,_var.timeout*2)
 
             except Exception as e:
-                await zb.bot_errors(self,e)
+                await zb.bot_errors(self,sp.format(e))
         except Exception as e:
-            await zb.bot_errors(self,e)
+            await zb.bot_errors(self,sp.format(e))
 
 
 def setup(bot):

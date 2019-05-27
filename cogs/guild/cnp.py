@@ -196,7 +196,7 @@ class CoffeePolCog(commands.Cog):
                 except:
                     pass
         except Exception as e:
-            await zb.bot_errors(self,e)
+            await zb.bot_errors(self,sp.format(e))
 
     # @commands.command(name='template', description='defined')
     # @is_in_guild(509242768401629204)
@@ -205,7 +205,7 @@ class CoffeePolCog(commands.Cog):
     #     try:
     #         pass
     #     except Exception as e:
-    #         await zb.bot_errors(ctx,sp.format(e)
+    #         await zb.bot_errors(ctx,sp.format(e))
 
     @commands.command(name='hotchicks', description='Posts hot chicks')
     @is_in_guild(509242768401629204)
