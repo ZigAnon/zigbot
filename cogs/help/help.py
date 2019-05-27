@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+import stackprinter as sp
 from bin import zb
 from bin import zb_config
 
@@ -31,7 +32,7 @@ class HelpCog(commands.Cog):
                 await ctx.send(embed=embed)
         except Exception as e:
             await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
-            await zb.bot_errors(ctx,e)
+            await zb.bot_errors(ctx,sp.format(e))
 
 
 def setup(bot):

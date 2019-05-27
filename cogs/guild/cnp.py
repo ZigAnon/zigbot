@@ -1,6 +1,7 @@
 import discord
 import asyncio
 from discord.ext import commands
+import stackprinter as sp
 import numpy as np
 from bin import zb
 from bin import cp
@@ -204,7 +205,7 @@ class CoffeePolCog(commands.Cog):
     #     try:
     #         pass
     #     except Exception as e:
-    #         await zb.bot_errors(ctx,e)
+    #         await zb.bot_errors(ctx,sp.format(e)
 
     @commands.command(name='hotchicks', description='Posts hot chicks')
     @is_in_guild(509242768401629204)
@@ -215,7 +216,7 @@ class CoffeePolCog(commands.Cog):
                     delete_after=30)
             await ctx.message.delete()
         except Exception as e:
-            await zb.bot_errors(ctx,e)
+            await zb.bot_errors(ctx,sp.format(e))
 
     @commands.command(name='roles', description='Redirects to roles page')
     @is_in_guild(509242768401629204)
@@ -227,7 +228,7 @@ class CoffeePolCog(commands.Cog):
                     'or going to <#512473259376246808>', delete_after=15)
             await ctx.message.delete()
         except Exception as e:
-            await zb.bot_errors(ctx,e)
+            await zb.bot_errors(ctx,sp.format(e))
 
 
 def setup(bot):

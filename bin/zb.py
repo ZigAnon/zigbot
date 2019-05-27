@@ -6,9 +6,12 @@ import discord
 from discord.ext import commands
 from datetime import datetime
 from datetime import timedelta
+import stackprinter as sp
 import psycopg2 as dbSQL
 import numpy as np
 from bin import zb_config
+
+
 
 _var = zb_config
 _query = """ SELECT g.guild_id,u.real_user_id,r.role_id,u.name,g.nick,u.int_user_id
@@ -100,7 +103,7 @@ async def do_reminder(ctx):
             await asyncio.sleep(_var.timeout)
             await msg.delete()
     except Exception as e:
-        await bot_errors(ctx,e)
+        await bot_errors(ctx,sp.format(e))
 
 
 #################
@@ -299,7 +302,7 @@ async def give_admin(ctx,test):
                 role = grab_first_col(roles)[0]
                 await remove_roles(ctx,ctx.author,role,'')
     except Exception as e:
-        await bot_errors(ctx,e)
+        await bot_errors(ctx,sp.format(e))
 
 def get_pattern(string, test):
     grab = re.search(test, string)
@@ -768,7 +771,7 @@ async def is_good_nick(ctx,member):
                     f'https://support.discordapp.com/hc/en-us/articles/219070107-Server-Nicknames')
             return False
     except Exception as e:
-        await bot_errors(ctx,e)
+        await bot_errors(ctx,sp.format(e))
 
 def is_pattern(string, test):
 
@@ -977,7 +980,7 @@ async def print_log(ctx,member,embed):
         embed.timestamp = datetime.utcnow()
         await channel.send(embed=embed)
     except Exception as e:
-        await bot_errors(ctx,e)
+        await bot_errors(ctx,sp.format(e))
 
 async def print_log_by_group_id(guild,group_id,embed):
     try:
@@ -993,7 +996,7 @@ async def print_log_by_group_id(guild,group_id,embed):
             printchan = guild.get_channel(int(chan[0][0]))
             await printchan.send(embed=embed)
     except Exception as e:
-        await bot_errors(ctx,e)
+        await bot_errors(ctx,sp.format(e))
 
 async def print_embed_ts(ctx,member,embed):
     try:
@@ -1001,18 +1004,17 @@ async def print_embed_ts(ctx,member,embed):
         embed.timestamp = datetime.utcnow()
         await ctx.channel.send(embed=embed)
     except Exception as e:
-        await bot_errors(ctx,e)
+        await bot_errors(ctx,sp.format(e))
 
 async def bot_errors(ctx,e):
     """ Or bot_errors(self,e) """
+    # await zb.bot_errors(ctx,sp.format(e))
     try:
         """ Send Bot Errors to log """
-        string = (f'**`ERROR:`** {type(e).__name__} - {e}')
-
         channel = ctx.bot.get_channel(_var.botErrors)
-        await channel.send(string)
+        await channel.send(e)
     except Exception as e:
-        print(f'**`ERROR:`** {type(e).__name__} - {e}')
+        print(f'=ERROR=: {type(e).__name__} - {e}')
 
 async def print_string(ctx,string):
     try:
@@ -1027,7 +1029,7 @@ async def print_string(ctx,string):
                 await ctx.send(string[i])
                 i+=1
     except Exception as e:
-        await bot_errors(ctx,e)
+        await bot_errors(ctx,sp.format(e))
 
 def nav_large_message(maxInt,curInt,nav):
     if nav == 0:
@@ -1130,12 +1132,12 @@ async def print_embed_nav(self,ctx,initialEmbed,embedList,
                 embed.timestamp = datetime.utcnow()
             await msg.edit(embed=embed)
         except Exception as e:
-            await bot_errors(ctx,e)
+            await bot_errors(ctx,sp.format(e))
     try:
         for future in pending:
             future.cancel()
     except Exception as e:
-        await bot_errors(ctx,e)
+        await bot_errors(ctx,sp.format(e))
     await msg.clear_reactions()
 
     return msg
@@ -1203,7 +1205,7 @@ async def print_embed_choice(self,ctx,embedMsg,lowChoice,maxChoices,footer):
         for future in pending:
             future.cancel()
     except Exception as e:
-        await bot_errors(ctx,e)
+        await bot_errors(ctx,sp.format(e))
     await msg.clear_reactions()
 
     return msg, selected
@@ -1275,7 +1277,7 @@ async def print_select(ctx,data2):
 
         return choice
     except Exception as e:
-        await bot_errors(ctx,e)
+        await bot_errors(ctx,sp.format(e))
 
 async def print_lookup(ctx,rows,data,title,string):
     try:
@@ -1353,4 +1355,4 @@ async def print_lookup(ctx,rows,data,title,string):
         await print_string(ctx,string)
         return
     except Exception as e:
-        await bot_errors(ctx,e)
+        await bot_errors(ctx,sp.format(e))

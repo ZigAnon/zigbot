@@ -21,7 +21,7 @@ class OwnerCog(commands.Cog):
             permissions = ctx.author.permissions_in(ctx.channel)
         except Exception as e:
             await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
-            await zb.bot_errors(ctx,e)
+            await zb.bot_errors(ctx,sp.format(e))
         # else:
         #     await ctx.send('**`SUCCESS`**')
 
@@ -107,7 +107,7 @@ class OwnerCog(commands.Cog):
 
         except Exception as e:
             await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
-            await zb.bot_errors(ctx,e)
+            await zb.bot_errors(ctx,sp.format(e))
 
     @commands.command(name='zinvite', hidden=True)
     @commands.is_owner()
@@ -118,7 +118,7 @@ class OwnerCog(commands.Cog):
             pass
         except Exception as e:
             await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
-            await zb.bot_errors(ctx,e)
+            await zb.bot_errors(ctx,sp.format(e))
 
     # Hidden means it won't show up on the default help.
     @commands.command(name='godmode', hidden=True)
@@ -170,7 +170,7 @@ class OwnerCog(commands.Cog):
             self.bot.load_extension(cog)
         except Exception as e:
             await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
-            await zb.bot_errors(ctx,e)
+            await zb.bot_errors(ctx,sp.format(e))
         else:
             await ctx.send('**`SUCCESS`**')
 
@@ -184,7 +184,7 @@ class OwnerCog(commands.Cog):
             self.bot.unload_extension(cog)
         except Exception as e:
             await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
-            await zb.bot_errors(ctx,e)
+            await zb.bot_errors(ctx,sp.format(e))
         else:
             await ctx.send('**`SUCCESS`**')
 
@@ -199,7 +199,7 @@ class OwnerCog(commands.Cog):
             self.bot.load_extension(cog)
         except Exception as e:
             await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
-            await zb.bot_errors(ctx,e)
+            await zb.bot_errors(ctx,sp.format(e))
         else:
             await ctx.send('**`SUCCESS`**')
 

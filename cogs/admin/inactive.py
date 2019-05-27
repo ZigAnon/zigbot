@@ -1,6 +1,7 @@
 import discord
 import psycopg2 as dbSQL
 from discord.ext import commands
+import stackprinter as sp
 from bin import zb
 from bin import zb_config
 
@@ -54,7 +55,7 @@ class InactiveCog(commands.Cog):
                     await zb.print_lookup(ctx,rows,data,title,string)
         except Exception as e:
             await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
-            await zb.bot_errors(ctx,e)
+            await zb.bot_errors(ctx,sp.format(e))
 
 
 def setup(bot):

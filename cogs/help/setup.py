@@ -1,7 +1,8 @@
 import discord
 import asyncio
-import psycopg2 as dbSQL
 from discord.ext import commands
+import psycopg2 as dbSQL
+import stackprinter as sp
 from bin import zb
 from bin import zb_config
 
@@ -30,7 +31,7 @@ class SetupCog(commands.Cog):
                 await ctx.send(embed=embed)
         except Exception as e:
             await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
-            await zb.bot_errors(ctx,e)
+            await zb.bot_errors(ctx,sp.format(e))
 
     # Hidden means it won't show up on the default help.
     @commands.command(name='sar', hidden=True)
@@ -99,7 +100,7 @@ class SetupCog(commands.Cog):
                                'I\'ll let <@{0}> know there is an issue'.format('zig'))
         except Exception as e:
             await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
-            await zb.bot_errors(ctx,e)
+            await zb.bot_errors(ctx,sp.format(e))
 
     @commands.command(name='asar', hidden=True)
     @commands.guild_only()
@@ -207,7 +208,7 @@ class SetupCog(commands.Cog):
                     await msg.edit(embed=embed,delete_after=30)
 
         except Exception as e:
-            await zb.bot_errors(ctx,e)
+            await zb.bot_errors(ctx,sp.format(e))
 
     @commands.command(name='rsar', hidden=True)
     @commands.guild_only()
@@ -276,7 +277,7 @@ class SetupCog(commands.Cog):
                     await ctx.send(embed=embed,delete_after=30)
 
         except Exception as e:
-            await zb.bot_errors(ctx,e)
+            await zb.bot_errors(ctx,sp.format(e))
 
 
 def setup(bot):

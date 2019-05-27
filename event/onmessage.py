@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+import stackprinter as sp
 from bin import zb
 from bin import zb_config as _var
 
@@ -185,7 +186,7 @@ class onmessageCog(commands.Cog):
                 print(f'**`ERROR:`** {type(e).__name__} - {e}')
         except Exception as e:
             ctx = await self.bot.get_context(message)
-            await zb.bot_errors(ctx,e)
+            await zb.bot_errors(ctx,sp.format(e))
 
 
 def setup(bot):

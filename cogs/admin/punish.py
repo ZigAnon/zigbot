@@ -1,6 +1,7 @@
 import discord
 import asyncio
 from discord.ext import commands
+import stackprinter as sp
 from bin import zb
 from bin import cp
 
@@ -35,7 +36,7 @@ class PunishCog(commands.Cog):
                 await ctx.send('__**`RAID ON:`**__ All invite links are disabled!')
             rows, string = zb.sql_update(sql)
         except Exception as e:
-            await zb.bot_errors(ctx,e)
+            await zb.bot_errors(ctx,sp.format(e))
 
     @commands.command(name='shitpost', hidden=True)
     async def shitpost(self, ctx, member: discord.Member):
@@ -86,7 +87,7 @@ class PunishCog(commands.Cog):
                     pass
 
         except Exception as e:
-            await zb.bot_errors(ctx,e)
+            await zb.bot_errors(ctx,sp.format(e))
 
     @commands.command(name='mute', hidden=True)
     async def mute(self, ctx, member: discord.Member):
@@ -131,7 +132,7 @@ class PunishCog(commands.Cog):
                     pass
 
         except Exception as e:
-            await zb.bot_errors(ctx,e)
+            await zb.bot_errors(ctx,sp.format(e))
 
     @commands.command(name='jail', hidden=True)
     async def jail(self, ctx, member: discord.Member):
@@ -177,7 +178,7 @@ class PunishCog(commands.Cog):
                     pass
 
         except Exception as e:
-            await zb.bot_errors(ctx,e)
+            await zb.bot_errors(ctx,sp.format(e))
 
     @commands.command(name='cleanpost', aliases=['free','unmute'], hidden=True)
     async def cleanpost(self, ctx, member: discord.Member):
@@ -247,7 +248,7 @@ class PunishCog(commands.Cog):
                     pass
 
         except Exception as e:
-            await zb.bot_errors(ctx,e)
+            await zb.bot_errors(ctx,sp.format(e))
 
 
 def setup(bot):

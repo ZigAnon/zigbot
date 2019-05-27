@@ -1,6 +1,7 @@
 import math
 import discord
 from discord.ext import commands
+import stackprinter as sp
 from bin import zb
 from bin import cp
 
@@ -154,7 +155,7 @@ class MembersCog(commands.Cog):
             await zb.print_embed_nav(self,ctx,initialEmbed,embeds,pages,page,'')
 
         except Exception as e:
-            await zb.bot_errors(ctx,e)
+            await zb.bot_errors(ctx,sp.format(e))
 
     @commands.command(name='iam', hidden=True)
     @commands.guild_only()
@@ -437,7 +438,7 @@ class MembersCog(commands.Cog):
                 string = string[:-2]
                 zb.add_special_role(string)
         except Exception as e:
-            await zb.bot_errors(ctx,e)
+            await zb.bot_errors(ctx,sp.format(e))
 
     @commands.command(name='iamn', aliases=['iamnot'], hidden=True)
     @commands.guild_only()
@@ -568,7 +569,7 @@ class MembersCog(commands.Cog):
                 await zb.remove_roles(self,ctx.author,rmv,'No longer busy')
                 zb.rmv_special_role(ctx.guild.id,51,ctx.author.id)
         except Exception as e:
-            await zb.bot_errors(ctx,e)
+            await zb.bot_errors(ctx,sp.format(e))
 
 
 def setup(bot):
