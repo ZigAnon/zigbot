@@ -440,6 +440,12 @@ class MembersCog(commands.Cog):
                         f'removed.', color=0xf5d28a)
                 await ctx.send(embed=embed)
                 await ctx.author.send('Join voice channel to type `.iamn busy`.')
+
+                # Log user changed to busy
+                embed=discord.Embed(description=ctx.author.mention +
+                        " **is now busy**", color=0x117ea6)
+                embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
+                await zb.print_log(ctx,ctx.author,embed)
         except Exception as e:
             await zb.bot_errors(ctx,sp.format(e))
 
@@ -571,6 +577,12 @@ class MembersCog(commands.Cog):
                 await zb.add_roles(self,ctx.author,data,'No longer busy')
                 await zb.remove_roles(self,ctx.author,rmv,'No longer busy')
                 zb.rmv_special_role(ctx.guild.id,51,ctx.author.id)
+
+                # Log user changed to not busy
+                embed=discord.Embed(description=ctx.author.mention +
+                        " **is no longer busy**", color=0x117ea6)
+                embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
+                await zb.print_log(ctx,ctx.author,embed)
         except Exception as e:
             await zb.bot_errors(ctx,sp.format(e))
 
