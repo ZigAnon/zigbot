@@ -107,10 +107,13 @@ class DictionaryCog(commands.Cog):
                                 url=f'https://{language}.oxforddictionaries.com/' \
                                         f'definition/{search}',
                                         color=0xf5d28a)
-                        oxford = data['results'][0]['lexicalEntries'][0]['entries'][0]['senses'][i]['definitions']
-                        embed.add_field(name=f'{word.capitalize()}:',
-                                value=oxford[0],
-                                inline=False)
+                        try:
+                            oxford = data['results'][0]['lexicalEntries'][0]['entries'][0]['senses'][i]['definitions']
+                            embed.add_field(name=f'{word.capitalize()}:',
+                                    value=oxford[0],
+                                    inline=False)
+                        except:
+                            howmany-=1
                         if i == 0:
                             initialEmbed = embed
                         embedList.append(embed)
