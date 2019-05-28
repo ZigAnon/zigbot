@@ -1,8 +1,13 @@
+import os
+import psutil
 import discord
 from discord.ext import commands
+from datetime import datetime
+from datetime import timedelta
 import stackprinter as sp
 from datetime import datetime
 from time import strftime
+from bin import zb_config as _var
 from bin import zb
 
 
@@ -10,7 +15,71 @@ class ServerInfoCog(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-    
+
+    @commands.command(name='stats', hidden=True)
+    @commands.guild_only()
+    async def embed_botinfo(self, ctx):
+        async with ctx.channel.typing():
+            try:
+                # Gather data
+                author = self.bot.user
+                server = 6
+                textChan = 0
+                voiceChan = 0
+                for guild in self.bot.guilds:
+                    server+=1
+                    textChan+=len(guild.text_channels)
+                    voiceChan+=len(guild.voice_channels)
+                sql = """ SELECT attachments
+                          FROM messages
+                          WHERE content like '.%' """
+                junk1, cmds, junk2 = zb.sql_query(sql)
+                sql = """ SELECT created_at
+                          FROM messages
+                          ORDER BY created_at ASC """
+                dates, msgs, junk2 = zb.sql_query(sql)
+                diff = int((datetime.utcnow() - dates[0][0]).total_seconds())
+                msgsPer = msgs/diff
+                day = 0
+                hour = 0
+                minute = 0
+                while diff > 86400:
+                    day+=1
+                    diff-=86400
+                while diff > 3600:
+                    hour+=1
+                    diff-=3600
+                while diff > 60:
+                    minute+=1
+                    diff-=60
+                pid = os.getpid()
+                py = psutil.Process(pid)
+                memoryUse = (py.memory_info()[0]/2.**30) * 1000
+
+                # Build embed
+                embed=discord.Embed(color=0xbaab7d)
+                embed.set_author(name=f'{author.name} {_var.botVersion}',
+                        icon_url=author.avatar_url)
+                embed.add_field(name="Author", value=author, inline=True)
+                embed.add_field(name="Bot ID", value=author.id, inline=True)
+                embed.add_field(name="Shard", value='#0 / 1', inline=True)
+                embed.add_field(name="Commands ran", value=cmds, inline=True)
+                embed.add_field(name="Messages", value=f'{msgs} ({msgsPer:.2f}/sec)',
+                        inline=True)
+                embed.add_field(name="Memory", value=f'{memoryUse:.2f} MB',
+                        inline=True)
+                embed.add_field(name="Owner IDs", value=self.bot.owner_id, inline=True)
+                embed.add_field(name="Uptime",
+                        value=f'{day} days\n{hour} hours\n{minute} minutes', inline=True)
+                embed.add_field(name="Presence",
+                        value=(f'{server} Servers\n'
+                               f'{textChan} Text Channels\n'
+                               f'{voiceChan} Voice Channels'), inline=True)
+
+                await ctx.send(embed=embed)
+            except Exception as e:
+                await zb.bot_errors(ctx,sp.format(e))
+
     # Hidden means it won't show up on the default help.
     @commands.command(name='serverinfo', hidden=True)
     @commands.guild_only()
