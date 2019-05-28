@@ -115,7 +115,7 @@ async def _heartbeat(bot):
                     # SQL TASKS
                     zb.reset_voice_updating(guild)
             except Exception as e:
-                print(f'**`ERROR:`** {type(e).__name__} - {e}')
+                await zb.bot_errors(self,sp.format(e))
 
             # Voice role check
             try:
@@ -174,7 +174,7 @@ async def _heartbeat(bot):
                         i+=1
 
             except Exception as e:
-                print(f'**`ERROR:`** {type(e).__name__} - {e}')
+                await zb.bot_errors(self,sp.format(e))
 
             # Auto purge channels
             try:
@@ -236,7 +236,7 @@ async def _heartbeat(bot):
                 junk1, junk2 = zb.sql_update(sql)
 
             except Exception as e:
-                print(f'**`ERROR:`** {type(e).__name__} - {e}')
+                await zb.bot_errors(self,sp.format(e))
 
             # RSS Feeds
             try:
@@ -306,10 +306,11 @@ async def _heartbeat(bot):
                         i+=1
 
             except Exception as e:
-                print(f'**`ERROR:`** {type(e).__name__} - {e}')
+                await zb.bot_errors(self,sp.format(e))
 
     except Exception as e:
-        print(f'**`ERROR:`** {type(e).__name__} - {e}')
+        await zb.bot_errors(self,sp.format(e))
+
 
     # Keeps heartbeat stable
     dub = datetime.now()

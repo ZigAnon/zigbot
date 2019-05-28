@@ -160,6 +160,7 @@ class OwnerCog(commands.Cog):
                 pass
         except Exception as e:
             await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
+            await zb.bot_errors(ctx,sp.format(e))
 
     # Hidden means it won't show up on the default help.
     @commands.command(name='load', hidden=True)

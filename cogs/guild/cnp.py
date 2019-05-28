@@ -22,95 +22,98 @@ class CoffeePolCog(commands.Cog):
     #TODO: Add to main loop
     @commands.Cog.listener()
     async def on_message(self, message):
-        guild = self.bot.get_guild(509242768401629204)
-        # If message in #landing
-        if message.channel.id == 574748648072544273:
-            await message.delete(delay=120)
+        try:
+            guild = self.bot.get_guild(509242768401629204)
+            # If message in #landing
+            if message.channel.id == 574748648072544273:
+                await message.delete(delay=120)
 
-        # If any bot
-        if message.author.bot:
-            return
-
-        # Ignore self
-        if message.author == self.bot.user:
-            return
-
-        # Adds people to blacklist
-        if(message.author in guild.members and
-                message.guild is None):
-            channel = guild.get_channel(509244241776738304)
-
-            # Sets static values
-            member = message.author
-            carryMsg = message
-            # Looks for last message in admin chats
-            async for message in channel.history(limit=500):
-                if message.author == member:
-                    msg = message
-
-            # Try to get message ctx if found
-            try:
-                ctx = await self.bot.get_context(msg)
-            except:
+            # If any bot
+            if message.author.bot:
                 return
 
-            # If ctx found, test for permissions
-            if(zb.is_trusted(ctx,4) and
-                    zb.is_pattern(carryMsg.content,
-                        '^([0-9]{14,})\s+(((\w+\s+)+(\w+)?)|(\w+)).+')):
-                data = carryMsg.content.split(' ',1)
-                sql = """ SELECT real_user_id
-                          FROM blacklist
-                          WHERE guild_id = {0}
-                          AND real_user_id = {1} """
-                sql = sql.format(guild.id,data[0])
+            # Ignore self
+            if message.author == self.bot.user:
+                return
 
-                junk, rows, junk2 = zb.sql_query(sql)
+            # Adds people to blacklist
+            if(message.author in guild.members and
+                    message.guild is None):
+                channel = guild.get_channel(509244241776738304)
 
-                # Checks if already in list
-                if rows > 0:
-                    await carryMsg.author.send('Thank you for reporting ' +
-                            f'`{data[0]}`, but it already exists for **{guild.name}**.')
+                # Sets static values
+                member = message.author
+                carryMsg = message
+                # Looks for last message in admin chats
+                async for message in channel.history(limit=500):
+                    if message.author == member:
+                        msg = message
+
+                # Try to get message ctx if found
+                try:
+                    ctx = await self.bot.get_context(msg)
+                except:
                     return
-                else:
-                    await carryMsg.author.send(f'I have added `{data[0]}` ' +
-                            f'to the blacklist for **{guild.name}**')
-                    zb.add_blacklist(message,data[0],data[1])
 
-        # Ignore if not guild
-        if not message.guild is guild:
-            return
+                # If ctx found, test for permissions
+                if(zb.is_trusted(ctx,4) and
+                        zb.is_pattern(carryMsg.content,
+                            '^([0-9]{14,})\s+(((\w+\s+)+(\w+)?)|(\w+)).+')):
+                    data = carryMsg.content.split(' ',1)
+                    sql = """ SELECT real_user_id
+                              FROM blacklist
+                              WHERE guild_id = {0}
+                              AND real_user_id = {1} """
+                    sql = sql.format(guild.id,data[0])
 
-        # Delete @everyone post
-        if(not zb.is_trusted(message,5) and
-                ('@everyone' in message.content.lower() or
-                    '@here' in message.content.lower())):
-            await message.delete()
+                    junk, rows, junk2 = zb.sql_query(sql)
 
-        # If discord link
-        if(not zb.is_trusted(message,5) and zb.is_pattern(message.content.lower(),
-                '(https?:\/\/)?(www\.)?(discord\.(gg|io|me|li)|disboard\.org\/server|discordapp\.com\/invite)\/.+([0-9]|[a-z])')):
-            punishchan = message.guild.get_channel(517882333752459264)
-            embed=discord.Embed(title="Banned!",
-                    description=f'**{message.author}** was banned by ' +
-                    '**ZigBot#1002** for violation of rule 6!',
-                    color=0xd30000)
-            await punishchan.send(embed=embed)
-            await message.author.send('It\'s in the rules, no sharing discord ' +
-                    'links.\n Bye bye!')
-            await message.author.ban(reason='Posted invite')
+                    # Checks if already in list
+                    if rows > 0:
+                        await carryMsg.author.send('Thank you for reporting ' +
+                                f'`{data[0]}`, but it already exists for **{guild.name}**.')
+                        return
+                    else:
+                        await carryMsg.author.send(f'I have added `{data[0]}` ' +
+                                f'to the blacklist for **{guild.name}**')
+                        zb.add_blacklist(message,data[0],data[1])
 
-        # If IQ, stop topic
-        if(not zb.is_trusted(message,5) and
-                (' iq' in message.content.lower() or
-                    'iq ' in message.content.lower())):
-            await message.channel.send(f'{message.author.mention}, there are ' \
-                    f'better arguments than IQ to make your case.\n' \
-                    f'https://www.independent.co.uk/news/science/iq-tests' \
-                    f'-are-fundamentally-flawed-and-using-them-alone-to-measure' \
-                    f'-intelligence-is-a-fallacy-study-8425911.html\n' \
-                    f'https://www.cell.com/neuron/fulltext/S0896-6273(12)00584-3',
-                    delete_after=300)
+            # Ignore if not guild
+            if not message.guild is guild:
+                return
+
+            # Delete @everyone post
+            if(not zb.is_trusted(message,5) and
+                    ('@everyone' in message.content.lower() or
+                        '@here' in message.content.lower())):
+                await message.delete()
+
+            # If discord link
+            if(not zb.is_trusted(message,5) and zb.is_pattern(message.content.lower(),
+                    '(https?:\/\/)?(www\.)?(discord\.(gg|io|me|li)|disboard\.org\/server|discordapp\.com\/invite)\/.+([0-9]|[a-z])')):
+                punishchan = message.guild.get_channel(517882333752459264)
+                embed=discord.Embed(title="Banned!",
+                        description=f'**{message.author}** was banned by ' +
+                        '**ZigBot#1002** for violation of rule 6!',
+                        color=0xd30000)
+                await punishchan.send(embed=embed)
+                await message.author.send('It\'s in the rules, no sharing discord ' +
+                        'links.\n Bye bye!')
+                await message.author.ban(reason='Posted invite')
+
+            # If IQ, stop topic
+            if(not zb.is_trusted(message,5) and
+                    (' iq' in message.content.lower() or
+                        'iq ' in message.content.lower())):
+                await message.channel.send(f'{message.author.mention}, there are ' \
+                        f'better arguments than IQ to make your case.\n' \
+                        f'https://www.independent.co.uk/news/science/iq-tests' \
+                        f'-are-fundamentally-flawed-and-using-them-alone-to-measure' \
+                        f'-intelligence-is-a-fallacy-study-8425911.html\n' \
+                        f'https://www.cell.com/neuron/fulltext/S0896-6273(12)00584-3',
+                        delete_after=300)
+        except Exception as e:
+            await zb.bot_errors(self,sp.format(e))
 
     # Events on member join voice
     @commands.Cog.listener()
