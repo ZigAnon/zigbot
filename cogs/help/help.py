@@ -31,7 +31,6 @@ class HelpCog(commands.Cog):
             else:
                 await ctx.send(embed=embed)
         except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,sp.format(e))
 
 

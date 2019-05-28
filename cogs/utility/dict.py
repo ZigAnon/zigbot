@@ -67,7 +67,6 @@ class DictionaryCog(commands.Cog):
                         'in Merriam-Webster', delete_after=10)
 
         except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,sp.format(e))
 
     @commands.command(name='define', description='Defines word using Oxford Living Dictionary.')
@@ -126,7 +125,6 @@ class DictionaryCog(commands.Cog):
                         'in Oxford Living', delete_after=10)
 
         except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,sp.format(e))
 
     @commands.command(name='inspire', description='Generatates inspirational quote with InspiroBot')
@@ -145,7 +143,6 @@ class DictionaryCog(commands.Cog):
             embed.set_image(url=r.text)
             await zb.print_embed_ts(ctx,ctx.author,embed)
         except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,sp.format(e))
 
 def setup(bot):

@@ -54,7 +54,6 @@ class InactiveCog(commands.Cog):
                     data, rows, string = zb.sql_query(sql)
                     await zb.print_lookup(ctx,rows,data,title,string)
         except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,sp.format(e))
 
 

@@ -30,7 +30,6 @@ class SetupCog(commands.Cog):
                 embed.set_footer(text="Type '.setup' to start over.")
                 await ctx.send(embed=embed)
         except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,sp.format(e))
 
     # Hidden means it won't show up on the default help.
@@ -99,7 +98,6 @@ class SetupCog(commands.Cog):
                                'Check the spelling and try again. ' +
                                'I\'ll let <@{0}> know there is an issue'.format('zig'))
         except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,sp.format(e))
 
     @commands.command(name='asar', hidden=True)

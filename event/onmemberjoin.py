@@ -90,7 +90,7 @@ class onmemberjoinCog(commands.Cog):
                                     ' because account was made in the last ' +
                                     str(_var.newAccount) + ' hours.')
                         except Exception as e:
-                            print(f'**`ERROR:`** {type(e).__name__} - {e}')
+                            await zb.bot_errors(self,sp.format(e))
                         await member.kick()
                         return
 
@@ -128,10 +128,9 @@ class onmemberjoinCog(commands.Cog):
                             ', welcome to **{0}** \U0001F389\U0001F917 !'.format(member.guild.name))
 
                     # Sends join instructions
-                    msg = 'Welcome {0}! {1}'.format(member.mention,
-                            zb.join_msg(member))
                     await zb.is_good_nick(self,member)
-                    await zb.timed_msg(joinChan,msg,_var.timeout*2)
+                    await joinChan.send(f'Welcome {member.mention}! {zb.join_msg(member)}',
+                            delete_after=_var.timeout*2)
 
             except Exception as e:
                 await zb.bot_errors(self,sp.format(e))

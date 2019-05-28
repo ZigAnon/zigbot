@@ -22,8 +22,7 @@ class OwnerCog(commands.Cog):
             permissions = ctx.author.permissions_in(ctx.channel)
             a = b/c
         except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
-            await zb.bot_errors(ctx,sp.format(e))
+            await ctx.send(sq.format(e))
         # else:
         #     await ctx.send('**`SUCCESS`**')
 
@@ -108,7 +107,6 @@ class OwnerCog(commands.Cog):
                 i+=1
 
         except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,sp.format(e))
 
     @commands.command(name='zinvite', hidden=True)
@@ -119,7 +117,6 @@ class OwnerCog(commands.Cog):
         try:
             pass
         except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,sp.format(e))
 
     # Hidden means it won't show up on the default help.
@@ -159,7 +156,6 @@ class OwnerCog(commands.Cog):
             except:
                 pass
         except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,sp.format(e))
 
     # Hidden means it won't show up on the default help.
@@ -172,7 +168,6 @@ class OwnerCog(commands.Cog):
         try:
             self.bot.load_extension(cog)
         except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,sp.format(e))
         else:
             await ctx.send('**`SUCCESS`**')
@@ -186,7 +181,6 @@ class OwnerCog(commands.Cog):
         try:
             self.bot.unload_extension(cog)
         except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,sp.format(e))
         else:
             await ctx.send('**`SUCCESS`**')
@@ -201,7 +195,6 @@ class OwnerCog(commands.Cog):
             self.bot.unload_extension(cog)
             self.bot.load_extension(cog)
         except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,sp.format(e))
         else:
             await ctx.send('**`SUCCESS`**')

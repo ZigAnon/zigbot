@@ -139,7 +139,6 @@ class ServerInfoCog(commands.Cog):
                 """Command which displays Server info.
                 Remember to use dot path. e.g: cogs.serverinfo"""
         except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,sp.format(e))
 
 def setup(bot):

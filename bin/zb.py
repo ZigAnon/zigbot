@@ -111,15 +111,6 @@ async def do_reminder(ctx):
 ##  Functions  ##
 ##             ##
 #################
-async def timed_msg(channel,string,seconds):
-    try:
-        string = string.replace('\\n','\n')
-        msg = await channel.send(string)
-        await asyncio.sleep(seconds)
-        await msg.delete()
-    except Exception as e:
-        print(f'**`ERROR:`** {type(e).__name__} - {e}')
-
 def how_wide(data):
     # Returns int length
     """ Finds longest element in array """
@@ -920,13 +911,13 @@ def sql_query(sql):
             # Close communication with the PostgreSQL database
             cur.close()
         except (Exception, dbSQL.DatabaseError) as e:
-            string = (f'**`ERROR:`** {type(e).__name__} - {e}')
+            string = sp.format(e)
         finally:
             if conn is not None:
                 conn.close()
 
     except Exception as e:
-        string = (f'**`ERROR:`** {type(e).__name__} - {e}')
+        string = sp.format(e)
 
     return data, rows, string
 
@@ -949,13 +940,13 @@ def sql_update(sql):
             # Close communication with the PostgreSQL database
             cur.close()
         except (Exception, dbSQL.DatabaseError) as e:
-            string = (f'**`ERROR:`** {type(e).__name__} - {e}')
+            string = sp.format(e)
         finally:
             if conn is not None:
                 conn.close()
 
     except Exception as e:
-        string = (f'**`ERROR:`** {type(e).__name__} - {e}')
+        string = sp.format(e)
 
     return rows, string
 
@@ -1245,7 +1236,7 @@ def print_2000lim(string):
         return string
 
     except Exception as e:
-        string = (f'**`ERROR:`** {type(e).__name__} - {e}')
+        string = sp.format(e)
         return string
 
 async def print_select(ctx,data2):

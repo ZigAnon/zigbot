@@ -59,9 +59,8 @@ class onmessageCog(commands.Cog):
                 #"""^((\s+)?i((\s+)?|[']|)m\s+?)\w+(\W+)?$"""):
                 hungry = zb.get_pattern(message.content.lower(),"""(?<=m\s).*""")
                 hungry = hungry.strip()
-                msg = 'Hi {0}, I\'m {1}.'.format(hungry.capitalize(),
-                    self.bot.user.display_name)
-                await zb.timed_msg(message.channel,msg,30)
+                msg = await message.channel.send(f'Hi {hungry.capitalize()}, I\'m' \
+                        f' {self.bot.user.display_name}.',delete_after=30)
 
             # Mass mentions
             if(len(message.mentions) > 0 and
@@ -183,10 +182,9 @@ class onmessageCog(commands.Cog):
             try:
                 pass
             except Exception as e:
-                print(f'**`ERROR:`** {type(e).__name__} - {e}')
+                await zb.bot_errors(self,sp.format(e))
         except Exception as e:
-            ctx = await self.bot.get_context(message)
-            await zb.bot_errors(ctx,sp.format(e))
+            await zb.bot_errors(self,sp.format(e))
 
 
 def setup(bot):

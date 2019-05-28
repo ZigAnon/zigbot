@@ -34,7 +34,6 @@ class LookupCog(commands.Cog):
                 else:
                     await ctx.send('**`INVALID OPTION:`** {0}'.format(tool))
         except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
             await zb.bot_errors(ctx,sp.format(e))
 
 
