@@ -60,7 +60,7 @@ class ServerInfoCog(commands.Cog):
                 embed=discord.Embed(color=0xbaab7d)
                 embed.set_author(name=f'{author.name} {_var.botVersion}',
                         icon_url=author.avatar_url)
-                embed.add_field(name="Author", value=author, inline=True)
+                embed.add_field(name="Author", value=_var.ownerName, inline=True)
                 embed.add_field(name="Bot ID", value=author.id, inline=True)
                 embed.add_field(name="Shard", value='#0 / 1', inline=True)
                 embed.add_field(name="Commands ran", value=cmds, inline=True)
