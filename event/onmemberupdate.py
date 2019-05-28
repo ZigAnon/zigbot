@@ -17,6 +17,18 @@ class onmemberupdateCog(commands.Cog):
             if before.bot:
                 return
 
+            try:
+                # If busy, no log
+                data, rows = zb.get_roles_special(before.guild.id,51,before.id)
+                if rows > 0:
+                    return
+                busy = zb.get_roles_by_group_id(before.guild.id,51)[0][0]
+                for role in before.roles:
+                    if role.id == busy:
+                        return
+            except:
+                pass
+
             if before.nick == after.nick:
                 pass
             elif before.nick is None and not after.nick is None:

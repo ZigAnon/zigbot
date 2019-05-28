@@ -431,6 +431,8 @@ class MembersCog(commands.Cog):
                     if not role.name == '@everyone':
                         string += f'51,{int_id},{ctx.author.id},{ctx.guild.id},{role.id}),('
                         rmv.append(role)
+                string = string[:-2]
+                zb.add_special_role(string)
                 await ctx.author.remove_roles(*rmv,reason='Is Busy')
                 await zb.add_roles(self,ctx.author,add,'Is Busy')
                 embed=discord.Embed(description=f'**{ctx.author}** You now have ' \
@@ -438,8 +440,6 @@ class MembersCog(commands.Cog):
                         f'removed.', color=0xf5d28a)
                 await ctx.send(embed=embed)
                 await ctx.author.send('Join voice channel to type `.iamn busy`.')
-                string = string[:-2]
-                zb.add_special_role(string)
         except Exception as e:
             await zb.bot_errors(ctx,sp.format(e))
 
