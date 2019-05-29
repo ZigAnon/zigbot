@@ -13,6 +13,35 @@ class PunishCog(commands.Cog):
         self.bot = bot
 
     # Hidden means it won't show up on the default help.
+    @commands.command(name='say', hidden=True)
+    @commands.guild_only()
+    async def say_remove(self, ctx, *, phrase: str):
+        """Removes bot commands."""
+        try:
+            if not zb.is_trusted(ctx,4):
+                return
+            await ctx.message.delete()
+
+            # Grab punishchan
+            sql = """ SELECT channel_id
+                      FROM channels
+                      WHERE channel_id = {0}
+                      AND group_id = 80 """
+            sql = sql.format(ctx.channel.id)
+
+            data, rows, string = zb.sql_query(sql)
+            if not rows > 0:
+                return
+
+            channel = ctx.guild.get_channel(int(data[0][0]))
+            permissions = ctx.author.permissions_in(channel)
+            if permissions.send_messages and not permissions.manage_webhooks:
+                embed=discord.Embed(description=f'{phrase}',
+                        color=0x117ea6)
+                await zb.print_log_by_group_id(ctx.guild,80,embed)
+        except Exception as e:
+            await zb.bot_errors(self,sp.format(e))
+
     @commands.command(name='raid', hidden=True)
     async def raid_control(self, ctx):
         """Command to show inactive members"""
