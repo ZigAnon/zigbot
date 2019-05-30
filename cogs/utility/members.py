@@ -23,7 +23,7 @@ class MembersCog(commands.Cog):
         except Exception as e:
             await zb.bot_errors(ctx,sp.format(e))
 
-    @commands.command(name='lsar', hidden=True)
+    @commands.command(name='lsar', aliases=['isar'], hidden=True)
     @commands.guild_only()
     async def list_self_assignable_roles(self, ctx, *args):
         """Lists roles"""
