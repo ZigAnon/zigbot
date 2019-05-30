@@ -33,7 +33,7 @@ class CoffeePolCog(commands.Cog):
                 return
 
             # If user has 200 messages and is on server > 14 days
-            sql = """ SELECT DISTINCT m.message_id, g.joined_at
+            sql = """ SELECT DISTINCT m.message_id
                       FROM messages m
                       LEFT JOIN users u ON m.int_user_id = u.int_user_id
                       LEFT JOIN guild_membership g ON m.int_user_id = g.int_user_id

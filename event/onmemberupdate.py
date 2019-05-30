@@ -18,6 +18,10 @@ class onmemberupdateCog(commands.Cog):
                 return
 
             try:
+                # If punished, no log
+                punished = zb.get_punish_num(before)
+                if punished > 0:
+                    return
                 # If busy, no log
                 data, rows = zb.get_roles_special(before.guild.id,51,before.id)
                 if rows > 0:
