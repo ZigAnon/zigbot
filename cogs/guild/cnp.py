@@ -1,6 +1,8 @@
 import discord
 import asyncio
 from discord.ext import commands
+from datetime import datetime
+from datetime import timedelta
 import stackprinter as sp
 import numpy as np
 from bin import zb
@@ -19,7 +21,57 @@ class CoffeePolCog(commands.Cog):
             return ctx.guild and ctx.guild.id == guild_id
         return commands.check(predicate)
 
-    #TODO: Add to main loop
+    # Events on member update
+    @commands.Cog.listener()
+    async def on_member_update(self, before, after):
+        try:
+            # If any bot
+            if before.bot:
+                return
+
+            if before.guild.id != _guild_check:
+                return
+
+            # If user has 200 messages and is on server > 14 days
+            sql = """ SELECT DISTINCT m.message_id, g.joined_at
+                      FROM messages m
+                      LEFT JOIN users u ON m.int_user_id = u.int_user_id
+                      LEFT JOIN guild_membership g ON m.int_user_id = g.int_user_id
+                      WHERE NOT m.int_user_id in (
+                          SELECT m.int_user_id
+                          FROM role_membership m
+                          LEFT JOIN roles r ON m.role_id = r.role_id
+                          WHERE r.role_perms >= 5
+                          AND m.guild_id = {0})
+                      AND g.guild_id = {0}
+                      AND u.real_user_id = {1}
+                      AND g.joined_at <= CURRENT_TIMESTAMP AT TIME ZONE 'ZULU' - INTERVAL '14 days' """
+            sql = sql.format(before.guild.id,before.id)
+            data, rows, junk1 = zb.sql_query(sql)
+            if rows < 200:
+                return
+
+            # Calculate Trusted
+            now = datetime.utcnow()
+            joined = before.joined_at
+            diff = (now - joined).days
+
+            require = -(80*diff)+2200
+            if require < 200:
+                require = 200
+            if require < rows:
+                sql = """ SELECT role_id
+                          FROM roles
+                          WHERE guild_id = {0}
+                          AND role_perms = 5 """
+                sql = sql.format(before.guild.id)
+                data, junk1, junk2 = zb.sql_query(sql)
+                trusted = before.guild.get_role(data[0][0])
+                await before.add_roles(trusted,reason=f'Member has been in server {diff} with {rows} messages')
+
+        except Exception as e:
+            await zb.bot_errors(self,sp.format(e))
+
     @commands.Cog.listener()
     async def on_message(self, message):
         try:
