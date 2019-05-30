@@ -1,3 +1,4 @@
+import re
 import math
 import discord
 from discord.ext import commands
@@ -12,14 +13,103 @@ class MembersCog(commands.Cog):
 
     @commands.command(name='inrole', hidden=True)
     @commands.guild_only()
-    async def list_members_in_roles(self, ctx, *args):
+    async def list_members_in_roles(self, ctx, *, cmd: str):
         """Lists people in role"""
         try:
-            if not ctx.author.id == 280455061140930562:
+            # Grab roles
+            cmd = cmd.lower()
+            role_names = list(map(str.strip, re.split('\+|,', cmd)))
+
+            # Fine roles in guild
+            roles = []
+            names = []
+            for role in ctx.guild.roles:
+                if role.name.lower() in role_names:
+                    roles.append(role.id)
+                    names.append(role.name)
+            if len(roles) == 0:
+                #TODO: none found
                 return
-            #TODO: erase command after 5 mins
-            #TODO: erase display after 5 mins
-            pass
+            if len(names) > 1:
+                print_name =f'{names[0]}'
+                i = 1
+                while i < len(names):
+                    print_name = f'{print_name}, {names[i]}'
+                    i+=1
+                print_name = f'{print_name} **roles'
+            else:
+                print_name =f'{names[0]} **role'
+
+            # Get members inrole
+            sql = """ SELECT u.real_user_id
+                      FROM users u
+                      LEFT JOIN guild_membership g ON u.int_user_id = g.int_user_id
+                      LEFT JOIN role_membership r ON u.int_user_id = r.int_user_id
+                      WHERE g.guild_id = {0}
+                      AND g.is_member = TRUE
+                      AND r.role_id in {1}
+                      GROUP BY u.real_user_id
+                      HAVING COUNT(*) = {2} """
+            sql = sql.format(ctx.guild.id,zb.sql_list(roles),len(roles))
+            data, rows, junk1 = zb.sql_query(sql)
+            if rows == 0:
+                #TODO: none found
+                return
+
+            # Get members
+            i = 0
+            members = []
+            while i < len(data):
+                member = ctx.guild.get_member(data[i][0])
+                members.append(member)
+                # increment loop
+                i+=1
+
+            # Build print
+            pages = int(math.ceil((len(members))/20))
+            embeds = []
+            strings = []
+            i = 1
+            limit = 20
+            string = f'{members[0]}'
+            if pages > 1:
+                while i < len(members):
+                    while i < limit and i < len(members):
+                        string = f'{string}\n{members[i]}'
+
+                        # increment loop
+                        i+=1
+                    try:
+                        tempString = f'{members[i]}'
+                        strings.append(string)
+                        string = tempString
+                    except:
+                        pass
+                    limit+=20
+                    i+=1
+            else:
+                while i < len(members):
+                    string = f'{string}\n{members[i]}'
+
+                    # increment loop
+                    i+=1
+            strings.append(string)
+
+            initialEmbed=discord.Embed(color=0xf5d28a)
+            initialEmbed.add_field(name=f'**List of users in** {print_name} -** {len(data)}',
+                    value=f'{strings[0]}')
+
+            i = 0
+            while i < pages:
+                embed=discord.Embed(color=0xf5d28a)
+                embed.add_field(name=f'**List of users in** {print_name} -** {len(data)}',
+                        value=f'{strings[i]}')
+                embeds.append(embed)
+                # Increment loop
+                i+=1
+
+            await zb.print_embed_nav(self,ctx,initialEmbed,embeds,pages,1,'')
+
         except Exception as e:
             await zb.bot_errors(ctx,sp.format(e))
 
