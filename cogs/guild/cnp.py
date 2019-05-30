@@ -45,6 +45,7 @@ class CoffeePolCog(commands.Cog):
                           AND m.guild_id = {0})
                       AND g.guild_id = {0}
                       AND u.real_user_id = {1}
+                      AND g.punished = 0
                       AND g.joined_at <= CURRENT_TIMESTAMP AT TIME ZONE 'ZULU' - INTERVAL '14 days' """
             sql = sql.format(before.guild.id,before.id)
             data, rows, junk1 = zb.sql_query(sql)
@@ -67,7 +68,7 @@ class CoffeePolCog(commands.Cog):
                 sql = sql.format(before.guild.id)
                 data, junk1, junk2 = zb.sql_query(sql)
                 trusted = before.guild.get_role(data[0][0])
-                await before.add_roles(trusted,reason=f'Member has been in server {diff} with {rows} messages')
+                await before.add_roles(trusted,reason=f'Member has been in server {diff} days with {rows} messages')
 
         except Exception as e:
             await zb.bot_errors(self,sp.format(e))
