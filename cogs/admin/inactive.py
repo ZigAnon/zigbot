@@ -1,6 +1,8 @@
 import discord
 import psycopg2 as dbSQL
 from discord.ext import commands
+from datetime import datetime
+from datetime import timedelta
 import stackprinter as sp
 from bin import zb
 from bin import zb_config
@@ -24,7 +26,6 @@ class InactiveCog(commands.Cog):
                 async with ctx.channel.typing():
 
                     # Lists current Server Access Roles
-                    title = '**`List of Inactive Members`**'
                     sql = """ SELECT name, created_at, real_user_id
                               FROM (
                                   SELECT DISTINCT ON (m.int_user_id)
@@ -52,7 +53,26 @@ class InactiveCog(commands.Cog):
                                      zb.sql_list(zb.get_members_ids(ctx)),
                                      zb.sql_list(ignore))
                     data, rows, string = zb.sql_query(sql)
-                    await zb.print_lookup(ctx,rows,data,title,string)
+
+                    # Get members
+                    lst = []
+                    now = datetime.utcnow()
+                    i = 0
+                    while i < rows:
+                        undecided = '❁-'
+                        unRole = ctx.guild.get_role(517850437626363925)
+                        member = ctx.guild.get_member(data[i][2])
+                        if not unRole in member.roles:
+                            undecided = ''
+                        diff = (now - data[i][1]).days
+                        lst.append(f'{diff} days -{undecided} {member}')
+
+                        # increment loop
+                        i+=1
+                    title = f'**There are** {rows} **inactive members**'
+                    pages, embeds = await zb.build_embed_print(self,ctx,lst,title)
+                    initialEmbed = embeds[0]
+                    await zb.print_embed_nav(self,ctx,initialEmbed,embeds,pages,1,'')
         except Exception as e:
             await zb.bot_errors(ctx,sp.format(e))
 
