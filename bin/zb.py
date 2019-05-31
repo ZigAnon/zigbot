@@ -1062,6 +1062,50 @@ def nav_small_message(maxInt,curInt,nav):
     else:
         return maxInt
 
+async def build_embed_print(self,ctx,pages,lst,title):
+    """ Builds list of embeds limited to 20 rows """
+    try:
+        embeds = []
+        strings = []
+        i = 1
+        limit = 20
+        string = f'{lst[0]}'
+        if pages > 1:
+            while i < len(lst):
+                while i < limit and i < len(lst):
+                    string = f'{string}\n{lst[i]}'
+
+                    # increment loop
+                    i+=1
+                try:
+                    tempString = f'{lst[i]}'
+                    strings.append(string)
+                    string = tempString
+                except:
+                    pass
+                limit+=20
+                i+=1
+        else:
+            while i < len(lst):
+                string = f'{string}\n{lst[i]}'
+
+                # increment loop
+                i+=1
+        strings.append(string)
+
+        i = 0
+        while i < pages:
+            embed=discord.Embed(color=0xf5d28a)
+            embed.add_field(name=f'{title}',value=f'{strings[i]}')
+            embeds.append(embed)
+            # Increment loop
+            i+=1
+
+        return embeds
+
+    except Exception as e:
+        await bot_errors(ctx,sp.format(e))
+
 async def print_embed_nav(self,ctx,initialEmbed,embedList,
         maxInt,initialIndex,footer):
     count = initialIndex - 1

@@ -66,48 +66,10 @@ class MembersCog(commands.Cog):
                 i+=1
 
             # Build print
+            title = f'**List of users in** {print_name} -** {len(data)}'
             pages = int(math.ceil((len(members))/20))
-            embeds = []
-            strings = []
-            i = 1
-            limit = 20
-            string = f'{members[0]}'
-            if pages > 1:
-                while i < len(members):
-                    while i < limit and i < len(members):
-                        string = f'{string}\n{members[i]}'
-
-                        # increment loop
-                        i+=1
-                    try:
-                        tempString = f'{members[i]}'
-                        strings.append(string)
-                        string = tempString
-                    except:
-                        pass
-                    limit+=20
-                    i+=1
-            else:
-                while i < len(members):
-                    string = f'{string}\n{members[i]}'
-
-                    # increment loop
-                    i+=1
-            strings.append(string)
-
-            initialEmbed=discord.Embed(color=0xf5d28a)
-            initialEmbed.add_field(name=f'**List of users in** {print_name} -** {len(data)}',
-                    value=f'{strings[0]}')
-
-            i = 0
-            while i < pages:
-                embed=discord.Embed(color=0xf5d28a)
-                embed.add_field(name=f'**List of users in** {print_name} -** {len(data)}',
-                        value=f'{strings[i]}')
-                embeds.append(embed)
-                # Increment loop
-                i+=1
-
+            embeds = await zb.build_embed_print(self,ctx,pages,members,title)
+            initialEmbed = embeds[0]
             await zb.print_embed_nav(self,ctx,initialEmbed,embeds,pages,1,'')
 
         except Exception as e:
