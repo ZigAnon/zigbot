@@ -53,6 +53,9 @@ class InactiveCog(commands.Cog):
                                      zb.sql_list(zb.get_members_ids(ctx)),
                                      zb.sql_list(ignore))
                     data, rows, string = zb.sql_query(sql)
+                    if rows == 0:
+                        await ctx.send(f'**There are** {0} **inactive members**')
+                        return
 
                     # Get members
                     lst = []
@@ -61,11 +64,11 @@ class InactiveCog(commands.Cog):
                     now = datetime.utcnow()
                     i = 0
                     while i < rows:
-                        undecided = '❁-'
+                        undecided = ''
                         unRole = ctx.guild.get_role(517850437626363925)
                         member = ctx.guild.get_member(data[i][2])
-                        if not unRole in member.roles:
-                            undecided = ''
+                        if unRole in member.roles:
+                            undecided = '❁-'
                             unMembers.append(member)
                         diff = (now - data[i][1]).days
                         lst.append(f'{diff} days -{undecided} {member}')
@@ -86,27 +89,34 @@ class InactiveCog(commands.Cog):
                     except:
                         page = 1
 
+                    # Purge members
+                    purge = False
+                    try:
+                        check = str(args[0]).lower()
+                        if check == 'purge':
+                            purge = True
+                    except:
+                        pass
+
+                    if zb.is_trusted(ctx,2):
+                        await ctx.send(f'Purging {len(members)} members.',
+                                delete_after=15)
+                        for member in members:
+                            await member.kick(reason='Purged for inactivity')
+                    elif zb.is_trusted(ctx,3):
+                        await ctx.send(f'Purging {len(unMembers)} members.',
+                                delete_after=15)
+                        for member in unMembers:
+                            await member.kick(reason='Purged for inactivity')
+
+                    if purge and zb.is_trusted(ctx,3):
+                        await ctx.send('Purged inactive members',
+                                delete_after=15)
+                        await ctx.message.delete()
+                        return
+
                     initialEmbed = embeds[page-1]
                     await zb.print_embed_nav(self,ctx,initialEmbed,embeds,pages,page,'')
-
-                # Purge members
-                purge = False
-                try:
-                    check = args[0]
-                    if check.lower == 'purge':
-                        purge = True
-                except:
-                    pass
-
-                if not purge:
-                    return
-
-                if zb.is_trusted(ctx,2):
-                    for member in members:
-                        await member.kick(reason='Purged for inactivity')
-                elif zb.is_trusted(ctx,3):
-                    for member in unMembers:
-                        await member.kick(reason='Purged for inactivity')
 
         except Exception as e:
             await zb.bot_errors(ctx,sp.format(e))
