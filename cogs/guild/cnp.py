@@ -32,6 +32,22 @@ class CoffeePolCog(commands.Cog):
             if before.guild.id != _guild_check:
                 return
 
+            try:
+                # If punished, no log
+                punished = zb.get_punish_num(before)
+                if punished > 0:
+                    return
+                # If busy, no log
+                data, rows = zb.get_roles_special(before.guild.id,51,before.id)
+                if rows > 0:
+                    return
+                busy = zb.get_roles_by_group_id(before.guild.id,51)[0][0]
+                for role in before.roles:
+                    if role.id == busy:
+                        return
+            except:
+                pass
+
             # If user has 200 messages and is on server > 14 days
             sql = """ SELECT DISTINCT m.message_id
                       FROM messages m
