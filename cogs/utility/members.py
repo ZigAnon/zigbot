@@ -67,8 +67,7 @@ class MembersCog(commands.Cog):
 
             # Build print
             title = f'**List of users in** {print_name} -** {len(data)}'
-            pages = int(math.ceil((len(members))/20))
-            embeds = await zb.build_embed_print(self,ctx,pages,members,title)
+            pages, embeds = await zb.build_embed_print(self,ctx,members,title)
             initialEmbed = embeds[0]
             await zb.print_embed_nav(self,ctx,initialEmbed,embeds,pages,1,'')
 
@@ -80,6 +79,7 @@ class MembersCog(commands.Cog):
     async def list_self_assignable_roles(self, ctx, *args):
         """Lists roles"""
         try:
+            lst = ['⟪**Chat Roles**⟫']
             # Checks for group 3 roles
             sql = """ SELECT name
                       FROM roles
@@ -91,6 +91,12 @@ class MembersCog(commands.Cog):
             # If none found, return
             if rows == 0:
                 return
+            i = 0
+            while i < rows:
+                lst.append(roles[i][0])
+
+                # increment loop
+                i+=1
 
             # Checks for group 4+ roles
             sql = """ SELECT name
@@ -112,18 +118,22 @@ class MembersCog(commands.Cog):
                       AND r.group_id = 3 """
             sql = sql.format(ctx.guild.id,ctx.author.id)
             junk1, canTalk, junk2 = zb.sql_query(sql)
-            if int(canTalk) == 0:
-                rolesP = [[]]
+            if int(canTalk) > 0:
+                if rowsP > 0:
+                    lst.append('⟪**Vanity Roles**⟫')
+                i = 0
+                while i < rowsP:
+                    lst.append(rolesP[i][0])
+
+                    # increment loop
+                    i+=1
+            else:
                 rowsP = 0
 
-            # Calculate pages
-            header = 0
-            if rows > 0:
-                header += 1
-            if rowsP > 0:
-                header += 1
-            totalRows = rows+rowsP+header
-            pages = int(math.ceil((totalRows)/20))
+            # Build print
+            title = f'**There are {rows+rowsP} self assignable roles**'
+            pages, embeds = await zb.build_embed_print(self,ctx,lst,title)
+
             # Starting page
             try:
                 page = int(args[0])
@@ -134,65 +144,7 @@ class MembersCog(commands.Cog):
             except:
                 page = 1
 
-            # Build Chat Roles
-            embeds = []
-            strings = []
-            if pages > 1:
-                string = '⟪**Chat Roles**⟫\n' + roles[0][0]
-                i = 1
-                j = 0
-                limit = 19
-                while i < rows or j < rowsP:
-                    while i < rows and i < limit:
-                        string = string + '\n' + roles[i][0]
-                        # Increment loop
-                        i+=1
-                        if i == rows:
-                            limit = limit - i
-                    # Build Vanity Roles
-                    while j < rowsP and i == rows and j < limit:
-                        if j == 0:
-                            string = string + '\n⟪**Vanity Roles**⟫\n' + rolesP[0][0]
-                            limit-=1
-                        else:
-                            string = string + '\n' + rolesP[j][0]
-                        # Increment loop
-                        j+=1
-                    if i == rows:
-                        limit = j + 20
-                    else:
-                        limit = i + 20
-                    strings.append(string)
-                    string = ''
-            else:
-                string = '⟪**Chat Roles**⟫\n' + roles[0][0]
-                i = 1
-                while i < rows:
-                    string = string + '\n' + roles[i][0]
-                    # Increment loop
-                    i+=1
-                # Build Vanity Roles
-                if rowsP > 0:
-                    string = string + '\n⟪**Vanity Roles**⟫\n' + rolesP[0][0]
-                    i = 1
-                    while i < rowsP:
-                        string = string + '\n' + rolesP[i][0]
-                        # Increment loop
-                        i+=1
-                strings.append(string)
-
-            initialEmbed=discord.Embed(color=0xf5d28a)
-            initialEmbed.add_field(name=f'**There are {rows+rowsP} self assignable roles**',
-                    value=f'{strings[page-1]}')
-            i = 0
-            while i < pages:
-                embed=discord.Embed(color=0xf5d28a)
-                embed.add_field(name=f'**There are {rows+rowsP} self assignable roles**',
-                        value=f'{strings[i]}')
-                embeds.append(embed)
-                # Increment loop
-                i+=1
-
+            initialEmbed = embeds[page-1]
             await zb.print_embed_nav(self,ctx,initialEmbed,embeds,pages,page,'')
 
         except Exception as e:

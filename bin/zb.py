@@ -1062,9 +1062,10 @@ def nav_small_message(maxInt,curInt,nav):
     else:
         return maxInt
 
-async def build_embed_print(self,ctx,pages,lst,title):
+async def build_embed_print(self,ctx,lst,title):
     """ Builds list of embeds limited to 20 rows """
     try:
+        pages = int(math.ceil((len(lst))/20))
         embeds = []
         strings = []
         i = 1
@@ -1101,7 +1102,7 @@ async def build_embed_print(self,ctx,pages,lst,title):
             # Increment loop
             i+=1
 
-        return embeds
+        return pages, embeds
 
     except Exception as e:
         await bot_errors(ctx,sp.format(e))
