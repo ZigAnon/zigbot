@@ -569,15 +569,30 @@ def increment_bot_help_counter(update,channel_id):
     rows, string = sql_update(sql)
 
 def mention_spamming(member):
+    # Get Hammer number
+    sql = """ SELECT g.hammer
+              FROM guild_membership g
+              LEFT JOIN users u ON g.int_user_id = u.int_user_id
+              WHERE g.is_member = TRUE
+              AND g.guild_id = {0}
+              AND u.real_user_id = {1} """
+    sql = sql.format(member.guild.id,member.id)
+    data, rows, string = sql_query(sql)
+    # Count
+    try:
+        count = int(data[0]) + 1
+    except:
+        count = 1
+
     # Set hammer
     sql = """ UPDATE guild_membership g
-              SET hammer = hammer + 1
+              SET hammer = {2}
               FROM (SELECT int_user_id, real_user_id
               FROM users) AS u
               WHERE g.int_user_id = u.int_user_id
               AND g.guild_id = {0}
               AND u.real_user_id = {1} """
-    sql = sql.format(member.guild.id,member.id)
+    sql = sql.format(member.guild.id,member.id,count)
     rows, string = sql_update(sql)
 
     # How many times?

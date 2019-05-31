@@ -18,7 +18,7 @@ class InactiveCog(commands.Cog):
 
     # Hidden means it won't show up on the default help.
     @commands.command(name='ialist', hidden=True)
-    async def server_setup(self, ctx):
+    async def server_setup(self, ctx, *args):
         """Command to show inactive members"""
         try:
             # Ensures only bot owner or user with perms can use command
@@ -56,6 +56,8 @@ class InactiveCog(commands.Cog):
 
                     # Get members
                     lst = []
+                    members = []
+                    unMembers = []
                     now = datetime.utcnow()
                     i = 0
                     while i < rows:
@@ -64,15 +66,48 @@ class InactiveCog(commands.Cog):
                         member = ctx.guild.get_member(data[i][2])
                         if not unRole in member.roles:
                             undecided = ''
+                            unMembers.append(member)
                         diff = (now - data[i][1]).days
                         lst.append(f'{diff} days -{undecided} {member}')
+                        members.append(member)
 
                         # increment loop
                         i+=1
                     title = f'**There are** {rows} **inactive members**'
                     pages, embeds = await zb.build_embed_print(self,ctx,lst,title)
-                    initialEmbed = embeds[0]
-                    await zb.print_embed_nav(self,ctx,initialEmbed,embeds,pages,1,'')
+
+                    # Starting page
+                    try:
+                        page = int(args[0])
+                        if page < 1:
+                            page = 1
+                        elif page > pages:
+                            page = pages
+                    except:
+                        page = 1
+
+                    initialEmbed = embeds[page-1]
+                    await zb.print_embed_nav(self,ctx,initialEmbed,embeds,pages,page,'')
+
+                # Purge members
+                purge = False
+                try:
+                    check = args[0]
+                    if check.lower == 'purge':
+                        purge = True
+                except:
+                    pass
+
+                if not purge:
+                    return
+
+                if zb.is_trusted(ctx,2):
+                    for member in members:
+                        await member.kick(reason='Purged for inactivity')
+                elif zb.is_trusted(ctx,3):
+                    for member in unMembers:
+                        await member.kick(reason='Purged for inactivity')
+
         except Exception as e:
             await zb.bot_errors(ctx,sp.format(e))
 
