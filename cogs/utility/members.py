@@ -16,8 +16,8 @@ class MembersCog(commands.Cog):
         """Lists people in role"""
         try:
             # Grab roles
-            cmd = cmd.lower()
-            role_names = list(map(str.strip, re.split('\+|,', cmd)))
+            cmd = cmd.lower().replace('++','+ +')
+            role_names = list(map(str.strip, re.split('\s\+\s|,|\s\+', cmd)))
 
             # Fine roles in guild
             roles = []
