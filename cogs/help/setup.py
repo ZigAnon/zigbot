@@ -49,14 +49,21 @@ class SetupCog(commands.Cog):
             maxRanks = str(zb_config.maxRoleRanks)
             maxNum = len(maxRanks)
 
+            # Resets removed roles
+            sql = """ UPDATE roles
+                      SET role_perms = 0
+                      WHERE is_deleted = TRUE
+                      AND NOT role_perms = 0 """
+            junk1, junk2 = zb.sql_update(sql)
+
             # Verifies pattern is valid
             if zb.is_pattern(ctx.message.content.lower(),
-                    '^(.\w+)\s+(\w+\W+){1,}([0-' + maxRanks + '])$'):
+                    f'^(.\w+)\s+(\w+\W+){1,}([0-{maxRanks}])$'):
                 role = role[:-(1+maxNum)].lower()
                 role_perms = int(ctx.message.content[-1:])
             else:
-                await ctx.send('Please use format `.sar <role_name> [1-' +
-                               maxRanks +  ']`.')
+                await ctx.send(f'Please use format `.sar <role_name> [1-' \
+                        f'{maxRanks}]`.')
                 return
 
             # Get role id by name
@@ -65,7 +72,7 @@ class SetupCog(commands.Cog):
             if len(roles) > 1:
                 rows = len(roles)
 
-                await ctx.send('Multiple roles were found for `' + role + '`.')
+                await ctx.send(f'Multiple roles were found for `{role}`.')
                 select = await zb.print_select(ctx,roles)
                 if select >= 0:
                     role_id = roles[select][0]
@@ -77,8 +84,8 @@ class SetupCog(commands.Cog):
                     role_id = roles[0][0]
                     role_name = roles[0][1]
                 except:
-                    await ctx.send('Unable to find the role `' + role + '`.\n' +
-                                   'Check your spelling and try again.')
+                    await ctx.send(f'Unable to find the role `{role}`.\n' \
+                            f'Check your spelling and try again.')
                     return
 
             sql = """ UPDATE roles
@@ -90,13 +97,13 @@ class SetupCog(commands.Cog):
             rows, string = zb.sql_update(sql)
 
             if rows > 0:
-                await ctx.send('Updated role `' + role_name +
-                               '` with id `' + str(role_id) +
-                               '`.\nPermission is now ' + str(role_perms))
+                await ctx.send(f'Updated role `{role_name}` ' \
+                        f'with id `{role_id}`.\n' \
+                        f'Permission is now {role_perms}')
             else:
-                await ctx.send('Something went wrong.\n' +
-                               'Check the spelling and try again. ' +
-                               'I\'ll let <@{0}> know there is an issue'.format('zig'))
+                await ctx.send(f'Something went wrong.\n' \
+                        f'Check the spelling and try again. ' \
+                        f'I\'ll let <@{zig}> know there is an issue')
         except Exception as e:
             await zb.bot_errors(ctx,sp.format(e))
 

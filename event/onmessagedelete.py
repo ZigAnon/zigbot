@@ -18,7 +18,7 @@ class onmessagedeleteCog(commands.Cog):
                 return
 
             # Ignore certain phrases
-            if message.content.lower().startswith('.god'):
+            if message.content.lower().startswith(('.god', '. god', ', god')):
                 return
 
             embed=discord.Embed(description="**Message sent by " +
