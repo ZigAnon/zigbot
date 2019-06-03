@@ -12,10 +12,11 @@ class HelpCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='help')
-    async def server_setup(self, ctx):
+    @commands.command(name='help', hidden=True)
+    @commands.guild_only()
+    @commands.is_owner()
+    async def server_setup(self, ctx, *args):
         """ Command to tell you what to do """
-
         try:
             embed=discord.Embed(title="For more details type .help <command>.")
             embed.set_author(name="Help Menu",
