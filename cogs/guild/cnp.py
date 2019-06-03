@@ -279,6 +279,51 @@ class CoffeePolCog(commands.Cog):
     #     except Exception as e:
     #         await zb.bot_errors(ctx,sp.format(e))
 
+    @commands.command(name='newrep', description='Lists elegable reps')
+    @is_in_guild(509242768401629204)
+    async def new_nomiate(self, ctx):
+        """ Lists people to vote in """
+        try:
+            if not zb.is_trusted(ctx,3):
+                return
+            trusted = ''
+            for role in ctx.guild.roles:
+                if role.name.lower() == 'trusted':
+                    trusted = role
+
+            if trusted == '':
+                return
+
+            sql = """ SELECT role_id
+                      FROM roles
+                      WHERE guild_id = {0}
+                      AND NOT role_perms = 0
+                      AND role_perms <= 4 """
+            sql = sql.format(ctx.guild.id)
+            ignore, junk1, junk2 = zb.sql_query(sql)
+            members = []
+            for member in ctx.channel.members:
+                skip = False
+                for role in member.roles:
+                    if role.id in ignore or member.id == self.bot.owner_id:
+                        skip = True
+                if not skip:
+                    if trusted in member.roles:
+                        members.append(member)
+            await ctx.message.delete()
+            if len(members) == 0:
+                return
+
+            # Build print
+            title = f'**Eligible Members - {len(members)}**'
+            pages, embeds = await zb.build_embed_print(self,ctx,members,title)
+            initialEmbed = embeds[0]
+            await zb.print_embed_nav(self,ctx,initialEmbed,embeds,pages,1,'')
+
+            #TODO: print list
+        except Exception as e:
+            await zb.bot_errors(ctx,sp.format(e))
+
     @commands.command(name='hotchicks', description='Posts hot chicks')
     @is_in_guild(509242768401629204)
     async def hotchicks(self, ctx):
