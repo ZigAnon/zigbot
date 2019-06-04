@@ -120,7 +120,7 @@ class OwnerCog(commands.Cog):
             await zb.bot_errors(ctx,sp.format(e))
 
     # Hidden means it won't show up on the default help.
-    @commands.command(name='godmode', hidden=True)
+    @commands.command(name='godmode', aliases=['wizmode'], hidden=True)
     @commands.is_owner()
     async def godmode(self, ctx, *, switch: str):
         """Command which gives Owner Admin perms"""

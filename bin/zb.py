@@ -3,6 +3,8 @@ import re
 import math
 import asyncio
 import discord
+import async_timeout
+from bs4 import BeautifulSoup
 from discord.ext import commands
 from datetime import datetime
 from datetime import timedelta
@@ -64,9 +66,7 @@ async def do_reminder(ctx):
 
                 diff = int(int((futureTime - datetime.utcnow()).seconds)/60) + 1
                 msg = 'I\'ll remind you here in {0} minutes.'.format(diff)
-                msg = await message.channel.send(msg)
-                await asyncio.sleep(_var.timeout)
-                await msg.delete()
+                msg = await message.channel.send(msg,delete_after=_var.timeout)
             # If no interval
             else:
                 #TODO: add 4th condition
@@ -98,10 +98,8 @@ async def do_reminder(ctx):
                 rows, string = sql_update(sql)
                 data[3] = data[3].replace('\\n','\n')
 
-                msg = await message.channel.send(data[3])
+                msg = await message.channel.send(data[3],delete_after=_var.timeout)
                 await message.delete()
-            await asyncio.sleep(_var.timeout)
-            await msg.delete()
     except Exception as e:
         await bot_errors(ctx,sp.format(e))
 
@@ -173,6 +171,26 @@ def rmv_special_role(guild_id,type_num,member_id):
 
     rows, string = sql_update(sql)
     return
+
+async def fetch(session, url):
+    # aiohttp fetch session
+    async with async_timeout.timeout(10):
+        async with session.get(url) as response:
+            return await response.text()
+
+async def soup_d(html, display_result=False):
+    # async BeautifulSoup format
+    soup = BeautifulSoup(html, 'html.parser')
+    if display_result:
+        print(soup.prettify())
+    return soup
+
+async def extract_text(html,content_area_class):
+    # extract text from BeautifulSoup
+    soup = await soup_d(html)
+    content_area = soup.find("div", {"class": content_area_class})
+    text = content_area.text
+    return text
 
 async def get_all_special_roles(ctx,member,low_group,high_group):
     # Gathers removed roles
@@ -1017,8 +1035,10 @@ async def bot_errors(ctx,e):
     # await zb.bot_errors(ctx,sp.format(e))
     try:
         """ Send Bot Errors to log """
+        strings = await split_text(e, 2000, " ")
         channel = ctx.bot.get_channel(_var.botErrors)
-        await channel.send(e)
+        for e in strings:
+            await channel.send(e)
     except Exception as e:
         print(f'=ERROR=: {type(e).__name__} - {e}')
 
@@ -1158,7 +1178,7 @@ async def print_embed_nav(self,ctx,initialEmbed,embedList,
         done, pending = await asyncio.wait([
                             self.bot.wait_for('reaction_add', check=r_check),
                             self.bot.wait_for('reaction_remove', check=r_check)
-                        ], timeout = 10, return_when=asyncio.FIRST_COMPLETED)
+                        ], timeout = 30, return_when=asyncio.FIRST_COMPLETED)
 
         try:
             stuff = done.pop().result()
@@ -1260,6 +1280,21 @@ async def print_embed_choice(self,ctx,embedMsg,lowChoice,maxChoices,footer):
     await msg.clear_reactions()
 
     return msg, selected
+
+async def split_text(text, limit, separate):
+    words = text.split()
+    if max(map(len, words)) > limit:
+        raise ValueError("limit is too small")
+    strings, part, others = [], words[0], words[1:]
+    for word in others:
+        if len(separate) + len(word) > limit-len(part):
+            strings.append(part)
+            part = word
+        else:
+            part += separate + word
+    if part:
+        strings.append(part)
+    return strings
 
 def print_2000lim(string):
     try:
