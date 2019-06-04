@@ -1035,10 +1035,42 @@ async def bot_errors(ctx,e):
     # await zb.bot_errors(ctx,sp.format(e))
     try:
         """ Send Bot Errors to log """
-        strings = await split_text(e, 2000, " ")
+        sections = e.split('zzz')
+        print(sections)
+
+        i = 0
+        embeds = []
+        while i < len(sections):
+            store = False
+            if len(sections[i]) < 5:
+                pass
+            elif '__**`ERROR:`**__' in sections[i]:
+                title = sections[i]
+            elif 'python\n' in sections[i]:
+                if i != 1:
+                    embeds.append(embed)
+                code = f'```{sections[i]}```'
+                embed=discord.Embed(title=f'{title}',
+                        description=f'{code}', color=0xf5d28a)
+            elif '........' in sections[i]:
+                items = f'```{sections[i]}```'
+                embed.add_field(name=f'Vars',value=f'{items}')
+            else:
+                tail = f'{sections[i]}'
+                embed.add_field(name=f'Error:',value=f'{tail}')
+                embed.timestamp = datetime.utcnow()
+                store = True
+
+            if store:
+                embeds.append(embed)
+
+            # increment loop
+            i+=1
+
+        #strings = await split_text(e, 2000, " ")
         channel = ctx.bot.get_channel(_var.botErrors)
-        for e in strings:
-            await channel.send(e)
+        for embed in embeds:
+            await channel.send(embed=embed)
     except Exception as e:
         print(f'=ERROR=: {type(e).__name__} - {e}')
 

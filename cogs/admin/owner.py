@@ -22,7 +22,8 @@ class OwnerCog(commands.Cog):
             permissions = ctx.author.permissions_in(ctx.channel)
             a = b/c
         except Exception as e:
-            await ctx.send(sq.format(e))
+            await zb.bot_errors(ctx,sp.format(e))
+            await print(sp.format(e))
         # else:
         #     await ctx.send('**`SUCCESS`**')
 

@@ -74,8 +74,9 @@ class DictionaryCog(commands.Cog):
         except Exception as e:
             await zb.bot_errors(ctx,sp.format(e))
 
-    @commands.command(name='cdefine', description='Defines word using Conservapedia.')
-    async def define(self, ctx, *args):
+    @commands.command(name='cdefine', aliases=['wiki', 'cwiki'],
+            description='Defines word using Conservapedia.')
+    async def cdefine(self, ctx, *args):
         """ Posts navigateable Conservapedia """
         try:
             term = '_'.join([str(x) for x in args])
