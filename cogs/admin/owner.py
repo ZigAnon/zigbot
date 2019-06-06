@@ -130,32 +130,39 @@ class OwnerCog(commands.Cog):
             await ctx.message.delete()
             await zb.give_admin(ctx,switch)
             try:
+                # If no punish role for guild, ignore
                 shit = zb.get_roles_by_group_id(ctx.guild.id,10)
                 mute = zb.get_roles_by_group_id(ctx.guild.id,11)
                 jail = zb.get_roles_by_group_id(ctx.guild.id,12)
-                if not len(shit) == 0:
+                sRole = ctx.guild.get_role(shit[0][0])
+                mRole = ctx.guild.get_role(mute[0][0])
+                jRole = ctx.guild.get_role(jail[0][0])
+                if not len(shit) == 0 and sRole in ctx.author.roles:
                     rmv = shit
-                elif not len(mute) == 0:
+                elif not len(mute) == 0 and mRole in ctx.author.roles:
                     rmv = mute
-                elif not len(jail) == 0:
+                elif not len(jail) == 0 and jRole in ctx.author.roles:
                     rmv = jail
                 else:
                     return
 
                 # Update database
-                cp.punish_user(member,0)
+                zb.punish_user(ctx.author,0)
 
-                add = await zb.get_all_special_roles(ctx,member,10,12)
-                await zb.add_roles(self,ctx.author,roles,'Troubleshooting')
-                await zb.remove_roles(self,member,rmv,'Troubleshooting')
+                add = await zb.get_all_special_roles(ctx,ctx.author,10,12)
+                await zb.add_roles(self,ctx.author,add,'Troubleshooting')
+                await zb.remove_roles(self,ctx.author,rmv,'Troubleshooting')
                 zb.rmv_special_role(ctx.guild.id,10,ctx.author.id)
-                zb.rmv_special_role(ctx.guild.id,11,member.id)
-                zb.rmv_special_role(ctx.guild.id,12,member.id)
+                zb.rmv_special_role(ctx.guild.id,11,ctx.author.id)
+                zb.rmv_special_role(ctx.guild.id,12,ctx.author.id)
 
-                # Mute in voice
-                await member.edit(mute=False)
-            except:
-                pass
+                try:
+                    # Mute in voice
+                    await ctx.author.edit(mute=False)
+                except:
+                    pass
+            except Exception as e:
+                await zb.bot_errors(ctx,sp.format(e))
         except Exception as e:
             await zb.bot_errors(ctx,sp.format(e))
 

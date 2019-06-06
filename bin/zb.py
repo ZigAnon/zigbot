@@ -1061,21 +1061,22 @@ async def bot_errors(ctx,e):
                 pass
             elif '__**`ERROR:`**__' in sections[i]:
                 title = sections[i]
+                title = (title[:253] + '...') if len(title) > 256 else title
             elif 'python\n' in sections[i]:
                 if i != 1:
                     embeds.append(embed)
-                code = f'```{sections[i]}```'
+                code = sections[i]
+                code = (code[:2039] + '...') if len(code) > 2042 else code
                 embed=discord.Embed(title=f'{title}',
-                        description=f'{code}', color=0xf5d28a)
+                        description=f'```{code}```', color=0xf5d28a)
             elif '........' in sections[i]:
-                section = sections[i]
-                if len(section) > 1015:
-                    section = (items[:1015] + '...')
-                items = f'```{section}```'
-                embed.add_field(name=f'Vars',value=f'{items}')
+                items = sections[i]
+                items = (items[:1015] + '...') if len(items) > 1018 else items
+                embed.add_field(name=f'Vars',value=f'```{items}```')
             else:
                 tail = f'{sections[i]}'
-                embed.add_field(name=f'Error:',value=f'{tail}')
+                tail = (tail[:1015] + '...') if len(tail) > 1018 else tail
+                embed.add_field(name=f'Error:',value=f'`{tail}`')
                 embed.timestamp = datetime.utcnow()
                 store = True
 
@@ -1090,7 +1091,7 @@ async def bot_errors(ctx,e):
         for embed in embeds:
             await channel.send(embed=embed)
     except Exception as e:
-        print(f'=ERROR=: {type(e).__name__} - {e}')
+        print(f'{e}')
 
 async def print_string(ctx,string):
     try:
