@@ -87,7 +87,7 @@ class onmessageCog(commands.Cog):
                 # if 5 or more, mute
                 elif count >= 5:
                     # If no mute role for guild, ignore but warn
-                    add = zb.get_roles_by_group_id(ctx.guild.id,11)
+                    add = zb.get_roles_by_group_id(message.guild.id,11)
                     if len(add) == 0:
                         # Update database
                         zb.punish_user(message.author,1)
@@ -104,10 +104,10 @@ class onmessageCog(commands.Cog):
                                 description=f'**{message.author}** was muted by ' +
                                 f'**ZigBot**!',
                                 color=0xd30000)
-                        await zb.print_log_by_group_id(ctx.guild,80,embed)
+                        await zb.print_log_by_group_id(message.guild,80,embed)
 
                         # Removes roles and sets mute
-                        rmv = await zb.store_all_special_roles(ctx,message.author,11)
+                        rmv = await zb.store_all_special_roles(message,message.author,11)
                         if len(rmv) != 0:
                             await message.author.remove_roles(*rmv,reason='Mention spamming')
                             await zb.add_roles(self,message.author,add,'Mention spamming')
