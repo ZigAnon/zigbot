@@ -17,6 +17,9 @@ class onmessagedeleteCog(commands.Cog):
             if message.author.bot:
                 return
 
+            if not zb.is_logged(message.channel.id):
+                return
+
             # Ignore certain phrases
             if message.content.lower().startswith(('.god', '. god', ', god')):
                 return

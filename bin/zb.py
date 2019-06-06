@@ -775,6 +775,21 @@ def is_closed(guild_id):
     else:
         return False
 
+def is_logged(channel_id):
+    log = True
+    sql = """ SELECT ignore_logs
+              FROM channels
+              WHERE channel_id = {0}
+              AND ignore_logs = TRUE """
+    sql = sql.format(channel_id)
+
+    data, rows, string = sql_query(sql)
+    if rows > 0:
+        log = False
+
+    return log
+
+
 async def is_good_nick(ctx,member):
     try:
         try:
@@ -1053,7 +1068,10 @@ async def bot_errors(ctx,e):
                 embed=discord.Embed(title=f'{title}',
                         description=f'{code}', color=0xf5d28a)
             elif '........' in sections[i]:
-                items = f'```{sections[i]}```'
+                section = sections[i]
+                if len(section) > 1015:
+                    section = (items[:1015] + '...')
+                items = f'```{section}```'
                 embed.add_field(name=f'Vars',value=f'{items}')
             else:
                 tail = f'{sections[i]}'

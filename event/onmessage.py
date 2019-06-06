@@ -74,8 +74,8 @@ class onmessageCog(commands.Cog):
                     msg = (message.clean_content[:1021] + '...') if len(message.clean_content) > 1024 else message.clean_content
 
                     # Sends edited message
-                    embed=discord.Embed(description="**Too many mentions in " +
-                            message.channel.mention + "** " +
+                    embed=discord.Embed(description=f'**Too many mentions in ' \
+                            f'{message.channel.mention}** ' \
                             f'[Jump to Message]({message.jump_url})', color=0x117ea6)
                     embed.add_field(name="Message", value=msg,
                             inline=False)
@@ -83,29 +83,36 @@ class onmessageCog(commands.Cog):
                     await zb.print_log(self,message.author,embed)
                     await message.channel.send(f'I have banned {message.author.mention} ' +
                             'for mention spamming.', delete_after=90)
-                    await message.author.ban(delete_message_days=0,reason='Mention spamming')
+                    await message.author.ban(reason='Mention spamming')
                 # if 5 or more, mute
                 elif count >= 5:
-                    if zb.get_punish_num == 0:
+                    # If no mute role for guild, ignore but warn
+                    add = zb.get_roles_by_group_id(ctx.guild.id,11)
+                    if len(add) == 0:
+                        # Update database
+                        zb.punish_user(message.author,1)
+
+                        await message.channel.send(f'Careful {message.author.mention}, ' \
+                                f'I don\'t want to ban you.', delete_after=90)
+                        return
+
+                    if zb.get_punish_num(message.author) == 0:
+                        # Update database
+                        zb.punish_user(message.author,1)
+
                         embed=discord.Embed(title="Mention Spammer!",
                                 description=f'**{message.author}** was muted by ' +
                                 f'**ZigBot**!',
                                 color=0xd30000)
-                        await punishchan.send(embed=embed)
+                        await zb.print_log_by_group_id(ctx.guild,80,embed)
 
-                    role = zb.get_roles_by_group_id(message.guild.id,11)
-                    if not role:
-                        zb.punish_user(message.author,1)
-                        await message.channel.send(f'Careful {message.author.mention}, ' +
-                                'I don\'t want to ban you.', delete_after=90)
-                    else:
-                        talk = zb.get_roles_by_group_id(message.guild.id,2)
-                        await zb.remove_roles(self,message.author,talk,'Mention spamming')
-                        mute = zb.get_roles_by_group_id(message.guild.id,11)
-                        await zb.add_roles(self,message.author,mute,'Mention spamming')
-                        zb.punish_user(message.author,1)
-                        await message.channel.send(f'I have muted {message.author.mention} ' +
-                                'for mention spamming.', delete_after=90)
+                        # Removes roles and sets mute
+                        rmv = await zb.store_all_special_roles(ctx,message.author,11)
+                        if len(rmv) != 0:
+                            await message.author.remove_roles(*rmv,reason='Mention spamming')
+                            await zb.add_roles(self,message.author,add,'Mention spamming')
+                            await message.channel.send(f'I have muted {message.author.mention} ' +
+                                    'for mention spamming.', delete_after=90)
                 # if 3 or more, warn
                 elif count == 3:
                     await message.channel.send(f'{message.author.mention}' +

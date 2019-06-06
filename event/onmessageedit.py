@@ -17,6 +17,10 @@ class onmessageeditCog(commands.Cog):
             if before.author.bot:
                 return
 
+            if(not zb.is_logged(before.channel.id) or
+                    not zb.is_logged(after.channel.id)):
+                return
+
             # Counts embeded links
             try:
                 eCount = len(after.embeds)
