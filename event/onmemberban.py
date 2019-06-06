@@ -1,5 +1,7 @@
 import discord
 from discord.ext import commands
+from datetime import datetime
+from datetime import timedelta
 import stackprinter as sp
 from bin import zb
 
@@ -27,8 +29,10 @@ class onmemberbanCog(commands.Cog):
             embed.set_thumbnail(url=member.avatar_url)
             embed.set_author(name="Member Banned",
                     icon_url=member.avatar_url)
+            embed.set_footer(text="ID: " + str(member.id))
+            embed.timestamp = datetime.utcnow()
 
-            await zb.print_log(self,member,embed)
+            await zb.print_log_by_group_id(guild,81,embed)
 
         except Exception as e:
             await zb.bot_errors(self,sp.format(e))

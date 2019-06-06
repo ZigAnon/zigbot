@@ -351,6 +351,7 @@ def get_roles_by_group_id(guild_id,group_id):
     # 50 = voice role
     # 51 = busy role
     # 80 = PunishLog
+    # 81 = AdminLog
     # 90 = BotAdmin
     sql = """ SELECT role_id FROM roles
               WHERE guild_id = {0}
