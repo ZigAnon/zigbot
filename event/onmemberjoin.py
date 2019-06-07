@@ -44,11 +44,11 @@ class onmemberjoinCog(commands.Cog):
                 if zb.is_closed(member.guild.id):
                     # If closed prevents exploiting API by joining quickly
                     if zb.hammering(member) > 2:
-                        await channel.send(member.mention +
-                                ' can\'t read so I banned them.')
-                        await member.send('**"{0}"** has banned you for '.format(member.guild.name) +
-                                'being unable to read. ' +
-                                'Sorry, go play roblox elsewhere.')
+                        await channel.send(f'{member.mention} can\'t read so I banned them.')
+                        await member.send(f'**"{member.guild.name}"** has banned you for ' \
+                                f'being unable to read. ' \
+                                f'sorry, go play roblox elsewhere.\n' \
+                                f'https://disboard.org/server/506250247198998528')
                         await member.ban(delete_message_days=0,
                                 reason='Continued to join after being told to wait')
                         return
@@ -73,11 +73,11 @@ class onmemberjoinCog(commands.Cog):
                 # If member account is newer than config time, kick
                 elif datetime.utcnow() - timedelta(hours=_var.newAccount) < member.created_at:
                     if zb.hammering(member) > 1:
-                        await channel.send(member.mention +
-                                ' can\'t read so I banned them.')
-                        await member.send('**"{0}"** has banned you for '.format(member.guild.name) +
-                                'being unable to read. ' +
-                                'Sorry, go play roblox elsewhere.')
+                        await channel.send(f'{member.mention} can\'t read so I banned them.')
+                        await member.send(f'**"{member.guild.name}"** has banned you for ' \
+                                f'being unable to read. ' \
+                                f'sorry, go play roblox elsewhere.\n' \
+                                f'https://disboard.org/server/506250247198998528')
                         await member.ban(delete_message_days=0,
                                 reason='Continued to join after being told to wait')
                         return
