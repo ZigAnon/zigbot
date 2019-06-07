@@ -345,7 +345,9 @@ class MembersCog(commands.Cog):
                         rmv = []
                         async with ctx.channel.typing():
                             for role in ctx.author.roles:
-                                if not role.name == '@everyone':
+                                if role.name == '@everyone' or role.name == 'Nitro Booster':
+                                    pass
+                                else:
                                     string += f'10,{int_id},{ctx.author.id},{ctx.guild.id},{role.id}),('
                                     rmv.append(role)
                             await ctx.author.remove_roles(*rmv,reason='Meme role')
@@ -417,7 +419,9 @@ class MembersCog(commands.Cog):
             rmv = []
             async with ctx.channel.typing():
                 for role in ctx.author.roles:
-                    if not role.name == '@everyone':
+                    if role.name == '@everyone' or role.name == 'Nitro Booster':
+                        pass
+                    else:
                         string += f'51,{int_id},{ctx.author.id},{ctx.guild.id},{role.id}),('
                         rmv.append(role)
                 string = string[:-2]

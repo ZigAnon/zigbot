@@ -215,7 +215,9 @@ async def store_all_special_roles(ctx,member,group_id):
     rmv = []
     async with ctx.channel.typing():
         for role in member.roles:
-            if not role.name == '@everyone':
+            if role.name == '@everyone' or role.name == 'Nitro Booster':
+                pass
+            else:
                 string += f'{group_id},{int_id},{member.id},{ctx.guild.id},{role.id}),('
                 rmv.append(role)
         string = string[:-2]
