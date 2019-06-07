@@ -1,5 +1,6 @@
 import discord
 import asyncio
+import random
 from discord.ext import commands
 from datetime import datetime
 from datetime import timedelta
@@ -321,6 +322,27 @@ class CoffeePolCog(commands.Cog):
             await zb.print_embed_nav(self,ctx,initialEmbed,embeds,pages,1,'')
 
             #TODO: print list
+        except Exception as e:
+            await zb.bot_errors(ctx,sp.format(e))
+
+    @commands.command(name='hebrew', description='Scrambles vowels')
+    @is_in_guild(509242768401629204)
+    async def hebrew_sounds(self, ctx, *args):
+        try:
+            if not zb.is_trusted(ctx,5):
+                return
+
+            # Randomize vowels
+            phrase = ' '.join([str(x) for x in args])
+            vowels = 'aeiou'
+            letters = []
+            for char in phrase:
+                if char.lower() in vowels:
+                    char = random.choice(vowels)
+                letters.append(char)
+            phrase = ''.join(letters)
+            await ctx.send(f'**{ctx.author.mention} Said:**  {phrase}',
+                    delete_after=60)
         except Exception as e:
             await zb.bot_errors(ctx,sp.format(e))
 
