@@ -35,13 +35,26 @@ class onmessageeditCog(commands.Cog):
             bcc = (before.clean_content[:1021] + '...') if len(before.clean_content) > 1024 else before.clean_content
             acc = (after.clean_content[:1021] + '...') if len(after.clean_content) > 1024 else after.clean_content
 
+            # Fixes blank embed message
+            if bcc == '':
+                bcc = '[Blank]'
+            if acc == '':
+                acc = '[Blank]'
+
             # Sends edited message
             embed=discord.Embed(description="**Message edited in " +
                     before.channel.mention + "** " +
                     f'[Jump to Message]({before.jump_url})', color=0x117ea6)
             embed.add_field(name="Before", value=bcc,
                     inline=False)
-            embed.set_author(name=before.author, icon_url=before.author.avatar_url)
+            # Grabs proxy image
+            try:
+                atch = after.attachments[0].proxy_url
+                embed.set_author(name=before.author, url=atch,
+                        icon_url=before.author.avatar_url)
+                embed.set_thumbnail(url=atch)
+            except:
+                embed.set_author(name=before.author, icon_url=before.author.avatar_url)
             embed.add_field(name="After", value=acc,
                     inline=False)
             await zb.print_log(self,before.author,embed)
