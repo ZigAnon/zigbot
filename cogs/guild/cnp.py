@@ -218,11 +218,14 @@ class CoffeePolCog(commands.Cog):
                 sql = sql.format(after.channel.id,member.guild.id,member.id)
                 junk1, junk2 = zb.sql_update(sql)
 
-                i = [(i, _voice_roles.index(after.channel.id))
-                        for i, _voice_roles in enumerate(_voice_roles)
-                        if after.channel.id in _voice_roles][0][0]
-                role = member.guild.get_role(_voice_roles[i][0])
-                await member.add_roles(role,reason='Joined voice')
+                try:
+                    i = [(i, _voice_roles.index(after.channel.id))
+                            for i, _voice_roles in enumerate(_voice_roles)
+                            if after.channel.id in _voice_roles][0][0]
+                    role = member.guild.get_role(_voice_roles[i][0])
+                    await member.add_roles(role,reason='Joined voice')
+                except:
+                    pass
             # Switched voice channel
             elif not before.channel is None and not after.channel is None:
                 sql = """ UPDATE guild_membership g
@@ -234,20 +237,22 @@ class CoffeePolCog(commands.Cog):
                           AND u.real_user_id = {2} """
                 sql = sql.format(after.channel.id,member.guild.id,member.id)
                 junk1, junk2 = zb.sql_update(sql)
-
-                i = [(i, _voice_roles.index(after.channel.id))
-                        for i, _voice_roles in enumerate(_voice_roles)
-                        if after.channel.id in _voice_roles][0][0]
                 try:
-                    j = [(i, _voice_roles.index(before.channel.id))
+                    try:
+                        j = [(i, _voice_roles.index(before.channel.id))
+                                for i, _voice_roles in enumerate(_voice_roles)
+                                if before.channel.id in _voice_roles][0][0]
+                        rmv = member.guild.get_role(_voice_roles[j][0])
+                        await member.remove_roles(rmv,reason='Left voice')
+                    except:
+                        pass
+                    i = [(i, _voice_roles.index(after.channel.id))
                             for i, _voice_roles in enumerate(_voice_roles)
-                            if before.channel.id in _voice_roles][0][0]
-                    rmv = member.guild.get_role(_voice_roles[j][0])
-                    await member.remove_roles(rmv,reason='Left voice')
+                            if after.channel.id in _voice_roles][0][0]
+                    add = member.guild.get_role(_voice_roles[i][0])
+                    await member.add_roles(add,reason='Joined voice')
                 except:
                     pass
-                add = member.guild.get_role(_voice_roles[i][0])
-                await member.add_roles(add,reason='Joined voice')
             # Left voice channel
             elif not before.channel is None and after.channel is None:
                 sql = """ UPDATE guild_membership g
@@ -334,15 +339,22 @@ class CoffeePolCog(commands.Cog):
 
             # Randomize vowels
             phrase = ' '.join([str(x) for x in args])
-            vowels = 'aeiou'
+            vowelslow = 'aeiou'
+            vowelsupp = 'AEIOU'
             letters = []
             for char in phrase:
-                if char.lower() in vowels:
-                    char = random.choice(vowels)
+                if char.lower() in vowelslow:
+                    if char in vowelslow:
+                        char = random.choice(vowelslow)
+                    else:
+                        char = random.choice(vowelsupp)
                 letters.append(char)
             phrase = ''.join(letters)
-            await ctx.send(f'**{ctx.author.mention} Said:**  {phrase}',
+            await ctx.send(f'{phrase}',
                     delete_after=60)
+            await ctx.send(f'{ctx.author.mention} **Copy** and **paste** the message :D',
+                    delete_after=60)
+            await ctx.message(delay=5)
         except Exception as e:
             await zb.bot_errors(ctx,sp.format(e))
 
