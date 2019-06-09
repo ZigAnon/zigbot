@@ -116,9 +116,9 @@ class onmessageCog(commands.Cog):
                 # if 3 or more, warn
                 elif count == 3:
                     await message.channel.send(f'{message.author.mention}' +
-                            f'{message.author.mention}' + f'{message.author.mention} ' +
-                            '__**STOP MENTION SPAMMING**__' + f' {message.author.mention} ' +
-                            f'{message.author.mention}' + f'{message.author.mention}',
+                            f'{message.author.mention}{message.author.mention}' +
+                            ' __**STOP MENTION SPAMMING**__ ' + f'{message.author.mention}' +
+                            f'{message.author.mention}{message.author.mention}',
                             delete_after=90)
                 # if 3 or more, log
                 if 10 > count > 2:
