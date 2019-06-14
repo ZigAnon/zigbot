@@ -53,15 +53,19 @@ class onmemberjoinCog(commands.Cog):
                                 reason='Continued to join after being told to wait')
                         return
                     else:
-                        await channel.send(member.mention + ' tried to join ' +
-                                'but I kicked them because server is closed.  ' +
-                                'To open server, use `.raid` command.')
-                        # Lets member join when server opens again
-                        await member.send('**"{0}"** is currently not accepting members'.format(member.guild.name) +
-                                 ' at this time.  If you wish to join our discussions please' +
-                                 ' wait a few days and try again.\nhttps://discord.gg/' +
-                                 '{0}'.format(zb.get_invite(member.guild.id)))
-                        await member.kick()
+                        if zb.is_pattern(member.display_name,'^[A-Z]\w+[0-9]{3,}'):
+                            await channel.send(f'{member.mention} is a porn bot.')
+                            await member.ban(reason='Discord bot')
+                        else:
+                            await channel.send(member.mention + ' tried to join ' +
+                                    'but I kicked them because server is closed.  ' +
+                                    'To open server, use `.raid` command.')
+                            # Lets member join when server opens again
+                            await member.send('**"{0}"** is currently not accepting members'.format(member.guild.name) +
+                                     ' at this time.  If you wish to join our discussions please' +
+                                     ' wait a few days and try again.\nhttps://discord.gg/' +
+                                     '{0}'.format(zb.get_invite(member.guild.id)))
+                            await member.kick()
                         return
 
                 # Checks if raidNumber in 5 mins is exceeded
