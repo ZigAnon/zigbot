@@ -87,18 +87,22 @@ class onmemberjoinCog(commands.Cog):
                                 reason='Continued to join after being told to wait')
                         return
                     else:
-                        await member.send('Your account is too new to for "{0}". '.format(member.guild.name) +
-                                ' If you wish to join our discussions please wait a few days' +
-                                ' and try again.  :D')
-                        try:
-                            await channel.send('I kicked ' + member.mention +
-                                    ' because account was made in the last ' +
-                                    str(_var.newAccount) + ' hours.')
-                        except Exception as e:
-                            await zb.bot_errors(self,sp.format(e))
                         if zb.is_pattern(member.display_name,'^[A-Z]\w+[0-9]{3,}'):
+                            try:
+                                await channel.send(f'{member.mention} is a porn bot.')
+                            except Exception as e:
+                                await zb.bot_errors(self,sp.format(e))
                             await member.ban(reason='Discord bot')
                         else:
+                            await member.send('Your account is too new to for "{0}". '.format(member.guild.name) +
+                                    ' If you wish to join our discussions please wait a few days' +
+                                    ' and try again.  :D')
+                            try:
+                                await channel.send('I kicked ' + member.mention +
+                                        ' because account was made in the last ' +
+                                        str(_var.newAccount) + ' hours.')
+                            except Exception as e:
+                                await zb.bot_errors(self,sp.format(e))
                             await member.kick()
                         return
 
