@@ -91,7 +91,10 @@ class onmemberjoinCog(commands.Cog):
                                     str(_var.newAccount) + ' hours.')
                         except Exception as e:
                             await zb.bot_errors(self,sp.format(e))
-                        await member.kick()
+                        if zb.is_pattern(member.display_name,'^[A-Z]\w+[0-9]{3,}'):
+                            await member.ban(reason='Discord bot')
+                        else:
+                            await member.kick()
                         return
 
                 # Checks if member is blacklisted
