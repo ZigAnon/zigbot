@@ -32,7 +32,8 @@ class onmemberjoinCog(commands.Cog):
                         member.name, color=0x23d160)
                 embed.add_field(name="Account Creation Date",
                         value=member.created_at, inline=False)
-                embed.set_thumbnail(url=member.avatar_url)
+                if not zb.is_pattern(member.display_name,'^[A-Z]\w+[0-9]{3,}'):
+                    embed.set_thumbnail(url=member.avatar_url)
                 embed.set_author(name="Member Joined", icon_url=member.avatar_url)
                 await zb.print_log(self,member,embed)
             except Exception as e:

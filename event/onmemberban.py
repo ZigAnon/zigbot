@@ -26,7 +26,8 @@ class onmemberbanCog(commands.Cog):
                         inline=False)
             except:
                 pass
-            embed.set_thumbnail(url=member.avatar_url)
+            if not zb.is_pattern(member.display_name,'^[A-Z]\w+[0-9]{3,}'):
+                embed.set_thumbnail(url=member.avatar_url)
             embed.set_author(name="Member Banned",
                     icon_url=member.avatar_url)
             embed.set_footer(text="ID: " + str(member.id))

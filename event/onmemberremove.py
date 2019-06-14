@@ -21,7 +21,8 @@ class onmemberremoveCog(commands.Cog):
                     member.name, color=0xff470f)
             embed.add_field(name="Join Date", value=member.joined_at,
                     inline=False)
-            embed.set_thumbnail(url=member.avatar_url)
+            if not zb.is_pattern(member.display_name,'^[A-Z]\w+[0-9]{3,}'):
+                embed.set_thumbnail(url=member.avatar_url)
             embed.set_author(name="Member Left",
                     icon_url=member.avatar_url)
 
