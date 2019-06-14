@@ -28,12 +28,12 @@ class onmemberbanCog(commands.Cog):
                 pass
             if not zb.is_pattern(member.display_name,'^[A-Z]\w+[0-9]{3,}'):
                 embed.set_thumbnail(url=member.avatar_url)
-            embed.set_author(name="Member Banned",
-                    icon_url=member.avatar_url)
-            embed.set_footer(text="ID: " + str(member.id))
-            embed.timestamp = datetime.utcnow()
+                embed.set_author(name="Member Banned",
+                        icon_url=member.avatar_url)
+                embed.set_footer(text="ID: " + str(member.id))
+                embed.timestamp = datetime.utcnow()
 
-            await zb.print_log_by_group_id(guild,81,embed)
+                await zb.print_log_by_group_id(guild,81,embed)
 
         except Exception as e:
             await zb.bot_errors(self,sp.format(e))

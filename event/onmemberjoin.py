@@ -18,6 +18,7 @@ class onmemberjoinCog(commands.Cog):
     async def on_member_join(self, member):
         try:
             # Resets counters on hammered members
+            # TODO: what is this? remove it? It shouldn't reset each join
             if zb.is_hammer(member.guild.id):
                 zb.reset_hammer(member.guild)
 
@@ -34,8 +35,8 @@ class onmemberjoinCog(commands.Cog):
                         value=member.created_at, inline=False)
                 if not zb.is_pattern(member.display_name,'^[A-Z]\w+[0-9]{3,}'):
                     embed.set_thumbnail(url=member.avatar_url)
-                embed.set_author(name="Member Joined", icon_url=member.avatar_url)
-                await zb.print_log(self,member,embed)
+                    embed.set_author(name="Member Joined", icon_url=member.avatar_url)
+                    await zb.print_log(self,member,embed)
             except Exception as e:
                 await zb.bot_errors(self,sp.format(e))
 
@@ -55,7 +56,7 @@ class onmemberjoinCog(commands.Cog):
                         return
                     else:
                         if zb.is_pattern(member.display_name,'^[A-Z]\w+[0-9]{3,}'):
-                            await channel.send(f'{member.mention} is a porn bot.')
+                            await channel.send(f'{member.mention} flagged as a Discord bot.')
                             await member.ban(reason='Discord bot')
                         else:
                             await channel.send(member.mention + ' tried to join ' +
@@ -87,9 +88,10 @@ class onmemberjoinCog(commands.Cog):
                                 reason='Continued to join after being told to wait')
                         return
                     else:
+                        # Detects Discord bots
                         if zb.is_pattern(member.display_name,'^[A-Z]\w+[0-9]{3,}'):
                             try:
-                                await channel.send(f'{member.mention} is a porn bot.')
+                                await channel.send(f'{member.mention} flagged as a Discord bot.')
                             except Exception as e:
                                 await zb.bot_errors(self,sp.format(e))
                             await member.ban(reason='Discord bot')

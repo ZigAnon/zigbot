@@ -24,6 +24,11 @@ class onmessagedeleteCog(commands.Cog):
             if message.content.lower().startswith(('.god', '. god', ', god')):
                 return
 
+            # If discord bot
+            # TODO: danger, takes up too many cases
+            if zb.is_pattern(message.author.display_name,'^[A-Z]\w+[0-9]{3,}'):
+                return
+
             embed=discord.Embed(description="**Message sent by " +
                     message.author.mention + " deleted in " +
                     message.channel.mention + "**\n" + message.clean_content,

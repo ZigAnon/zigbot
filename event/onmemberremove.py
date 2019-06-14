@@ -23,11 +23,11 @@ class onmemberremoveCog(commands.Cog):
                     inline=False)
             if not zb.is_pattern(member.display_name,'^[A-Z]\w+[0-9]{3,}'):
                 embed.set_thumbnail(url=member.avatar_url)
-            embed.set_author(name="Member Left",
-                    icon_url=member.avatar_url)
+                embed.set_author(name="Member Left",
+                        icon_url=member.avatar_url)
 
-            await zb.print_log(self,member,embed)
-            # junk1, junk2 = zb.del_all_special_role(member.guild,member.id)
+                await zb.print_log(self,member,embed)
+                # junk1, junk2 = zb.del_all_special_role(member.guild,member.id)
 
         except Exception as e:
             await zb.bot_errors(self,sp.format(e))
