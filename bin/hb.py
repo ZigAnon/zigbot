@@ -95,8 +95,10 @@ async def _heartbeat(bot):
                                   AND trigger_word = '{1}' """
                         sql = sql.format(guild.id,data[6])
                         rows, string = zb.sql_update(sql)
-                        data[9] = data[9].replace('\\n','\n')
-                        msg = await channel.send(data[9])
+                        try:
+                            msg = await channel.send(data[9])
+                        except Exception as e:
+                            await zb.bot_errors(self,sp.format(e))
                     pass
                 i+=1
 
