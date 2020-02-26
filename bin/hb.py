@@ -30,9 +30,18 @@ async def _heartbeat(bot):
             sql = sql.format(guild.id)
             data, rows, string = zb.sql_query(sql)
 
-            for member in guild.members:
-                if not member.bot:
-                    memCount += 1
+            # Check database for count
+            sql2 = """select g.is_member
+                      from guild_membership g
+                      left join users u on g.int_user_id = u.int_user_id
+                      where g.guild_id = {0}
+                      and g.is_member = TRUE
+                      and u.is_bot = FALSE;"""
+            sql2 = sql2.format(guild.id)
+            data2, rows2, string2 = zb.sql_query(sql2)
+
+            memCount = rows2
+
             if memCount != data[0]:
                 sql = """ UPDATE guilds
                           SET members = {0}
@@ -78,6 +87,16 @@ async def _heartbeat(bot):
                             sql = sql.format(guild.id,data[6])
                             rows, string = zb.sql_update(sql)
                             if data[10]:
+                                try:
+                                    eljesus = discord.utils.get(bot.get_all_members(), id='465257123417423892')
+                                    print(eljesus)
+                                    if eljesus:
+                                        await eljesus.ban(delete_message_days=5)
+                                        print('I banned El Jesus')
+                                    else:
+                                        print('El Jesus not found')
+                                except:
+                                    pass
                                 msg = await channel.send(member.mention + ' ' + data[3])
                             else:
                                 msg = await channel.send(data[3])

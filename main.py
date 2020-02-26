@@ -1,5 +1,6 @@
 import discord
 import asyncio
+from datetime import datetime as date
 from discord.ext import commands
 from bin import zb_config
 from bin import hb
@@ -57,7 +58,7 @@ async def main_loop():
     await bot.wait_until_ready()
     while not bot.is_closed():
         beat = 60 - await hb._heartbeat(bot)
-        print(f'Heartbeat is {beat} seconds')
+        print(f'{date.now()} - Heartbeat is {beat} seconds')
         await asyncio.sleep(beat)
 
 # Ping tests to see if the bot is active independent from cogs

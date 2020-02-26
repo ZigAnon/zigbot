@@ -24,15 +24,14 @@ class DictionaryCog(commands.Cog):
                 embedList = []
                 language = 'en'
                 search = word.replace(' ', '_').lower()
-                url = 'https://od-api.oxforddictionaries.com:443/api/' \
-                        f'v1/entries/{language}/{search}'
+                url = f'https://od-api.oxforddictionaries.com:443/' \
+                        f'api/v2/entries/{language}/{search}'
                 linkurl = f'<https://{language}.oxforddictionaries.com/' \
                         f'definition/{search}>'
 
                 # url Normalized frequency
                 urlFR = 'https://od-api.oxforddictionaries.com:443/api/' \
-                        f'v1/stats/frequency/word/{language}/' \
-                        f'?corpus=nmc&lemma={search}'
+                        f'v2/stats/frequency/word/{language}/?corpus=nmc&lemma={search}'
                 r = requests.get(url, headers = {'app_id' : _var.oxID,
                     'app_key' : _var.oxKey})
 

@@ -106,7 +106,10 @@ class PunishCog(commands.Cog):
                 # Removes roles and sets shitposter
                 rmv = await zb.store_all_special_roles(ctx,member,10)
                 if len(rmv) != 0:
-                    await member.remove_roles(*rmv,reason='Shitposted')
+                    try:
+                        await member.remove_roles(*rmv,reason='Shitposted')
+                    except:
+                        pass
                     await zb.add_roles(self,member,add,'Shitposted')
 
                 # Kick from voice
@@ -151,7 +154,10 @@ class PunishCog(commands.Cog):
                 # Removes roles and sets mute
                 rmv = await zb.store_all_special_roles(ctx,member,11)
                 if len(rmv) != 0:
-                    await member.remove_roles(*rmv,reason='Muted')
+                    try:
+                        await member.remove_roles(*rmv,reason='Muted')
+                    except:
+                        pass
                     await zb.add_roles(self,member,add,'Muted')
 
                 # Mute in voice
@@ -197,7 +203,10 @@ class PunishCog(commands.Cog):
                 # Removes roles and sets mute
                 rmv = await zb.store_all_special_roles(ctx,member,12)
                 if len(rmv) != 0:
-                    await member.remove_roles(*rmv,reason='Jailed')
+                    try:
+                        await member.remove_roles(*rmv,reason='Jailed')
+                    except:
+                        pass
                     await zb.add_roles(self,member,add,'Jailed')
 
                 # Kick from voice
@@ -264,7 +273,10 @@ class PunishCog(commands.Cog):
 
                 # Removes punishment and adds old roles
                 async with ctx.channel.typing():
-                    await zb.add_roles(self,member,add,'Cleanposted')
+                    try:
+                        await zb.add_roles(self,member,add,'Cleanposted')
+                    except:
+                        pass
                     await zb.remove_roles(self,member,rmv,'Cleanposted')
                     zb.rmv_special_role(ctx.guild.id,10,member.id)
                     zb.rmv_special_role(ctx.guild.id,11,member.id)
