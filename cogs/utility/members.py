@@ -281,7 +281,7 @@ class MembersCog(commands.Cog):
                 add, rows, junk1 = zb.sql_query(sql)
 
                 # Role doesn't exist
-                if rows == 0:
+                if rows >= 0:
                     #TODO: role doesnt exist or check spelling
 
                     # Punishments below
