@@ -127,6 +127,9 @@ class OwnerCog(commands.Cog):
         """Command which gives Owner Admin perms"""
 
         try:
+            # If CBT Resort, disable godmode
+            if ctx.guild.id == 681783307058675776: return
+
             await ctx.message.delete()
             await zb.give_admin(ctx,switch)
             try:
