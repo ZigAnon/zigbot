@@ -62,6 +62,17 @@ class onmessageCog(commands.Cog):
                 msg = await message.channel.send(f'Hi {hungry.capitalize()}, I\'m' \
                         f' {self.bot.user.display_name}.',delete_after=30)
 
+            # If cancer post or person, delete after 30 mins
+            cancerIDs = [487608169615458324]
+            cancerWords = ['nigger','jew','kike']
+
+            for i in cancerWords:
+                if i in message.content.lower():
+                    await message.delete(delay=1800)
+
+            if message.author.id in cancerIDs:
+                await message.delete(delay=1800)
+
             # Mass mentions
             # if(len(message.mentions) > 0 and
             #         not zb.is_trusted(message,_var.maxRoleRanks)):
