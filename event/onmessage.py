@@ -64,14 +64,14 @@ class onmessageCog(commands.Cog):
 
             # If cancer post or person, delete after 30 mins
             cancerIDs = [487608169615458324]
-            cancerWords = ['nigger','jew','kike']
+            cancerWords = ['nigger','kike','cringe']
 
             for i in cancerWords:
                 if i in message.content.lower():
                     await message.delete(delay=1800)
 
-            if message.author.id in cancerIDs:
-                await message.delete(delay=1800)
+            # if message.author.id in cancerIDs:
+            #     await message.delete(delay=1800)
 
             # Mass mentions
             # if(len(message.mentions) > 0 and
