@@ -810,7 +810,8 @@ async def is_good_nick(ctx,member):
                     f'Your nickname for **{member.guild.name}** is now set to ' \
                     f'*Invalid Nickname*.\n\n' \
                     f'To change your nickname visit this link:\n' \
-                    f'https://support.discordapp.com/hc/en-us/articles/219070107-Server-Nicknames')
+                    f'https://support.discordapp.com/hc/en-us/articles/219070107-Server-Nicknames\n' \
+                    f'If your server doesn\'t allow changing your nickname, please reach out to an admin.')
             return False
     except Exception as e:
         await bot_errors(ctx,sp.format(e))
