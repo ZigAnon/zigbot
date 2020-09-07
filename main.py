@@ -30,6 +30,7 @@ bot.remove_command('help')
 # Think of it like a dot path import
 initial_extensions = ['cogs.guild.cnp',
                       'cogs.guild.cbt',
+                      'cogs.guild.tps',
                       'cogs.admin.serverinfo',
                       'cogs.admin.inactive',
                       'cogs.admin.lookup',
