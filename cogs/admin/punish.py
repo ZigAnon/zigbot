@@ -169,10 +169,10 @@ class PunishCog(commands.Cog):
         except Exception as e:
             await zb.bot_errors(ctx,sp.format(e))
 
-    @commands.command(name='jail', hidden=True)
+    @commands.command(name='jail', aliases=['detain'], hidden=True)
     async def jail(self, ctx, member: discord.Member):
         """ Removes all chats and allows user to state case
-            in jail chat."""
+            in detain chat."""
         try:
             if(zb.is_trusted(ctx,4) and
                     cp.is_outranked(ctx.message.author,member,4)):
@@ -194,8 +194,8 @@ class PunishCog(commands.Cog):
                 cp.punish_user(member,1)
 
                 # If no punish chan, skip log
-                embed=discord.Embed(title="User Jailed!",
-                        description=f'**{member}** was jailed by ' +
+                embed=discord.Embed(title="User Detained!",
+                        description=f'**{member}** was detained by ' +
                         f'**{ctx.message.author}**!',
                         color=0xd30000)
                 await zb.print_log_by_group_id(ctx.guild,80,embed)
@@ -204,10 +204,10 @@ class PunishCog(commands.Cog):
                 rmv = await zb.store_all_special_roles(ctx,member,12)
                 if len(rmv) != 0:
                     try:
-                        await member.remove_roles(*rmv,reason='Jailed')
+                        await member.remove_roles(*rmv,reason='Detained')
                     except:
                         pass
-                    await zb.add_roles(self,member,add,'Jailed')
+                    await zb.add_roles(self,member,add,'Detained')
 
                 # Kick from voice
                 try:

@@ -227,7 +227,7 @@ class ThatPublicServerCog(commands.Cog):
 
     @commands.command(name='hire', description='Sets Temp role to Employee')
     @is_in_guild(744322815469027376)
-    async def new_nomiate(self, ctx, member: discord.Member):
+    async def new_hire(self, ctx, member: discord.Member):
         """ Sets Temp role to Employee """
         try:
             if not zb.is_trusted(ctx,3):
@@ -249,6 +249,17 @@ class ThatPublicServerCog(commands.Cog):
                     color=0x23d160)
             embed.set_author(name=member, icon_url=member.avatar_url)
             await zb.print_log(self,member,embed)
+
+            # Vocalize hire
+            embed=discord.Embed(description=f'**Congratulation! ' \
+                    f'{member.mention} was hired by #{ctx.author}**',
+                    color=0x23d160)
+            embed.set_author(name=member, icon_url=member.avatar_url)
+            await ctx.channel.send(embed=embed,delete_after=60)
+
+
+            # Remove message
+            await ctx.message.delete()
         except Exception as e:
             await zb.bot_errors(ctx,sp.format(e))
 
