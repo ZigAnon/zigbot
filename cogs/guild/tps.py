@@ -49,81 +49,81 @@ class ThatPublicServerCog(commands.Cog):
             except:
                 pass
 
-            # If user has 200 messages and is on server > 14 days
-            sql = """ SELECT DISTINCT m.message_id
-                      FROM messages m
-                      LEFT JOIN users u ON m.int_user_id = u.int_user_id
-                      LEFT JOIN guild_membership g ON m.int_user_id = g.int_user_id
-                      WHERE NOT m.int_user_id in (
-                          SELECT m.int_user_id
-                          FROM role_membership m
-                          LEFT JOIN roles r ON m.role_id = r.role_id
-                          WHERE r.role_perms >= 5
-                          AND m.guild_id = {0})
-                      AND g.guild_id = {0}
-                      AND u.real_user_id = {1}
-                      AND g.punished = 0
-                      AND g.joined_at <= CURRENT_TIMESTAMP AT TIME ZONE 'ZULU' - INTERVAL '14 days' """
-            sql = sql.format(before.guild.id,before.id)
-            data, rows, junk1 = zb.sql_query(sql)
-            if rows < 200:
-                return
+            # # If user has 200 messages and is on server > 14 days
+            # sql = """ SELECT DISTINCT m.message_id
+            #           FROM messages m
+            #           LEFT JOIN users u ON m.int_user_id = u.int_user_id
+            #           LEFT JOIN guild_membership g ON m.int_user_id = g.int_user_id
+            #           WHERE NOT m.int_user_id in (
+            #               SELECT m.int_user_id
+            #               FROM role_membership m
+            #               LEFT JOIN roles r ON m.role_id = r.role_id
+            #               WHERE r.role_perms >= 5
+            #               AND m.guild_id = {0})
+            #           AND g.guild_id = {0}
+            #           AND u.real_user_id = {1}
+            #           AND g.punished = 0
+            #           AND g.joined_at <= CURRENT_TIMESTAMP AT TIME ZONE 'ZULU' - INTERVAL '14 days' """
+            # sql = sql.format(before.guild.id,before.id)
+            # data, rows, junk1 = zb.sql_query(sql)
+            # if rows < 200:
+            #     return
 
-            # Calculate Trusted
-            now = datetime.utcnow()
-            joined = before.joined_at
-            diff = (now - joined).days
+            # # Calculate Trusted
+            # now = datetime.utcnow()
+            # joined = before.joined_at
+            # diff = (now - joined).days
 
-            require = -(80*diff)+2200
-            if require < 200:
-                require = 200
-            if require < rows:
-                sql = """ SELECT role_id
-                          FROM roles
-                          WHERE guild_id = {0}
-                          AND role_perms = 5 """
-                sql = sql.format(before.guild.id)
-                data, junk1, junk2 = zb.sql_query(sql)
-                trusted = before.guild.get_role(data[0][0])
-                await before.add_roles(trusted,reason=f'Member has been in server {diff} days with {rows} messages')
+            # require = -(80*diff)+2200
+            # if require < 200:
+            #     require = 200
+            # if require < rows:
+            #     sql = """ SELECT role_id
+            #               FROM roles
+            #               WHERE guild_id = {0}
+            #               AND role_perms = 5 """
+            #     sql = sql.format(before.guild.id)
+            #     data, junk1, junk2 = zb.sql_query(sql)
+            #     trusted = before.guild.get_role(data[0][0])
+            #     await before.add_roles(trusted,reason=f'Member has been in server {diff} days with {rows} messages')
 
         except Exception as e:
             await zb.bot_errors(self,sp.format(e))
 
-    @commands.Cog.listener()
-    async def on_message(self, message):
-        try:
-            # If any bot
-            if message.author.bot:
-                return
+    # @commands.Cog.listener()
+    # async def on_message(self, message):
+    #     try:
+    #         # If any bot
+    #         if message.author.bot:
+    #             return
 
-            # Ignore self
-            if message.author == self.bot.user:
-                return
-            # Ignore if not guild
-            if not message.guild is guild:
-                return
+    #         # Ignore self
+    #         if message.author == self.bot.user:
+    #             return
+    #         # Ignore if not guild
+    #         if not message.guild is guild:
+    #             return
 
-            # Delete @everyone post
-            if(not zb.is_trusted(message,5) and
-                    ('@everyone' in message.content.lower() or
-                        '@here' in message.content.lower())):
-                await message.delete()
+    #         # Delete @everyone post
+    #         if(not zb.is_trusted(message,5) and
+    #                 ('@everyone' in message.content.lower() or
+    #                     '@here' in message.content.lower())):
+    #             await message.delete()
 
-            # If discord link
-            # if(not zb.is_trusted(message,5) and zb.is_pattern(message.content.lower(),
-            #         '(https?:\/\/)?(www\.)?(discord\.(gg|io|me|li)|disboard\.org\/server|discordapp\.com\/invite)\/.+([0-9]|[a-z])')):
-            #     punishchan = message.guild.get_channel(517882333752459264)
-            #     embed=discord.Embed(title="Banned!",
-            #             description=f'**{message.author}** was banned by ' +
-            #             '**ZigBot#1002** for violation of rule 6!',
-            #             color=0xd30000)
-            #     await punishchan.send(embed=embed)
-            #     await message.author.send('It\'s in the rules, no sharing discord ' +
-            #             'links.\n Bye bye!')
-            #     await message.author.ban(reason='Posted invite')
-        except Exception as e:
-            await zb.bot_errors(self,sp.format(e))
+    #         # If discord link
+    #         # if(not zb.is_trusted(message,5) and zb.is_pattern(message.content.lower(),
+    #         #         '(https?:\/\/)?(www\.)?(discord\.(gg|io|me|li)|disboard\.org\/server|discordapp\.com\/invite)\/.+([0-9]|[a-z])')):
+    #         #     punishchan = message.guild.get_channel(517882333752459264)
+    #         #     embed=discord.Embed(title="Banned!",
+    #         #             description=f'**{message.author}** was banned by ' +
+    #         #             '**ZigBot#1002** for violation of rule 6!',
+    #         #             color=0xd30000)
+    #         #     await punishchan.send(embed=embed)
+    #         #     await message.author.send('It\'s in the rules, no sharing discord ' +
+    #         #             'links.\n Bye bye!')
+    #         #     await message.author.ban(reason='Posted invite')
+    #     except Exception as e:
+    #         await zb.bot_errors(self,sp.format(e))
 
     # Events on member join voice
     # @commands.Cog.listener()
@@ -236,6 +236,7 @@ class ThatPublicServerCog(commands.Cog):
             # Get Roles
             tempID = 744623716398268539
             empID = 744623766063022203
+            welcomeChan = 744322816156893228
             empRole = ctx.guild.get_role(empID)
             tempRole = ctx.guild.get_role(tempID)
 
@@ -256,6 +257,12 @@ class ThatPublicServerCog(commands.Cog):
                     color=0x23d160)
             embed.set_author(name=member, icon_url=member.avatar_url)
             await ctx.channel.send(embed=embed,delete_after=60)
+
+            # Let people know they were hired
+            welChan = ctx.guild.get_channel(welcomeChan)
+            msg = f'Welcome {member.mention}!  <#{welcomeChan}> is the server\'s ' \
+            f'main chat!  Take a look around and assign some roles in the WELCOME CENTER!'
+            await welChan.send(msg,delete_after=300)
 
 
             # Remove message
