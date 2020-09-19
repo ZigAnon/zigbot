@@ -256,7 +256,7 @@ class ThatPublicServerCog(commands.Cog):
                     f'{member.mention} was hired by #{ctx.author}**',
                     color=0x23d160)
             embed.set_author(name=member, icon_url=member.avatar_url)
-            await ctx.channel.send(embed=embed,delete_after=60)
+            await ctx.channel.send(embed=embed)
 
             # Let people know they were hired
             welChan = ctx.guild.get_channel(welcomeChan)
