@@ -236,13 +236,19 @@ class ThatPublicServerCog(commands.Cog):
             # Get Roles
             tempID = 744623716398268539
             empID = 744623766063022203
+            empRanksID = 744625525573550081
+            flairRolesID = 744626018085634198
             welcomeChan = 744322816156893228
             empRole = ctx.guild.get_role(empID)
+            empRanksRole = ctx.guild.get_role(empRanksID)
+            flairRolesRole = ctx.guild.get_role(flairRolesID)
             tempRole = ctx.guild.get_role(tempID)
 
             # Assign and remove roles
             await member.add_roles(empRole,reason=f'Member hired by {ctx.author}')
             await member.remove_roles(tempRole,reason=f'Member hired by {ctx.author}')
+            await member.add_roles(flairRolesRole,reason=f'Member hired by {ctx.author}')
+            await member.add_roles(empRanksRole,reason=f'Member hired by {ctx.author}')
 
             # Log hire
             embed=discord.Embed(description=f'**{member.mention} ' \
