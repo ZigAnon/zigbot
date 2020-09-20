@@ -225,6 +225,21 @@ class ThatPublicServerCog(commands.Cog):
     #     except Exception as e:
     #         await zb.bot_errors(ctx,sp.format(e))
 
+    # @commands.command(name='temp', description='Command to fix things I break')
+    # @commands.is_owner()
+    # async def temp_command(self, ctx):
+    #     """ Command to fix things I break """
+    #     try:
+    #         tempID = 744625525573550081
+    #         tempRole = ctx.guild.get_role(tempID)
+    #         for member in ctx.guild.members:
+    #             try:
+    #                 await member.add_roles(tempRole,reason=f'Adding Employee role seperator')
+    #             except:
+    #                 pass
+    #     except Exception as e:
+    #         await zb.bot_errors(ctx,sp.format(e))
+
     @commands.command(name='hire', description='Sets Temp role to Employee')
     @is_in_guild(744322815469027376)
     async def new_hire(self, ctx, member: discord.Member):
