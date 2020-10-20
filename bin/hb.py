@@ -62,64 +62,64 @@ async def _heartbeat(bot):
             # Remove bans from users that hammered server
             zb.reset_hammer(guild)
 
-            # Perform reminders
-            sql = """ SELECT * FROM reminders
-                      WHERE guild_id = {0}
-                      AND NOT interval = 0 """
-            sql = sql.format(guild.id)
-            array, rows, string = zb.sql_query(sql)
-            i = 0
-            while i < rows:
-                data = array[i]
-                data = data.flatten()
-                # If Repeat is TRUE
-                if data[5]:
-                    if int(data[4]) != 0:
-                        futureTime = data[7] + timedelta(minutes=int(data[4]))
-                        member = guild.get_member(int(data[1]))
-                        channel = guild.get_channel(int(data[2]))
-                        if datetime.utcnow() > futureTime:
-                            sql = """ UPDATE reminders
-                                      SET repeat = False,
-                                      time = date_trunc('minute', timezone('ZULU', NOW()))
-                                      WHERE guild_id = {0}
-                                      AND trigger_word = '{1}' """
-                            sql = sql.format(guild.id,data[6])
-                            rows, string = zb.sql_update(sql)
-                            if data[10]:
-                                try:
-                                    eljesus = discord.utils.get(bot.get_all_members(), id='465257123417423892')
-                                    print(eljesus)
-                                    if eljesus:
-                                        await eljesus.ban(delete_message_days=5)
-                                        print('I banned El Jesus')
-                                    else:
-                                        print('El Jesus not found')
-                                except:
-                                    pass
-                                msg = await channel.send(member.mention + ' ' + data[3])
-                            else:
-                                msg = await channel.send(data[3])
-                    else:
-                        #TODO: add 4th condition
-                        pass
-                # If Repeat is FALSE
-                else:
-                    futureTime = data[7] + timedelta(minutes=(int(data[4])/2))
-                    channel = guild.get_channel(int(data[2]))
-                    if datetime.utcnow() > futureTime:
-                        sql = """ UPDATE reminders
-                                  SET time = date_trunc('minute', timezone('ZULU', NOW()))
-                                  WHERE guild_id = {0}
-                                  AND trigger_word = '{1}' """
-                        sql = sql.format(guild.id,data[6])
-                        rows, string = zb.sql_update(sql)
-                        try:
-                            msg = await channel.send(data[9])
-                        except Exception as e:
-                            await zb.bot_errors(self,sp.format(e))
-                    pass
-                i+=1
+            # # Perform reminders
+            # sql = """ SELECT * FROM reminders
+            #           WHERE guild_id = {0}
+            #           AND NOT interval = 0 """
+            # sql = sql.format(guild.id)
+            # array, rows, string = zb.sql_query(sql)
+            # i = 0
+            # while i < rows:
+            #     data = array[i]
+            #     data = data.flatten()
+            #     # If Repeat is TRUE
+            #     if data[5]:
+            #         if int(data[4]) != 0:
+            #             futureTime = data[7] + timedelta(minutes=int(data[4]))
+            #             member = guild.get_member(int(data[1]))
+            #             channel = guild.get_channel(int(data[2]))
+            #             if datetime.utcnow() > futureTime:
+            #                 sql = """ UPDATE reminders
+            #                           SET repeat = False,
+            #                           time = date_trunc('minute', timezone('ZULU', NOW()))
+            #                           WHERE guild_id = {0}
+            #                           AND trigger_word = '{1}' """
+            #                 sql = sql.format(guild.id,data[6])
+            #                 rows, string = zb.sql_update(sql)
+            #                 if data[10]:
+            #                     try:
+            #                         eljesus = discord.utils.get(bot.get_all_members(), id='465257123417423892')
+            #                         print(eljesus)
+            #                         if eljesus:
+            #                             await eljesus.ban(delete_message_days=5)
+            #                             print('I banned El Jesus')
+            #                         else:
+            #                             print('El Jesus not found')
+            #                     except:
+            #                         pass
+            #                     msg = await channel.send(member.mention + ' ' + data[3])
+            #                 else:
+            #                     msg = await channel.send(data[3])
+            #         else:
+            #             #TODO: add 4th condition
+            #             pass
+            #     # If Repeat is FALSE
+            #     else:
+            #         futureTime = data[7] + timedelta(minutes=(int(data[4])/2))
+            #         channel = guild.get_channel(int(data[2]))
+            #         if datetime.utcnow() > futureTime:
+            #             sql = """ UPDATE reminders
+            #                       SET time = date_trunc('minute', timezone('ZULU', NOW()))
+            #                       WHERE guild_id = {0}
+            #                       AND trigger_word = '{1}' """
+            #             sql = sql.format(guild.id,data[6])
+            #             rows, string = zb.sql_update(sql)
+            #             try:
+            #                 msg = await channel.send(data[9])
+            #             except Exception as e:
+            #                 await zb.bot_errors(self,sp.format(e))
+            #         pass
+            #     i+=1
 
             # Every 15 mins
             try:

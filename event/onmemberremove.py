@@ -17,6 +17,17 @@ class onmemberremoveCog(commands.Cog):
             if member.bot:
                 return
 
+            # try:
+            #     info = await member.guild.fetch_ban(member)
+            #     print(info)
+            # except:
+            #     pass
+
+            # banlist = await member.guild.bans()
+            # for banned in banlist:
+            #     if member.id == banned.id:
+            #         return
+
             embed=discord.Embed(description=member.mention + " " +
                     member.name, color=0xff470f)
             embed.add_field(name="Join Date", value=member.joined_at,

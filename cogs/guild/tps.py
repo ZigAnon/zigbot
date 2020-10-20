@@ -240,6 +240,46 @@ class ThatPublicServerCog(commands.Cog):
     #     except Exception as e:
     #         await zb.bot_errors(ctx,sp.format(e))
 
+    @commands.command(name='settopic', description='Sets Temp role to Employee')
+    @is_in_guild(744322815469027376)
+    async def set_topic(self, ctx, *, roomName: str):
+        """ Sets Event Room names """
+        try:
+            if not zb.is_trusted(ctx,3):
+                return
+
+            textChannel = ctx.guild.get_channel(768167677151674389)
+            voiceChannel = ctx.guild.get_channel(762464559314763838)
+            oldName = textChannel.name
+
+            await voiceChannel.edit(name=roomName,reason=f'Changed by {ctx.author}')
+            await textChannel.edit(name=roomName,reason=f'Changed by {ctx.author}')
+            await ctx.channel.send(f'Event 1 Changed:\nfrom {oldName} to ' \
+                    f'<#{textChannel.id}>')
+
+        except Exception as e:
+            await zb.bot_errors(ctx,sp.format(e))
+
+    @commands.command(name='settopic2', description='Sets Temp role to Employee')
+    @is_in_guild(744322815469027376)
+    async def set_topic2(self, ctx, *, roomName: str):
+        """ Sets Event Room names """
+        try:
+            if not zb.is_trusted(ctx,3):
+                return
+
+            textChannel = ctx.guild.get_channel(768167712224444436)
+            voiceChannel = ctx.guild.get_channel(768167756541460500)
+            oldName = textChannel.name
+
+            await voiceChannel.edit(name=roomName,reason=f'Changed by {ctx.author}')
+            await textChannel.edit(name=roomName,reason=f'Changed by {ctx.author}')
+            await ctx.channel.send(f'Event 2 Changed:\nfrom {oldName} to ' \
+                    f'<#{textChannel.id}>')
+
+        except Exception as e:
+            await zb.bot_errors(ctx,sp.format(e))
+
     @commands.command(name='hire', description='Sets Temp role to Employee')
     @is_in_guild(744322815469027376)
     async def new_hire(self, ctx, member: discord.Member):

@@ -24,15 +24,20 @@ class DictionaryCog(commands.Cog):
                 embedList = []
                 language = 'en'
                 search = word.replace(' ', '_').lower()
-                url = f'https://od-api.oxforddictionaries.com:443/' \
-                        f'api/v2/entries/{language}/{search}'
+                url = f'https://od-api.oxforddictionaries.com:443/api/v2' \
+                        f'/entries/{language}/{search}'
+                # url = f'https://gad-proxy-prod-leap-2-1.us-east-1' \
+                #         f'.elasticbeanstalk.com:443/api/v2/entries/' \
+                #         f'{language}/{search}'
+                # url = f'https://od-api.oxforddictionaries.com:443/' \
+                #         f'api/v2/entries/{language}/{search}'
                 linkurl = f'<https://{language}.oxforddictionaries.com/' \
                         f'definition/{search}>'
 
                 # url Normalized frequency
                 urlFR = 'https://od-api.oxforddictionaries.com:443/api/' \
                         f'v2/stats/frequency/word/{language}/?corpus=nmc&lemma={search}'
-                r = requests.get(url, headers = {'app_id' : _var.oxID,
+                r = requests.get(urlFR, headers = {'app_id' : _var.oxID,
                     'app_key' : _var.oxKey})
 
                 # Checks for 404 or if Definitions is found
@@ -40,6 +45,7 @@ class DictionaryCog(commands.Cog):
                     # Builds the list to reduce API calls
                     try:
                         data = r.json()
+                        print(data)
                         howmany = len(list(data['results'][0]['lexicalEntries'][0]['entries'][0]['senses']))
                     except:
                         return
