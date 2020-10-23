@@ -277,6 +277,23 @@ class ThatPublicServerCog(commands.Cog):
             await ctx.channel.send(f'Event 2 Changed:\nfrom {oldName} to ' \
                     f'<#{textChannel.id}>')
 
+    @commands.command(name='settopic18', description='Sets Temp role to Employee')
+    @is_in_guild(744322815469027376)
+    async def set_topic18(self, ctx, *, roomName: str):
+        """ Sets Event Room names """
+        try:
+            if not zb.is_trusted(ctx,3):
+                return
+
+            textChannel = ctx.guild.get_channel(768598542943125535)
+            voiceChannel = ctx.guild.get_channel(768598571851055134)
+            oldName = textChannel.name
+
+            await voiceChannel.edit(name=roomName,reason=f'Changed by {ctx.author}')
+            await textChannel.edit(name=roomName,reason=f'Changed by {ctx.author}')
+            await ctx.channel.send(f'Mature Event Changed:\nfrom {oldName} to ' \
+                    f'<#{textChannel.id}>')
+
         except Exception as e:
             await zb.bot_errors(ctx,sp.format(e))
 
