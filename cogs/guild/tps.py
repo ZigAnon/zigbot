@@ -277,6 +277,9 @@ class ThatPublicServerCog(commands.Cog):
             await ctx.channel.send(f'Event 2 Changed:\nfrom {oldName} to ' \
                     f'<#{textChannel.id}>')
 
+        except Exception as e:
+            await zb.bot_errors(ctx,sp.format(e))
+
     @commands.command(name='settopic18', description='Sets Temp role to Employee')
     @is_in_guild(744322815469027376)
     async def set_topic18(self, ctx, *, roomName: str):
