@@ -22,42 +22,42 @@ async def _heartbeat(bot):
 
         for guild in guilds:
             # Update member count
-            memberChan = False
-            memCount = 0
-            sql = """ SELECT members
-                      FROM guilds
-                      WHERE guild_id = {0} """
-            sql = sql.format(guild.id)
-            data, rows, string = zb.sql_query(sql)
+            # memberChan = False
+            # memCount = 0
+            # sql = """ SELECT members
+            #           FROM guilds
+            #           WHERE guild_id = {0} """
+            # sql = sql.format(guild.id)
+            # data, rows, string = zb.sql_query(sql)
 
-            # Check database for count
-            sql2 = """select g.is_member
-                      from guild_membership g
-                      left join users u on g.int_user_id = u.int_user_id
-                      where g.guild_id = {0}
-                      and g.is_member = TRUE
-                      and u.is_bot = FALSE;"""
-            sql2 = sql2.format(guild.id)
-            data2, rows2, string2 = zb.sql_query(sql2)
+            # # Check database for count
+            # sql2 = """select g.is_member
+            #           from guild_membership g
+            #           left join users u on g.int_user_id = u.int_user_id
+            #           where g.guild_id = {0}
+            #           and g.is_member = TRUE
+            #           and u.is_bot = FALSE;"""
+            # sql2 = sql2.format(guild.id)
+            # data2, rows2, string2 = zb.sql_query(sql2)
 
-            memCount = rows2
+            # memCount = rows2
 
-            if memCount != data[0]:
-                sql = """ UPDATE guilds
-                          SET members = {0}
-                          WHERE guild_id = {1} """
-                sql = sql.format(memCount,guild.id)
-                junk, junk1 = zb.sql_update(sql)
+            # if memCount != data[0]:
+            #     sql = """ UPDATE guilds
+            #               SET members = {0}
+            #               WHERE guild_id = {1} """
+            #     sql = sql.format(memCount,guild.id)
+            #     junk, junk1 = zb.sql_update(sql)
 
-                for channel in guild.voice_channels:
-                    if channel.name.lower().startswith('members: '):
-                        await channel.edit(name=f'Members: {memCount}',
-                                reason='Member count')
-                        memberChan = True
-                if not memberChan:
-                    chan = await guild.create_voice_channel(name=f'Members: {memCount}',
-                            reason='Member count')
-                    await chan.edit(position=0)
+            #     for channel in guild.voice_channels:
+            #         if channel.name.lower().startswith('members: '):
+            #             await channel.edit(name=f'Members: {memCount}',
+            #                     reason='Member count')
+            #             memberChan = True
+            #     if not memberChan:
+            #         chan = await guild.create_voice_channel(name=f'Members: {memCount}',
+            #                 reason='Member count')
+            #         await chan.edit(position=0)
 
             # Remove bans from users that hammered server
             zb.reset_hammer(guild)
