@@ -260,74 +260,74 @@ async def _heartbeat(bot):
                 await zb.bot_errors(self,sp.format(e))
 
             # RSS Feeds
-            try:
-                sql = """ SELECT test_value, hook_url, embed_color,
-                          avatar_url, parse_url, date_format
-                          FROM webhooks
-                          WHERE guild_id = {0}
-                          AND type = 'rss'
-                          AND is_active = TRUE """
-                sql = sql.format(guild.id)
+            # try:
+            #     sql = """ SELECT test_value, hook_url, embed_color,
+            #               avatar_url, parse_url, date_format
+            #               FROM webhooks
+            #               WHERE guild_id = {0}
+            #               AND type = 'rss'
+            #               AND is_active = TRUE """
+            #     sql = sql.format(guild.id)
 
-                data, rows, string = zb.sql_query(sql)
-                data = data.tolist()
+            #     data, rows, string = zb.sql_query(sql)
+            #     data = data.tolist()
 
-                # If webhook active, grab test_value
-                if rows > 0:
-                    i = 0
-                    while i < len(data):
-                        rss = fp.parse(data[i][4])
+            #     # If webhook active, grab test_value
+            #     if rows > 0:
+            #         i = 0
+            #         while i < len(data):
+            #             rss = fp.parse(data[i][4])
 
-                        # cURL import
-                        url = data[i][1]
-                        headers = {
-                            'Content-Type': 'application/json',
-                        }
+            #             # cURL import
+            #             url = data[i][1]
+            #             headers = {
+            #                 'Content-Type': 'application/json',
+            #             }
 
-                        dateformat = data[i][5]
-                        lastPost = datetime.strptime(data[i][0],dateformat)
-                        oldest = lastPost
-                        for post in reversed(rss.entries):
-                            articleDate = datetime.strptime(post.published,dateformat)
-                            if articleDate > lastPost:
-                                try:
-                                    soup = bs(post.content[0]['value'], features='html.parser')
-                                    thumb = soup.find('img')['src']
-                                except:
-                                    thumb = ""
-                                try:
-                                    author = post.author
-                                except:
-                                    author = rss.feed.title
-                                push = ('{' +
-                                        '"username": ' + f'"{rss.feed.title}",'
-                                        '"embeds": [{' +
-                                            '"title": ' + f'"{post.title}",'
-                                            '"color": ' + f'{data[i][2]},'
-                                            '"url": ' + f'"{post.link}",'
-                                            '"description": ' + f'"{post.summary}",'
-                                            '"thumbnail": {"url": ' + f'"{thumb}"' + '},'
-                                            '"footer": {"text": ' + f'"Published by: {author}"' + '},'
-                                            '"timestamp": ' + f'"{articleDate}"' + '}],'
-                                            '"avatar_url": ' + f'"{data[i][3]}"' + '}')
+            #             dateformat = data[i][5]
+            #             lastPost = datetime.strptime(data[i][0],dateformat)
+            #             oldest = lastPost
+            #             for post in reversed(rss.entries):
+            #                 articleDate = datetime.strptime(post.published,dateformat)
+            #                 if articleDate > lastPost:
+            #                     try:
+            #                         soup = bs(post.content[0]['value'], features='html.parser')
+            #                         thumb = soup.find('img')['src']
+            #                     except:
+            #                         thumb = ""
+            #                     try:
+            #                         author = post.author
+            #                     except:
+            #                         author = rss.feed.title
+            #                     push = ('{' +
+            #                             '"username": ' + f'"{rss.feed.title}",'
+            #                             '"embeds": [{' +
+            #                                 '"title": ' + f'"{post.title}",'
+            #                                 '"color": ' + f'{data[i][2]},'
+            #                                 '"url": ' + f'"{post.link}",'
+            #                                 '"description": ' + f'"{post.summary}",'
+            #                                 '"thumbnail": {"url": ' + f'"{thumb}"' + '},'
+            #                                 '"footer": {"text": ' + f'"Published by: {author}"' + '},'
+            #                                 '"timestamp": ' + f'"{articleDate}"' + '}],'
+            #                                 '"avatar_url": ' + f'"{data[i][3]}"' + '}')
 
-                                try:
-                                    response = requests.post(url, headers=headers, data=push)
-                                except:
-                                    pass
+            #                     try:
+            #                         response = requests.post(url, headers=headers, data=push)
+            #                     except:
+            #                         pass
 
-                                if articleDate > oldest:
-                                    oldest = articleDate
-                                    # Update recent push
-                                    sql = """ UPDATE webhooks
-                                              SET test_value = '{0}'
-                                              WHERE hook_url = '{1}' """
-                                    sql = sql.format(post.published,data[i][1])
-                                    junk1, junk2 = zb.sql_update(sql)
-                        i+=1
+            #                     if articleDate > oldest:
+            #                         oldest = articleDate
+            #                         # Update recent push
+            #                         sql = """ UPDATE webhooks
+            #                                   SET test_value = '{0}'
+            #                                   WHERE hook_url = '{1}' """
+            #                         sql = sql.format(post.published,data[i][1])
+            #                         junk1, junk2 = zb.sql_update(sql)
+            #             i+=1
 
-            except Exception as e:
-                await zb.bot_errors(self,sp.format(e))
+            # except Exception as e:
+            #     await zb.bot_errors(self,sp.format(e))
 
     except Exception as e:
         await zb.bot_errors(self,sp.format(e))
