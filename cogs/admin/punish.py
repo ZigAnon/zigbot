@@ -253,12 +253,12 @@ class PunishCog(commands.Cog):
                     return
 
                 # If punished, can't use command
-                rows = zb.get_punish_num(member)
-                if rows == 0:
-                    await ctx.send(f'**{member}** is not punished.',
-                            delete_after=15)
-                    await ctx.message.delete()
-                    return
+                # rows = zb.get_punish_num(member)
+                # if rows == 0:
+                #     await ctx.send(f'**{member}** is not punished.',
+                #             delete_after=15)
+                #     await ctx.message.delete()
+                #     return
 
                 # Update database
                 cp.punish_user(member,0)
