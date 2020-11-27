@@ -342,7 +342,8 @@ class ThatPublicServerCog(commands.Cog):
             # Let people know they were hired
             welChan = ctx.guild.get_channel(welcomeChan)
             msg = f'Welcome {member.mention}!  <#{welcomeChan}> is the server\'s ' \
-            f'main chat!  Take a look around and assign some roles in the WELCOME CENTER!'
+            f'main chat!  Take a look around and be sure to assign some roles in ' \
+            f'<#751657293522796645>!'
             await welChan.send(msg,delete_after=300)
 
 
