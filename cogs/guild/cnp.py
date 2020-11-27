@@ -160,7 +160,7 @@ class CoffeePolCog(commands.Cog):
 
             # If discord link
             if(not zb.is_trusted(message,5) and zb.is_pattern(message.content.lower(),
-                    '(https?:\/\/)?(www\.)?(discord\.(gg|io|me|li)|disboard\.org\/server|discordapp\.com\/invite)\/.+([0-9]|[a-z])')):
+                '(https?:\/\/)?(www\.)?(discord\.(gg|io|me|li)|disboard\.org\/server|discord(app|)\.com\/invite)\/.+([0-9]|[a-z])')):
                 punishchan = message.guild.get_channel(517882333752459264)
                 embed=discord.Embed(title="Banned!",
                         description=f'**{message.author}** was banned by ' +
