@@ -29,6 +29,7 @@ intents.members = True  # Subscribe to the Members intent
 bot = commands.Bot(command_prefix=get_prefix, intents=intents, case_insensitive=True)
 bot.remove_command('help')
 
+# Added redbot UTC
 # Below cogs represents our folder our cogs are in. Following is the file name. So 'meme.py' in cogs, would be cogs.meme
 # Think of it like a dot path import
 initial_extensions = ['cogs.guild.cnp',
